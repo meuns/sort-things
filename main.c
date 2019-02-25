@@ -1,6 +1,7 @@
+#include <stdio.h>
 #include "bubble_sort.h"
 
-void main()
+int main()
 {
 	int keys[] = {
 		11, 12, 0, 2,
@@ -19,4 +20,6 @@ void main()
 	}
 	
 	printf("\n");
+
+  return 0;
 }
