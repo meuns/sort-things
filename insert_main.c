@@ -12,7 +12,7 @@ int main()
 	
 	int key_count = sizeof(keys) / sizeof(keys[0]);
   
-	insert_sort(keys, 0, key_count);
+	insert_sort(keys, key_count);
 	
 	for (int key_index = 0; key_index < key_count; ++key_index)
 	{

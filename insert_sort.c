@@ -31,9 +31,9 @@ static void insert_shift_keys(int* keys, int insert_index, int current_index)
   }
 }
 
-void insert_sort(int* keys, int key_index, int key_count)
+void insert_sort(int* keys, int key_count)
 {
-  for (int current_index = key_index + 1; current_index < key_count; ++current_index)
+  for (int current_index = 1; current_index < key_count; ++current_index)
   {
     const int insert_key = keys[current_index];
     const int insert_index = insert_find_index(keys, current_index, insert_key);    
