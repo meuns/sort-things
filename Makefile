@@ -2,7 +2,7 @@ CC=clang
 CFLAGS=-W -Wall -std=c11 -pedantic -g -O0
 LDFLAGS=
 
-all: bubble insert heap
+all: bubble insert heap merge
 
 bubble: bubble_sort.o bubble_main.o
 	$(CC) -o $@ $^ $(LDFLAGS)
@@ -21,6 +21,12 @@ heap: heap_sort.o heap_main.o
 
 heap_main.o: heap_sort.h heap_main.c
 heap_sort.o: heap_sort.h heap_sort.c
+
+merge: merge_sort.o merge_main.o
+	$(CC) -o $@ $^ $(LDFLAGS)
+
+merge_main.o: merge_sort.h merge_main.c
+merge_sort.o: merge_sort.h merge_sort.c
 
 %.o: %.c
 	$(CC) -o $@ -c $< $(CFLAGS)
