@@ -1,5 +1,6 @@
 #include "merge_sort.h"
 
+__attribute__((always_inline))
 static inline void merge_keys(int* left_keys, const int left_key_count, int* right_keys, const int right_key_count, int* merged_keys)
 {
   int left_index = 0;
@@ -13,16 +14,14 @@ static inline void merge_keys(int* left_keys, const int left_key_count, int* rig
     if (left_key <= right_key)
     {
       merged_keys[merged_index] = left_key;
-      
-      left_key = left_keys[left_index];
       left_index = left_index + 1;
+      left_key = left_keys[left_index];      
     }
     else
     {
       merged_keys[merged_index] = right_key;
-      
-      right_key = right_keys[right_index];
       right_index = right_index + 1;
+      right_key = right_keys[right_index];      
     }
     
     merged_index = merged_index + 1;
@@ -51,18 +50,22 @@ static inline void merge_keys(int* left_keys, const int left_key_count, int* rig
 
 void merge_sort(int* keys, int key_count, int* temp_keys)
 {
-  for (int merged_key_count = 2; merged_key_count < key_count; merged_key_count <<= 1)
+  for (int left_key_count = 1; left_key_count <= key_count; left_key_count <<= 1)
   {
-    int left_key_count = merged_key_count >> 1;
     int right_key_count = left_key_count;
-    
     int merge_index = 0;
-    while (merge_index < key_count)
+    int next_merge_index = merge_index + left_key_count + right_key_count;
+    while (next_merge_index <= key_count)
     {
       merge_keys(&keys[merge_index], left_key_count, &keys[merge_index + left_key_count], right_key_count, temp_keys);
-      merge_index = merge_index + merged_key_count;
+      merge_index = next_merge_index;
+      next_merge_index = merge_index + left_key_count + right_key_count;
     }
     
-    
+    if (merge_index + left_key_count < key_count)
+    {
+      right_key_count = key_count - (merge_index + left_key_count);
+      merge_keys(&keys[merge_index], left_key_count, &keys[merge_index + left_key_count], right_key_count, temp_keys);
+    }
   }
 }
