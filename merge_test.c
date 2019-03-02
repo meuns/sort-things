@@ -20,9 +20,6 @@ int main()
     {
       printf("FAIL\n");
     }
-    
-    free(temp_keys);
-    free(keys);
   }
 
   return 0;
