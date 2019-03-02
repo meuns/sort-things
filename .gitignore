@@ -1,6 +1,7 @@
+.vscode
 *.o
 bubble
 insert
 heap
 merge
-merge_test
+main_test
