@@ -7,13 +7,13 @@
 #include "insert_sort.h"
 #include "merge_sort.h"
 
-void wrap_merge_sort(int* keys, int key_count)
+void wrap_merge_sort(int* keys, const int key_count)
 {
   int temp_keys[key_count];
   merge_sort(keys, key_count, temp_keys);
 }
 
-typedef void (*sort_function_t)(int* keys, int key_count);
+typedef void (*sort_function_t)(int* keys, const int key_count);
 
 int main()
 {

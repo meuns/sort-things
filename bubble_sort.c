@@ -1,5 +1,5 @@
 
-void bubble_sort(int* keys, int key_count)
+void bubble_sort(int* keys, const int key_count)
 {
   for (int min_index = 0; min_index < key_count; ++min_index)
   {

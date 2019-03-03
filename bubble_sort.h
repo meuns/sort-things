@@ -1,3 +1,3 @@
 #pragma once
 
-void bubble_sort(int* keys, int key_count);
+void bubble_sort(int* keys, const int key_count);
