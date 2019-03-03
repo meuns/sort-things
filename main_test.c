@@ -6,6 +6,7 @@
 #include "heap_sort.h"
 #include "insert_sort.h"
 #include "merge_sort.h"
+#include "quick_sort.h"
 
 void wrap_merge_sort(int* keys, const int key_count)
 {
@@ -25,7 +26,8 @@ int main()
     bubble_sort,
     heap_sort,
     insert_sort,
-    wrap_merge_sort
+    wrap_merge_sort,
+    quick_sort
   };
 
   const int sort_count = sizeof(sort_functions) / sizeof(sort_functions[0]);

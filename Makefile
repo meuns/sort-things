@@ -12,7 +12,7 @@ else
 	EXE_SUFFIX=
 endif
 
-all: build_dir bubble$(EXE_SUFFIX) insert$(EXE_SUFFIX) heap$(EXE_SUFFIX) merge$(EXE_SUFFIX) main_test$(EXE_SUFFIX)
+all: build_dir bubble$(EXE_SUFFIX) insert$(EXE_SUFFIX) heap$(EXE_SUFFIX) merge$(EXE_SUFFIX) quick$(EXE_SUFFIX) main_test$(EXE_SUFFIX)
 
 .PHONY: clean build_dir
 
@@ -44,11 +44,18 @@ merge$(EXE_SUFFIX): $(BUILD_DIR_PATH)/merge_sort.o $(BUILD_DIR_PATH)/merge_main.
 $(BUILD_DIR_PATH)/merge_main.o: merge_sort.h merge_main.c
 $(BUILD_DIR_PATH)/merge_sort.o: merge_sort.h merge_sort.c
 
-# Test
-main_test$(EXE_SUFFIX): $(BUILD_DIR_PATH)/bubble_sort.o $(BUILD_DIR_PATH)/insert_sort.o $(BUILD_DIR_PATH)/heap_sort.o $(BUILD_DIR_PATH)/merge_sort.o $(BUILD_DIR_PATH)/main_test.o $(BUILD_DIR_PATH)/test.o
+# Heap sort
+quick$(EXE_SUFFIX): $(BUILD_DIR_PATH)/quick_sort.o $(BUILD_DIR_PATH)/quick_main.o
 	$(CC) -o $@ $^ $(LDFLAGS)
 
-$(BUILD_DIR_PATH)/main_test.o: bubble_sort.h insert_sort.h heap_sort.h merge_sort.h test.h main_test.c
+$(BUILD_DIR_PATH)/quick_main.o: quick_sort.h quick_main.c
+$(BUILD_DIR_PATH)/quick_sort.o: quick_sort.h quick_sort.c
+
+# Test
+main_test$(EXE_SUFFIX): $(BUILD_DIR_PATH)/bubble_sort.o $(BUILD_DIR_PATH)/insert_sort.o $(BUILD_DIR_PATH)/heap_sort.o $(BUILD_DIR_PATH)/merge_sort.o $(BUILD_DIR_PATH)/quick_sort.o $(BUILD_DIR_PATH)/main_test.o $(BUILD_DIR_PATH)/test.o
+	$(CC) -o $@ $^ $(LDFLAGS)
+
+$(BUILD_DIR_PATH)/main_test.o: bubble_sort.h insert_sort.h heap_sort.h merge_sort.h quick_sort.h test.h main_test.c
 $(BUILD_DIR_PATH)/test.o: test.h test.c
 
 # Build rules
@@ -59,5 +66,5 @@ build_dir:
 	mkdir -p $(BUILD_DIR_PATH)
 
 clean:
-	rm -f bubble insert heap merge main_test bubble_d insert_d heap_d merge_d main_test_d .release/*.o .debug/*.o
+	rm -f bubble insert heap merge quick main_test bubble_d insert_d heap_d merge_d quick_d main_test_d .release/*.o .debug/*.o
 	rm -rf .release .debug
