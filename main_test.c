@@ -22,10 +22,10 @@ int main()
   
   sort_function_t sort_functions[] =
   {
-      bubble_sort,
-      heap_sort,
-      insert_sort,
-      wrap_merge_sort
+    bubble_sort,
+    heap_sort,
+    insert_sort,
+    wrap_merge_sort
   };
 
   const int sort_count = sizeof(sort_functions) / sizeof(sort_functions[0]);
