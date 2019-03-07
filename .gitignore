@@ -5,10 +5,12 @@ insert
 heap
 merge
 main_test
+main_benchmark
 quick
 bubble_d
 insert_d
 heap_d
 merge_d
 main_test_d
+main_benchmark_d
 quick_d
