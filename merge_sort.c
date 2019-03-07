@@ -48,6 +48,7 @@ static inline void merge_keys(int* left_keys, const int left_key_count, int* rig
   }
 }
 
+__attribute__((noinline))
 void merge_sort(int* keys, const int key_count, int* temp_keys)
 {
   for (int left_key_count = 1; left_key_count <= key_count; left_key_count <<= 1)

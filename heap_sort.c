@@ -89,6 +89,7 @@ static inline void heap_fix_down(int* const key_heap_root, const int heap_last_e
   key_heap_root[current_index] = fix_key;
 }
 
+__attribute__((noinline))
 void heap_sort(int* keys, const int key_count)
 {
   for (int heap_last_element = 0; heap_last_element < key_count; ++heap_last_element)

@@ -69,6 +69,7 @@ static inline int quick_partition(int* keys, const int key_count, const int pivo
   return right_index;
 }
 
+__attribute__((noinline))
 void quick_sort(int* base_keys, const int key_count)
 {
   const int stack_size = 32;

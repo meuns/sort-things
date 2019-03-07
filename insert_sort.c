@@ -29,6 +29,7 @@ static inline void insert_shift_keys(int* keys, const int insert_index, const in
   }
 }
 
+__attribute__((noinline))
 void insert_sort(int* keys, const int key_count)
 {
   for (int current_index = 1; current_index < key_count; ++current_index)
