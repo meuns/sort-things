@@ -7,17 +7,11 @@ static inline int quick_pivot_index(int* keys, const int key_count)
   return key_count >> 1;
 }
 
-//for (int key_index = 1; key_index < key_count; ++key_index) { printf("%d ", keys[key_index]); } printf("\n");
-
 __attribute__((always_inline))
 static inline int quick_partition(int* keys, const int key_count, const int pivot_index, const int pivot_key)
 {
-  //printf("quick_partition "); for (int key_index = 0; key_index < key_count; ++key_index) { printf("%d ", keys[key_index]); } printf("\n");  
-  //printf("quick_partition with %d : ", pivot_key); printf("\n");  
-  //for (int key_index = 0; key_index < key_count; ++key_index) { printf("%d ", keys[key_index]); } printf("\n");
-  
   keys[pivot_index] = keys[0];
-  keys[0] = -666;
+  //keys[0] = -666;
   
   int left_index = 1;
   int left_key = keys[left_index];
@@ -25,18 +19,16 @@ static inline int quick_partition(int* keys, const int key_count, const int pivo
   int right_index = key_count - 1;
   int right_key = keys[right_index];
   
-  //for (int key_index = 0; key_index < key_count; ++key_index) { printf("%d ", keys[key_index]); } printf("\n");
+  const int last_index = right_index;
   
-  while (right_key >= pivot_key)
+  while (right_key >= pivot_key && right_index > 0)
   {
-    //printf("r\n");
     right_index = right_index - 1;
     right_key = keys[right_index];
   }
   
-  while (left_key < pivot_key)
+  while (left_key < pivot_key && left_index < last_index)
   {
-    //printf("l\n");
     keys[left_index - 1] = left_key;
     left_index = left_index + 1;
     left_key = keys[left_index];      
@@ -44,58 +36,74 @@ static inline int quick_partition(int* keys, const int key_count, const int pivo
   
   while (left_index < right_index)
   {
-    //printf("s %d %d\n", left_key, right_key);
     keys[right_index] = left_key;
-    keys[left_index] = -666;
+    //keys[left_index] = -666;
     keys[left_index - 1] = right_key;
     
-    //for (int key_index = 0; key_index < key_count; ++key_index) { printf("%d ", keys[key_index]); } printf("\n");
-       
     right_index = right_index - 1;
     right_key = keys[right_index];
     left_index = left_index + 1;
     left_key = keys[left_index];
-  
-    while (right_key >= pivot_key)
+    
+    while (right_key >= pivot_key && right_index > 0)
     {
-      //printf("r\n");
       right_index = right_index - 1;
       right_key = keys[right_index];
     }
     
-    while (left_key < pivot_key)
+    while (left_key < pivot_key && left_index < last_index)
     {
-      //printf("l\n");
       keys[left_index - 1] = left_key;
       left_index = left_index + 1;
       left_key = keys[left_index];      
     }
   }
   
-  keys[right_index] = pivot_key;
+  if (left_index == 1)
+  {
+    keys[left_index - 1] = left_key;
+  }
   
-  //for (int key_index = 0; key_index < key_count; ++key_index) { printf("%d ", keys[key_index]); } printf("\n");
+  keys[right_index] = pivot_key;
   
   return right_index;
 }
 
-void quick_sort(int* keys, const int key_count)
+void quick_sort(int* base_keys, const int key_count)
 {
-  if (key_count < 2)
+  const int stack_size = 32;
+  int* stack_keys[stack_size];
+  int stack_key_count[stack_size];
+  int stack_top = -1;
+  
+  stack_top = stack_top + 1;
+  stack_keys[stack_top] = base_keys;
+  stack_key_count[stack_top] = key_count;
+  
+  while (stack_top > -1)
   {
-    return;
+    int* keys = stack_keys[stack_top];
+    const int key_count = stack_key_count[stack_top];
+    stack_top = stack_top - 1;
+
+    const int pivot_index = quick_pivot_index(keys, key_count);
+    const int pivot_key = keys[pivot_index];
+    const int partition_index = quick_partition(keys, key_count, pivot_index, pivot_key);
+
+    const int left_key_count = partition_index;
+    if (left_key_count > 1)
+    {
+      stack_top = stack_top + 1;
+      stack_keys[stack_top] = keys;
+      stack_key_count[stack_top] = left_key_count;
+    }
+
+    const int right_key_count = key_count - (left_key_count + 1);
+    if (right_key_count > 1)
+    {
+      stack_top = stack_top + 1;
+      stack_keys[stack_top] = keys + (left_key_count + 1);
+      stack_key_count[stack_top] = right_key_count;
+    }
   }
-  
-  int pivot_index = quick_pivot_index(keys, key_count);
-  int pivot_key = keys[pivot_index];
-  
-  //printf ("quick_sort %d %d\n", key_index, key_count);
-  
-  pivot_index = quick_partition(keys, key_count, pivot_index, pivot_key);
-  
-  quick_sort(keys, pivot_index);
-  quick_sort(keys + pivot_index + 1, key_count - pivot_index - 1);
-  
-  //quick_sort(keys, pivot_index);
-  //quick_sort(keys + pivot_index + 1, key_count - pivot_index - 1);
 }
