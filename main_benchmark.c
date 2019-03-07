@@ -14,17 +14,17 @@
 
 typedef void (*sort_function_t)(int* keys, const int key_count, int* temp_keys);
 
-void wrap_heap_sort(int* keys, const int key_count, int* temp_keys)
+void wrap_heap_sort(int* keys, const int key_count, int* temp_keys __attribute__((unused)))
 {
   heap_sort(keys, key_count);
 }
 
-void wrap_merge_sort(int* keys, const int key_count, int* temp_keys)
+void wrap_merge_sort(int* keys, const int key_count, int* temp_keys __attribute__((unused)))
 {
   merge_sort(keys, key_count, temp_keys);
 }
 
-void wrap_quick_sort(int* keys, const int key_count, int* temp_keys)
+void wrap_quick_sort(int* keys, const int key_count, int* temp_keys __attribute__((unused)))
 {
   quick_sort(keys, key_count);
 }
@@ -59,7 +59,7 @@ int main()
 
     if (!keys_are_sorted(keys, key_count))
     {
-      printf("Function %d failed...\n", sort_index, key_count);
+      printf("Function %d failed...\n", sort_index);
       return 1;
     }
     else

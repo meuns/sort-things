@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 __attribute__((always_inline))
-static inline int quick_pivot_index(int* keys, const int key_count)
+static inline int quick_pivot_index(int* keys __attribute__((unused)), const int key_count)
 {
   return key_count >> 1;
 }

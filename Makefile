@@ -7,10 +7,14 @@ ifeq ($(DEBUG), 1)
 	BUILD_DIR_PATH=./.debug
 	EXE_SUFFIX=_d
 else
-	CFLAGS=-W -Wall -std=c11 -D_XOPEN_SOURCE=600 -pedantic -g -O2 -flto
-	LDFLAGS=-flto -fuse-ld=gold -Wl
+	CFLAGS=-W -Wall -std=c11 -D_XOPEN_SOURCE=600 -pedantic -O2
+	LDFLAGS=
 	BUILD_DIR_PATH=./.release
 	EXE_SUFFIX=
+	ifeq ($(LTO), 1)
+		CFLAGS+=-flto
+		LDFLAGS+=-flto -fuse-ld=gold -Wl
+	endif
 endif
 
 # Projects
