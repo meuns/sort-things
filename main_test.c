@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 
 #include "test.h"
 
@@ -8,26 +9,47 @@
 #include "merge_sort.h"
 #include "quick_sort.h"
 
+typedef void (*sort_function_t)(int* keys, const int key_count);
+
+void wrap_bubble_sort(int* keys, const int key_count)
+{
+  bubble_sort(keys, key_count);
+}
+
+void wrap_heap_sort(int* keys, const int key_count)
+{
+  heap_sort(keys, key_count);
+}
+
+void wrap_insert_sort(int* keys, const int key_count)
+{
+  insert_sort(keys, key_count);
+}
+
 void wrap_merge_sort(int* keys, const int key_count)
 {
   int temp_keys[key_count];
   merge_sort(keys, key_count, temp_keys);
 }
 
-typedef void (*sort_function_t)(int* keys, const int key_count);
+void wrap_quick_sort(int* keys, const int key_count)
+{
+  quick_sort(keys, key_count, quick_median3_pivot_index);
+}
 
 int main()
 {
   const int max_key_count = 3871;
   int keys[max_key_count];
+  int sorted_keys[max_key_count];
   
   sort_function_t sort_functions[] =
   {
-    /*bubble_sort,
-    heap_sort,
-    insert_sort,
-    wrap_merge_sort,*/
-    quick_sort
+    wrap_bubble_sort,
+    wrap_heap_sort,
+    wrap_insert_sort,
+    wrap_merge_sort,
+    wrap_quick_sort
   };
   
   const int sort_count = sizeof(sort_functions) / sizeof(sort_functions[0]);
@@ -43,16 +65,23 @@ int main()
     for (int key_count = 0; key_count < max_key_count; ++key_count)
     {
       generate_keys(keys, key_count, 42);
-      
-      //for (int key_index = 0; key_index < key_count; ++key_index) { printf("%d, ", keys[key_index]); }
-      //printf("\n");
-      
-      sort_function(keys, key_count);
-      
-      if (!keys_are_sorted(keys, key_count))
+      memcpy(sorted_keys, keys, sizeof(keys));
+
+      sort_function(sorted_keys, key_count);
+
+      if (!key_counts_are_equal(keys, sorted_keys, key_count))
       {
-        printf("Testing function %d and key count %d failed...\n", sort_index, key_count);
-        for (int key_index = 0; key_index < key_count; ++key_index) { printf("%d, ", keys[key_index]); }
+        printf("Testing histogram function %d and key count %d failed...\n", sort_index, key_count);
+        for (int key_index = 0; key_index < key_count; ++key_index) { printf("%d, ", keys[key_index]); } printf("\n");
+        for (int key_index = 0; key_index < key_count; ++key_index) { printf("%d, ", sorted_keys[key_index]); } printf("\n");
+        return 1;
+      }
+      
+      if (!keys_are_sorted(sorted_keys, key_count))
+      {
+        printf("Testing sort function %d and key count %d failed...\n", sort_index, key_count);
+        for (int key_index = 0; key_index < key_count; ++key_index) { printf("%d, ", keys[key_index]); } printf("\n");
+        for (int key_index = 0; key_index < key_count; ++key_index) { printf("%d, ", sorted_keys[key_index]); } printf("\n");
         return 1;
       }
       

@@ -47,62 +47,58 @@ __attribute__((always_inline))
 static inline int quick_partition(int* keys, const int key_count, const int pivot_index, const int pivot_key)
 {
   keys[pivot_index] = keys[0];
-  //keys[0] = -666;
-    
+
   int left_index = 1;
   int left_key = keys[left_index];
   
   int right_index = key_count - 1;
   int right_key = keys[right_index];
   
-  const int last_index = right_index;
-  
-  while (right_key >= pivot_key && right_index > 0)
+  while (right_key >= pivot_key && right_index > left_index)
   {
     right_index = right_index - 1;
     right_key = keys[right_index];
   }
   
-  while (left_key < pivot_key && left_index < last_index)
+  while (left_key < pivot_key && right_index > left_index)
   {
-    keys[left_index - 1] = left_key;
     left_index = left_index + 1;
     left_key = keys[left_index];      
   }
-  
+
   while (left_index < right_index)
   {
-    keys[right_index] = left_key;
-    //keys[left_index] = -666;
-    keys[left_index - 1] = right_key;
-    
+    keys[right_index] = left_key;    
+    keys[left_index] = right_key;
+
     right_index = right_index - 1;
     right_key = keys[right_index];
     left_index = left_index + 1;
     left_key = keys[left_index];
-    
-    while (right_key >= pivot_key && right_index > 0)
+
+    while (right_key >= pivot_key && right_index > left_index)
     {
       right_index = right_index - 1;
       right_key = keys[right_index];
     }
     
-    while (left_key < pivot_key && left_index < last_index)
+    while (left_key < pivot_key && right_index > left_index)
     {
-      keys[left_index - 1] = left_key;
       left_index = left_index + 1;
       left_key = keys[left_index];      
     }
   }
-  
-  if (left_index == 1)
+
+  int new_pivot_index = right_index;    
+  if (right_key >= pivot_key && new_pivot_index > 0)
   {
-    keys[left_index - 1] = left_key;
+    new_pivot_index = new_pivot_index - 1;
   }
-  
-  keys[right_index] = pivot_key;
-  
-  return right_index;
+
+  keys[0] = keys[new_pivot_index];
+  keys[new_pivot_index] = pivot_key;
+
+  return new_pivot_index;
 }
 
 __attribute__((noinline))
