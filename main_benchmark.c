@@ -26,7 +26,7 @@ void wrap_merge_sort(int* keys, const int key_count, int* temp_keys __attribute_
 
 void wrap_quick_sort(int* keys, const int key_count, int* temp_keys __attribute__((unused)))
 {
-  quick_sort(keys, key_count);
+  quick_sort(keys, key_count, quick_median3_pivot_index);
 }
 
 int main()

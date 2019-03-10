@@ -2,9 +2,45 @@
 #include <stdio.h>
 
 __attribute__((always_inline))
-static inline int quick_pivot_index(int* keys __attribute__((unused)), const int key_count)
+inline int quick_middle_pivot_index(int* keys __attribute__((unused)), const int key_count)
 {
   return key_count >> 1;
+}
+
+__attribute__((always_inline))
+inline int quick_median3_pivot_index(int* keys, const int key_count)
+{
+  int low_index = 0;
+  int mid_index = key_count >> 1;
+  int high_index = key_count - 1;
+  
+  int low_key = keys[low_index];
+  int mid_key = keys[mid_index];    
+  int high_key = keys[high_index];
+
+  if (mid_key > high_key)
+  {
+    const int temp_key = mid_key;
+    mid_key = high_key;
+    high_key = temp_key;
+
+    const int temp_index = mid_index;
+    mid_index = high_index;
+    high_index = temp_index;
+  }
+
+  if (low_key > high_key)
+  {
+    low_key = high_key;    
+    low_index = high_index;
+  }
+
+  if (low_key > mid_key)
+  {
+    mid_index = low_index;
+  }
+
+  return mid_index;
 }
 
 __attribute__((always_inline))
@@ -12,7 +48,7 @@ static inline int quick_partition(int* keys, const int key_count, const int pivo
 {
   keys[pivot_index] = keys[0];
   //keys[0] = -666;
-  
+    
   int left_index = 1;
   int left_key = keys[left_index];
   
@@ -70,7 +106,7 @@ static inline int quick_partition(int* keys, const int key_count, const int pivo
 }
 
 __attribute__((noinline))
-void quick_sort(int* base_keys, const int key_count)
+void quick_sort(int* base_keys, const int key_count, quick_pivot_index_t quick_pivot_index)
 {
   const int stack_size = 32;
   int* stack_keys[stack_size];
