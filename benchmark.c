@@ -1,11 +1,19 @@
 #include "benchmark.h"
 
-#include <time.h>
+#if defined(_WIN32)
+  // TODO
+#else
+  #include <time.h>
+#endif
 
 typedef struct benchmark_scope_s
 {
-  struct timespec start_time;
-  struct timespec end_time;
+  #if defined(_WIN32)
+    // TODO
+  #else
+    struct timespec start_time;
+    struct timespec end_time;
+  #endif
 }
 benchmark_scope_t;
 
@@ -19,7 +27,11 @@ benchmark_scope_t* benchmark_begin()
   benchmark_scope_t* new_scope = &benchmark_ring_buffer[benchmark_ring_head];
   benchmark_ring_head = (benchmark_ring_head + 1) % benchmark_ring_size;
 
-  clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &new_scope->start_time);
+  #if defined(_WIN32)
+    // TODO
+  #else
+    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &new_scope->start_time);
+  #endif
 
   return new_scope;
 }
@@ -27,8 +39,13 @@ benchmark_scope_t* benchmark_begin()
 __attribute__((always_inline))
 int benchmark_end(benchmark_scope_t* scope)
 {
-  clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &scope->end_time);
-  long long duration_ns = (scope->end_time.tv_sec - scope->start_time.tv_sec) * 1000000000LL + (scope->end_time.tv_nsec - scope->start_time.tv_nsec);
-  long long duration_ms = duration_ns / 1000000L;
-  return (int)duration_ms;
+  #if defined(_WIN32)
+    // TODO
+    return 0;
+  #else
+    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &scope->end_time);
+    long long duration_ns = (scope->end_time.tv_sec - scope->start_time.tv_sec) * 1000000000LL + (scope->end_time.tv_nsec - scope->start_time.tv_nsec);
+    long long duration_ms = duration_ns / 1000000L;
+    return (int)duration_ms;
+  #endif
 }
