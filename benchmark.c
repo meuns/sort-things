@@ -9,7 +9,7 @@
 typedef struct benchmark_scope_s
 {
   #if defined(_WIN32)
-    // TODO
+    int dummy_int;
   #else
     struct timespec start_time;
     struct timespec end_time;
@@ -41,6 +41,7 @@ int benchmark_end(benchmark_scope_t* scope)
 {
   #if defined(_WIN32)
     // TODO
+    scope = 0;
     return 0;
   #else
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &scope->end_time);

@@ -1,6 +1,8 @@
 #include "test.h"
 
 #include <stdlib.h>
+#undef max
+#undef min
 
 void generate_keys(int* keys, const int key_count, const unsigned int seed)
 {

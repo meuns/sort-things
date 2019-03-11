@@ -1,14 +1,21 @@
 #include "quick_sort.h"
 #include <stdio.h>
 
+// Temporary workaround linking issue on _WIN32
+#if defined(_WIN32)
+  #define WA_INLINE
+#else
+  #define WA_INLINE inline
+#endif
+
 __attribute__((always_inline))
-inline int quick_middle_pivot_index(int* keys __attribute__((unused)), const int key_count)
+WA_INLINE int quick_middle_pivot_index(int* keys __attribute__((unused)), const int key_count)
 {
   return key_count >> 1;
 }
 
 __attribute__((always_inline))
-inline int quick_median3_pivot_index(int* keys, const int key_count)
+WA_INLINE int quick_median3_pivot_index(int* keys, const int key_count)
 {
   int low_index = 0;
   int mid_index = key_count >> 1;
