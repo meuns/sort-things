@@ -18,7 +18,7 @@ else
 endif
 
 # Projects
-all: bubble$(EXE_SUFFIX) insert$(EXE_SUFFIX) heap$(EXE_SUFFIX) merge$(EXE_SUFFIX) quick$(EXE_SUFFIX) main_test$(EXE_SUFFIX) main_benchmark$(EXE_SUFFIX)
+all: bubble$(EXE_SUFFIX) insert$(EXE_SUFFIX) heap$(EXE_SUFFIX) merge$(EXE_SUFFIX) quick$(EXE_SUFFIX) count$(EXE_SUFFIX) main_test$(EXE_SUFFIX) main_benchmark$(EXE_SUFFIX)
 
 # Bubble sort
 BUBBLE_MODULE=$(BUILD_DIR_PATH)/bubble_sort.o $(BUILD_DIR_PATH)/bubble_main.o
@@ -52,13 +52,21 @@ merge$(EXE_SUFFIX): build_dir $(MERGE_MODULES)
 $(BUILD_DIR_PATH)/merge_main.o: merge_sort.h merge_main.c
 $(BUILD_DIR_PATH)/merge_sort.o: merge_sort.h merge_sort.c
 
-# Heap sort
+# Quick sort
 QUICK_MODULES=$(BUILD_DIR_PATH)/quick_sort.o $(BUILD_DIR_PATH)/quick_main.o
 quick$(EXE_SUFFIX): build_dir $(QUICK_MODULES)
 	$(CC) -o $@ $(QUICK_MODULES) $(LDFLAGS)
 
 $(BUILD_DIR_PATH)/quick_main.o: quick_sort.h quick_main.c
 $(BUILD_DIR_PATH)/quick_sort.o: quick_sort.h quick_sort.c
+
+# Count sort
+COUNT_MODULES=$(BUILD_DIR_PATH)/count_sort.o $(BUILD_DIR_PATH)/count_main.o
+count$(EXE_SUFFIX): build_dir $(COUNT_MODULES)
+	$(CC) -o $@ $(COUNT_MODULES) $(LDFLAGS)
+
+$(BUILD_DIR_PATH)/quick_main.o: count_sort.h count_main.c
+$(BUILD_DIR_PATH)/quick_sort.o: count_sort.h count_sort.c
 
 # Test
 ALL_SORT_HEADERS=bubble_sort.h insert_sort.h heap_sort.h merge_sort.h quick_sort.h
@@ -87,7 +95,7 @@ build_dir:
 	mkdir -p $(BUILD_DIR_PATH)
 
 clean:
-	rm -f bubble insert heap merge quick main_test main_benchmark bubble_d insert_d heap_d merge_d quick_d main_test_d main_benchmark_d .release/*.o .debug/*.o
+	rm -f bubble insert heap merge quick count main_test main_benchmark bubble_d insert_d heap_d merge_d quick_d count_d main_test_d main_benchmark_d .release/*.o .debug/*.o
 	rm -rf .release .debug
 
 .PHONY: clean build_dir
