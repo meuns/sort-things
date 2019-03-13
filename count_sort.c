@@ -14,8 +14,11 @@ void count_sort(char* const keys, char* sorted_keys, const int key_count)
   for (int key_index = 0; key_index < key_count; ++key_index)
   {
     const unsigned char histogram_key = (unsigned char)(keys[key_index] ^ 0x80);
+    printf ("%X ", histogram_key);
     histogram[histogram_key]++;
   }
+
+  printf ("\n");
   
   for (int bin_index = 1; bin_index < UCHAR_MAX; ++bin_index)
   {
