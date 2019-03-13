@@ -8,6 +8,7 @@ main_test
 main_benchmark
 quick
 count
+radix
 bubble_d
 insert_d
 heap_d
@@ -16,3 +17,4 @@ main_test_d
 main_benchmark_d
 quick_d
 count_d
+radix_d

@@ -18,7 +18,7 @@ else
 endif
 
 # Projects
-all: bubble$(EXE_SUFFIX) insert$(EXE_SUFFIX) heap$(EXE_SUFFIX) merge$(EXE_SUFFIX) quick$(EXE_SUFFIX) count$(EXE_SUFFIX) main_test$(EXE_SUFFIX) main_benchmark$(EXE_SUFFIX)
+all: bubble$(EXE_SUFFIX) insert$(EXE_SUFFIX) heap$(EXE_SUFFIX) merge$(EXE_SUFFIX) quick$(EXE_SUFFIX) count$(EXE_SUFFIX) radix$(EXE_SUFFIX) main_test$(EXE_SUFFIX) main_benchmark$(EXE_SUFFIX)
 
 # If we depend on $(BUILD_DIR_PATH) for each sort, we modify its timestamp and make link everything again
 BUILD_DIR_DEPENDENCY=$(filter-out $(wildcard $(BUILD_DIR_PATH)), $(BUILD_DIR_PATH))
@@ -70,6 +70,14 @@ count$(EXE_SUFFIX): $(BUILD_DIR_DEPENDENCY) $(COUNT_MODULES)
 
 $(BUILD_DIR_PATH)/quick_main.o: count_sort.h count_main.c
 $(BUILD_DIR_PATH)/quick_sort.o: count_sort.h count_sort.c
+
+# Radix sort
+RADIX_MODULES=$(BUILD_DIR_PATH)/radix_sort.o $(BUILD_DIR_PATH)/radix_main.o
+radix$(EXE_SUFFIX): $(BUILD_DIR_DEPENDENCY) $(RADIX_MODULES)
+	$(CC) -o $@ $(RADIX_MODULES) $(LDFLAGS)
+
+$(BUILD_DIR_PATH)/radix_main.o: radix_sort.h radix_main.c
+$(BUILD_DIR_PATH)/radix_sort.o: radix_sort.h radix_sort.c
 
 # Test
 ALL_SORT_HEADERS=bubble_sort.h insert_sort.h heap_sort.h merge_sort.h quick_sort.h
