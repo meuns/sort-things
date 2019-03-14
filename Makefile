@@ -106,5 +106,5 @@ $(BUILD_DIR_PATH):
 	mkdir -p $(BUILD_DIR_PATH)
 
 clean:
-	rm -f bubble insert heap merge quick count main_test main_benchmark bubble_d insert_d heap_d merge_d quick_d count_d main_test_d main_benchmark_d .release/*.o .debug/*.o
+	rm -f bubble insert heap merge quick count radix main_test main_benchmark bubble_d insert_d heap_d merge_d quick_d count_d radix_d main_test_d main_benchmark_d .release/*.o .debug/*.o
 	rm -rf .release .debug
