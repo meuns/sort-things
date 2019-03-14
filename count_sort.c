@@ -2,7 +2,7 @@
 
 #include <limits.h>
 
-void count_sort(char* const keys, char* sorted_keys, const int key_count)
+void count_sort(signed char* const keys, signed char* sorted_keys, const int key_count)
 {
   int histogram[UCHAR_MAX];
   
@@ -14,12 +14,9 @@ void count_sort(char* const keys, char* sorted_keys, const int key_count)
   for (int key_index = 0; key_index < key_count; ++key_index)
   {
     const unsigned char histogram_key = (unsigned char)(keys[key_index] ^ 0x80);
-    printf ("%X ", histogram_key);
     histogram[histogram_key]++;
   }
 
-  printf ("\n");
-  
   for (int bin_index = 1; bin_index < UCHAR_MAX; ++bin_index)
   {
     histogram[bin_index] += histogram[bin_index - 1];
@@ -28,10 +25,8 @@ void count_sort(char* const keys, char* sorted_keys, const int key_count)
   for (int key_index = 0; key_index < key_count; ++key_index)
   {
     const char key = keys[key_index];
-    printf ("%d ", key);
     const unsigned char histogram_key = (unsigned char)(key ^ 0x80);
     sorted_keys[--histogram[histogram_key]] = key;
   }
-
-  printf ("\n");
 }
+

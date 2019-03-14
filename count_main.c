@@ -3,7 +3,7 @@
 
 int main()
 {
-	char keys[] = {
+	signed char keys[] = {
 		-11, 12, 0, 2,
 		5, 4, 14, 1,
 		9, -9, 6, 6,
@@ -12,13 +12,13 @@ int main()
 	
 	int key_count = sizeof(keys) / sizeof(keys[0]);
   
-  char sorted_keys[key_count];
+  signed char sorted_keys[key_count];
 	
 	count_sort(keys, sorted_keys, key_count);
 	
 	for (int key_index = 0; key_index < key_count; ++key_index)
 	{
-		printf("%d ", sorted_keys[key_index]);
+		printf("%d ", (int)sorted_keys[key_index]);
 	}
 	
 	printf("\n");
