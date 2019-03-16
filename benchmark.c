@@ -22,7 +22,7 @@ static const int benchmark_ring_size = sizeof(benchmark_ring_buffer) / sizeof(be
 static int benchmark_ring_head = 0;
 
 __attribute__((always_inline))
-benchmark_scope_t* benchmark_begin()
+inline benchmark_scope_t* benchmark_begin()
 {
   benchmark_scope_t* new_scope = &benchmark_ring_buffer[benchmark_ring_head];
   benchmark_ring_head = (benchmark_ring_head + 1) % benchmark_ring_size;
@@ -37,7 +37,7 @@ benchmark_scope_t* benchmark_begin()
 }
 
 __attribute__((always_inline))
-int benchmark_end(benchmark_scope_t* scope)
+inline int benchmark_end(benchmark_scope_t* scope)
 {
   #if defined(_WIN32)
     // TODO
