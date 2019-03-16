@@ -7,7 +7,7 @@ endif
 
 ifeq ($(DEBUG), 1)
 	CFLAGS=-W -Wall -std=c11 -D_XOPEN_SOURCE=600 -pedantic -g -O0
-	LDFLAGS=-fPIC
+	LDFLAGS=
 	BUILD_DIR_PATH=./.debug
 	EXE_SUFFIX=_d
 else
