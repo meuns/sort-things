@@ -1,9 +1,13 @@
+# Configure build
 CC=clang
 
-# Configure build
+ifeq ($(GCC), 1)
+	CC=gcc
+endif
+
 ifeq ($(DEBUG), 1)
 	CFLAGS=-W -Wall -std=c11 -D_XOPEN_SOURCE=600 -pedantic -g -O0
-	LDFLAGS=
+	LDFLAGS=-fPIC
 	BUILD_DIR_PATH=./.debug
 	EXE_SUFFIX=_d
 else
