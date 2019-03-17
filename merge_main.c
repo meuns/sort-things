@@ -1,4 +1,6 @@
 #include <stdio.h>
+
+#include "debug.h"
 #include "merge_sort.h"
 
 int main()
@@ -16,12 +18,7 @@ int main()
 	
 	merge_sort(keys, key_count, temp_keys);
 	
-	for (int key_index = 0; key_index < key_count; ++key_index)
-	{
-		printf("%d ", keys[key_index]);
-	}
-	
-	printf("\n");
+	debug_print_keys(keys, key_count);
 
   return 0;
 }

@@ -1,4 +1,6 @@
 #include <stdio.h>
+
+#include "debug.h"
 #include "quick_sort.h"
 
 int main()
@@ -14,12 +16,7 @@ int main()
 	
   quick_sort(keys, key_count, quick_middle_pivot_index);
 	
-	for (int key_index = 0; key_index < key_count; ++key_index)
-	{
-		printf("%d ", keys[key_index]);
-	}
-	
-	printf("\n");
+	debug_print_keys(keys, key_count);
 
   return 0;
 }
