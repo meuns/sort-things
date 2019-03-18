@@ -1,10 +1,6 @@
 # Configure build
 CC=clang
 
-ifeq ($(GCC), 1)
-	CC=gcc
-endif
-
 ifeq ($(DEBUG), 1)
 	CFLAGS=-W -Wall -Werror -std=c11 -D_XOPEN_SOURCE=600 -pedantic -g -O0
 	LDFLAGS=
@@ -18,7 +14,15 @@ else
 	ifeq ($(LTO), 1)
 		CFLAGS+=-flto
 		LDFLAGS+=-flto -fuse-ld=gold -Wl
+		BUILD_DIR_PATH:=$(BUILD_DIR_PATH)_lto
+		EXE_SUFFIX:=$(EXE_SUFFIX)_lto
 	endif
+endif
+
+ifeq ($(GCC), 1)
+	CC=gcc
+	BUILD_DIR_PATH:=$(BUILD_DIR_PATH)_gcc
+	EXE_SUFFIX:=$(EXE_SUFFIX)_gcc
 endif
 
 # Projects
@@ -111,5 +115,13 @@ $(BUILD_DIR_PATH):
 	mkdir -p $(BUILD_DIR_PATH)
 
 clean:
-	rm -f bubble insert heap merge quick count radix main_test main_benchmark bubble_d insert_d heap_d merge_d quick_d count_d radix_d main_test_d main_benchmark_d .release/*.o .debug/*.o
+	rm -f bubble insert heap merge quick count radix main_test main_benchmark
+	rm -f bubble_d insert_d heap_d merge_d quick_d count_d radix_d main_test_d main_benchmark_d
+	rm -f bubble_lto insert_lto heap_lto merge_lto quick_lto count_lto radix_lto main_test_lto main_benchmark_lto
+	rm -f bubble_gcc insert_gcc heap_gcc merge_gcc quick_gcc count_gcc radix_gcc main_test_gcc main_benchmark_gcc
+	rm -f .release/*.o .debug/*.o
+	rm -f .release_lto/*.o .debug_lto/*.o
+	rm -f .release_gcc/*.o .debug_gcc/*.o
 	rm -rf .release .debug
+	rm -rf .release_lto .debug_lto
+	rm -rf .release_gcc .debug_gcc
