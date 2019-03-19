@@ -21,9 +21,10 @@ static inline unsigned char radix_key_byteX(const int key, const int byte_index)
 
 void radix_sort_byte(int* input_keys, int* output_keys, const int key_count, radix_key_byte_t radix_key_byte, const int byte_index)
 {
-  int histogram[UCHAR_MAX];
-  
-  for (int bin_index = 0; bin_index < UCHAR_MAX; ++bin_index)
+  const int histogram_size = UCHAR_MAX + 1;
+  int histogram[histogram_size];
+    
+  for (int bin_index = 0; bin_index < histogram_size; ++bin_index)
   {
     histogram[bin_index] = 0;
   }
@@ -34,7 +35,7 @@ void radix_sort_byte(int* input_keys, int* output_keys, const int key_count, rad
     histogram[key_byte]++;
   }
   
-  for (int bin_index = 1; bin_index < UCHAR_MAX; ++bin_index)
+  for (int bin_index = 1; bin_index < histogram_size; ++bin_index)
   {
     histogram[bin_index] += histogram[bin_index - 1];
   }

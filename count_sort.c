@@ -5,9 +5,10 @@
 __attribute__((noinline))
 void count_sort(signed char* const keys, const int key_count, signed char* sorted_keys)
 {
-  int histogram[UCHAR_MAX];
+  const int histogram_size = UCHAR_MAX + 1;
+  int histogram[histogram_size];
   
-  for (int bin_index = 0; bin_index < UCHAR_MAX; ++bin_index)
+  for (int bin_index = 0; bin_index < histogram_size; ++bin_index)
   {
     histogram[bin_index] = 0;
   }
@@ -18,7 +19,7 @@ void count_sort(signed char* const keys, const int key_count, signed char* sorte
     histogram[histogram_key]++;
   }
 
-  for (int bin_index = 1; bin_index < UCHAR_MAX; ++bin_index)
+  for (int bin_index = 1; bin_index < histogram_size; ++bin_index)
   {
     histogram[bin_index] += histogram[bin_index - 1];
   }

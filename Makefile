@@ -1,13 +1,15 @@
 # Configure build
 CC=clang
 
+CFLAGS_COMMON=-std=c11 -D_XOPEN_SOURCE=600 -W -Wall -Wextra -Werror -pedantic -Wno-gnu-empty-initializer -Wno-zero-length-array
+
 ifeq ($(DEBUG), 1)
-	CFLAGS=-W -Wall -Werror -std=c11 -D_XOPEN_SOURCE=600 -pedantic -g -O0
+	CFLAGS=$(CFLAGS_COMMON) -g -O0
 	LDFLAGS=
 	BUILD_DIR_PATH=./.debug
 	EXE_SUFFIX=_d
 else
-	CFLAGS=-W -Wall -Werror -std=c11 -D_XOPEN_SOURCE=600 -pedantic -O2
+	CFLAGS=$(CFLAGS_COMMON) -O2
 	LDFLAGS=
 	BUILD_DIR_PATH=./.release
 	EXE_SUFFIX=

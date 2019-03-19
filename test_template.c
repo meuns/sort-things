@@ -3,16 +3,6 @@
   #error Please define CONCAT_SUFFIX and KEY_TYPE before including test_template.c
 #endif
 
-void CONCAT_SUFFIX(generate_keys)(KEY_TYPE* keys, const int key_count, const unsigned int seed)
-{
-  srand(seed);
-  
-  for (int key_index = 0; key_index < key_count; ++key_index)
-  {
-    keys[key_index] = (KEY_TYPE)(rand() % 256) - 128;
-  }
-}
-
 static inline KEY_TYPE CONCAT_SUFFIX(min)(KEY_TYPE a, KEY_TYPE b)
 {
   return a < b ? a : b;
