@@ -1,4 +1,4 @@
-#include "count_sort.h"
+#include "radix_sort.h"
 
 #include <limits.h>
 
@@ -7,19 +7,20 @@ typedef unsigned char (*radix_key_byte_t)(const int key, const int byte_index);
 __attribute__((always_inline))
 static inline unsigned char radix_key_byte3(const int key, const int byte_index __attribute__((unused)))
 {
-  const int flipped_key = key ^ 0x80000000;
+  const unsigned int flipped_key = (unsigned int)key ^ 0x80000000U;
   return (unsigned char)((flipped_key & 0xFF000000) >> 24);
 }
 
 __attribute__((always_inline))
 static inline unsigned char radix_key_byteX(const int key, const int byte_index)
 {
-  const int mask = 0x000000FF;
+  const unsigned int mask = 0x000000FF;
   const int bit_shift = byte_index << 3;
-  return (key & (mask << bit_shift)) >> bit_shift;
+  return (unsigned char)(((unsigned int)key & (mask << bit_shift)) >> bit_shift);
 }
 
-void radix_sort_byte(int* input_keys, int* output_keys, const int key_count, radix_key_byte_t radix_key_byte, const int byte_index)
+__attribute__((always_inline))
+static inline void radix_sort_byte(int* input_keys, int* output_keys, const int key_count, radix_key_byte_t radix_key_byte, const int byte_index)
 {
   const int histogram_size = UCHAR_MAX + 1;
   int histogram[histogram_size];
@@ -48,6 +49,7 @@ void radix_sort_byte(int* input_keys, int* output_keys, const int key_count, rad
   }
 }
 
+__attribute__((noinline))
 void radix_sort(int* keys, const int key_count, int* temp_keys)
 {
   radix_sort_byte(keys, temp_keys, key_count, radix_key_byteX, 0);

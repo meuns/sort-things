@@ -136,7 +136,7 @@ static inline quick_partition_result_t quick_partition(int* keys, const int key_
 }
 
 __attribute__((noinline))
-void quick_sort(int* base_keys, const int key_count, const quick_pivot_index_t quick_pivot_index)
+void quick_sort(int* base_keys, const int base_key_count, const quick_pivot_index_t quick_pivot_index)
 {
   const int stack_size = 32;
   int* stack_keys[stack_size];
@@ -145,7 +145,7 @@ void quick_sort(int* base_keys, const int key_count, const quick_pivot_index_t q
   
   stack_top = stack_top + 1;
   stack_keys[stack_top] = base_keys;
-  stack_key_count[stack_top] = key_count;
+  stack_key_count[stack_top] = base_key_count;
   
   while (stack_top > -1)
   {

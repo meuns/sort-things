@@ -1,7 +1,7 @@
 # Configure build
 CC=clang
 
-CFLAGS_COMMON=-std=c11 -D_XOPEN_SOURCE=600 -W -Wall -Wextra -Werror -pedantic -Wno-gnu-empty-initializer -Wno-zero-length-array
+CFLAGS_COMMON=-std=c11 -D_XOPEN_SOURCE=600 -Weverything -Werror -Wno-gnu-empty-initializer -Wno-zero-length-array -Wno-vla -Wno-missing-prototypes
 
 ifeq ($(DEBUG), 1)
 	CFLAGS=$(CFLAGS_COMMON) -g -O0

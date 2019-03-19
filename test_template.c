@@ -3,37 +3,27 @@
   #error Please define CONCAT_SUFFIX and KEY_TYPE before including test_template.c
 #endif
 
-static inline KEY_TYPE CONCAT_SUFFIX(min)(KEY_TYPE a, KEY_TYPE b)
-{
-  return a < b ? a : b;
-}
-
-static inline KEY_TYPE CONCAT_SUFFIX(max)(KEY_TYPE a, KEY_TYPE b)
-{
-  return a > b ? a : b;
-}
-
 int CONCAT_SUFFIX(key_counts_are_equal)(KEY_TYPE* keys, KEY_TYPE* sorted_keys, const int key_count)
 {
-  KEY_TYPE min_key = keys[0];
-  KEY_TYPE max_key = keys[0];
+  long long int min_key = keys[0];
+  long long int max_key = keys[0];
 
   for (int key_index = 1; key_index < key_count; ++key_index)
   {
-    min_key = CONCAT_SUFFIX(min)(min_key, keys[key_index]);
-    max_key = CONCAT_SUFFIX(max)(max_key, keys[key_index]);
+    min_key = min(min_key, keys[key_index]);
+    max_key = max(max_key, keys[key_index]);
   }
 
   for (int key_index = 0; key_index < key_count; ++key_index)
   {
-    min_key = CONCAT_SUFFIX(min)(min_key, sorted_keys[key_index]);
-    max_key = CONCAT_SUFFIX(max)(max_key, sorted_keys[key_index]);
+    min_key = min(min_key, sorted_keys[key_index]);
+    max_key = max(max_key, sorted_keys[key_index]);
   }
 
-  const int histogram_size = max_key - min_key + 1;
+  const long long int histogram_size = max_key - min_key + 1;
 
-  int* histogram = (int*)malloc(sizeof(int) * histogram_size);
-  int* sorted_histogram = (int*)malloc(sizeof(int) * histogram_size);
+  int* histogram = (int*)malloc(sizeof(int) * (size_t)histogram_size);
+  int* sorted_histogram = (int*)malloc(sizeof(int) * (size_t)histogram_size);
 
   for (int entry_index = 0; entry_index < histogram_size; ++entry_index)
   {

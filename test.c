@@ -4,6 +4,16 @@
 #undef max
 #undef min
 
+static inline long long int min(long long int a, long long int b)
+{
+  return a < b ? a : b;
+}
+
+static inline long long int max(long long int a, long long int b)
+{
+  return a > b ? a : b;
+}
+
 #define KEY_TYPE int
 #define CONCAT_SUFFIX(name) name##_int
 #include "test_template.c"

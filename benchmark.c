@@ -22,7 +22,7 @@ static const int benchmark_ring_size = sizeof(benchmark_ring_buffer) / sizeof(be
 static int benchmark_ring_head = 0;
 
 __attribute__((noinline))
-benchmark_scope_t* benchmark_begin()
+benchmark_scope_t* benchmark_begin(void)
 {
   benchmark_scope_t* new_scope = &benchmark_ring_buffer[benchmark_ring_head];
   benchmark_ring_head = (benchmark_ring_head + 1) % benchmark_ring_size;
