@@ -119,6 +119,7 @@ clean:
 	rm -f bubble_d insert_d heap_d merge_d quick_d count_d radix_d main_test_d main_benchmark_d
 	rm -f bubble_lto insert_lto heap_lto merge_lto quick_lto count_lto radix_lto main_test_lto main_benchmark_lto
 	rm -f bubble_gcc insert_gcc heap_gcc merge_gcc quick_gcc count_gcc radix_gcc main_test_gcc main_benchmark_gcc
+	rm -f bubble_d_gcc insert_d_gcc heap_d_gcc merge_d_gcc quick_d_gcc count_d_gcc radix_d_gcc main_test_d_gcc main_benchmark_d_gcc
 	rm -f .release/*.o .debug/*.o
 	rm -f .release_lto/*.o .debug_lto/*.o
 	rm -f .release_gcc/*.o .debug_gcc/*.o
