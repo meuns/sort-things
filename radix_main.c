@@ -18,7 +18,7 @@ int main()
 
   radix_sort(keys, key_count, temp_keys);
 
-	debug_print_keys(keys, key_count);
+  debug_print_keys(keys, key_count);
 
   return 0;
 }
