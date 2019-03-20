@@ -26,7 +26,7 @@ void count_sort(signed char* const keys, const int key_count, signed char* sorte
   
   for (int key_index = 0; key_index < key_count; ++key_index)
   {
-    const char key = keys[key_index];
+    const signed char key = keys[key_index];
     const unsigned char histogram_key = (unsigned char)(key ^ 0x80);
     sorted_keys[--histogram[histogram_key]] = key;
   }
