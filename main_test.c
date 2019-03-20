@@ -53,27 +53,41 @@ void wrap_radix_sort(int* keys, const int key_count)
   radix_sort(keys, key_count, temp_keys);
 }
 
+typedef struct
+{
+  sort_function_int_t sort_function;
+  const char* sort_name;
+}
+test_int_t;
+
+typedef struct
+{
+  sort_function_char_t sort_function;
+  const char* sort_name;
+}
+test_char_t;
+
 int main()
 {
   const int max_key_count = 3871;
   
-  sort_function_int_t sort_functions_int[] =
+  test_int_t tests_int[] =
   {
-    /*wrap_bubble_sort,
-    wrap_heap_sort,
-    wrap_insert_sort,
-    wrap_merge_sort,*/
-    wrap_quick_sort,
-    /*wrap_radix_sort*/
+    {wrap_bubble_sort, "bubble_sort"},
+    {wrap_heap_sort, "heap_sort"},
+    {wrap_insert_sort, "insert_sort"},
+    {wrap_merge_sort, "merge_sort"},
+    {wrap_quick_sort, "quick_sort"},
+    {wrap_radix_sort, "radix_sort"}
   };
   
-  sort_function_char_t sort_functions_char[] =
+  test_char_t tests_char[] =
   {
-    /*wrap_count_sort*/
+    {wrap_count_sort, "count_sort"}
   };
   
-  const int sort_count_int = sizeof(sort_functions_int) / sizeof(sort_functions_int[0]);
-  const int sort_count_char = sizeof(sort_functions_char) / sizeof(sort_functions_char[0]);
+  const int sort_count_int = sizeof(tests_int) / sizeof(tests_int[0]);
+  const int sort_count_char = sizeof(tests_char) / sizeof(tests_char[0]);
   
   const int test_count = max_key_count * (sort_count_int + sort_count_char);
   int remaining_test_count = test_count;
@@ -85,9 +99,13 @@ int main()
   
   for (int sort_index = 0; sort_index < sort_count_int; ++sort_index)
   {
-    sort_function_int_t sort_function = sort_functions_int[sort_index];
+    const test_int_t test_int = tests_int[sort_index];
+    const sort_function_int_t sort_function = test_int.sort_function;
+    const char* sort_name = test_int.sort_name;
 
-    for (int key_count = max_key_count/2; key_count < max_key_count; ++key_count)
+    printf("\nTesting %s\n", sort_name);
+
+    for (int key_count = 0; key_count < max_key_count; ++key_count)
     {
       generate_keys_int(keys, key_count, 42);
       memcpy(sorted_keys, keys, sizeof(keys));
@@ -96,7 +114,7 @@ int main()
 
       if (!key_counts_are_equal_int(keys, sorted_keys, key_count))
       {
-        printf("Testing histogram function %d and key count %d failed...\n", sort_index, key_count);
+        printf("\nTesting histogram function %d and key count %d failed...\n", sort_index, key_count);
         for (int key_index = 0; key_index < key_count; ++key_index) { printf("%d, ", keys[key_index]); } printf("\n");
         for (int key_index = 0; key_index < key_count; ++key_index) { printf("%d, ", sorted_keys[key_index]); } printf("\n");
         return 1;
@@ -104,7 +122,7 @@ int main()
 
       if (!keys_are_sorted_int(sorted_keys, key_count))
       {
-        printf("Testing sort function %d and key count %d failed...\n", sort_index, key_count);
+        printf("\nTesting sort function %d and key count %d failed...\n", sort_index, key_count);
         for (int key_index = 0; key_index < key_count; ++key_index) { printf("%d, ", keys[key_index]); } printf("\n");
         for (int key_index = 0; key_index < key_count; ++key_index) { printf("%d, ", sorted_keys[key_index]); } printf("\n");
         return 1;
@@ -114,7 +132,7 @@ int main()
       if (percent_print != last_percent_print)
       {
         last_percent_print = percent_print;
-        printf("Progression %d\n", last_percent_print);
+        printf(".");
         fflush(stdout);
       }
     }
@@ -126,8 +144,12 @@ int main()
   
   for (int sort_index = 0; sort_index < sort_count_char; ++sort_index)
   {
-    sort_function_char_t sort_function = sort_functions_char[sort_index];
-    
+    const test_char_t test_char = tests_char[sort_index];
+    const sort_function_char_t sort_function = test_char.sort_function;
+    const char* sort_name = test_char.sort_name;
+
+    printf("\nTesting %s\n", sort_name);
+
     for (int key_count = 0; key_count < max_key_count; ++key_count)
     {
       generate_keys_char(keys_char, key_count, 42);
@@ -137,7 +159,7 @@ int main()
 
       if (!key_counts_are_equal_char(keys_char, sorted_keys_char, key_count))
       {
-        printf("Testing histogram function %d and key count %d failed...\n", sort_index, key_count);
+        printf("\nTesting histogram function %d and key count %d failed...\n", sort_index, key_count);
         for (int key_index = 0; key_index < key_count; ++key_index) { printf("%d, ", keys_char[key_index]); } printf("\n");
         for (int key_index = 0; key_index < key_count; ++key_index) { printf("%d, ", sorted_keys_char[key_index]); } printf("\n");
         return 1;
@@ -145,7 +167,7 @@ int main()
       
       if (!keys_are_sorted_char(sorted_keys_char, key_count))
       {
-        printf("Testing sort function %d and key count %d failed...\n", sort_index, key_count);
+        printf("\nTesting sort function %d and key count %d failed...\n", sort_index, key_count);
         for (int key_index = 0; key_index < key_count; ++key_index) { printf("%d, ", keys_char[key_index]); } printf("\n");
         for (int key_index = 0; key_index < key_count; ++key_index) { printf("%d, ", sorted_keys_char[key_index]); } printf("\n");
         return 1;
@@ -155,13 +177,11 @@ int main()
       if (percent_print != last_percent_print)
       {
         last_percent_print = percent_print;
-        printf("Progression %d\n", last_percent_print);
+        printf(".");
         fflush(stdout);
       }
     }
   }
-
-  printf("Testing is done!\n");
 
   return 0;
 }
