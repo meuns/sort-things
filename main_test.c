@@ -49,7 +49,6 @@ void wrap_count_sort(signed char* keys, const int key_count)
 
 void wrap_radix_sort(int* keys, const int key_count)
 {
-  printf("%d\n", key_count);
   int temp_keys[key_count];
   radix_sort(keys, key_count, temp_keys);
 }
@@ -60,17 +59,17 @@ int main()
   
   sort_function_int_t sort_functions_int[] =
   {
-    wrap_bubble_sort,
+    /*wrap_bubble_sort,
     wrap_heap_sort,
     wrap_insert_sort,
-    wrap_merge_sort,
+    wrap_merge_sort,*/
     wrap_quick_sort,
-    wrap_radix_sort
+    /*wrap_radix_sort*/
   };
   
   sort_function_char_t sort_functions_char[] =
   {
-    wrap_count_sort
+    /*wrap_count_sort*/
   };
   
   const int sort_count_int = sizeof(sort_functions_int) / sizeof(sort_functions_int[0]);
@@ -88,7 +87,7 @@ int main()
   {
     sort_function_int_t sort_function = sort_functions_int[sort_index];
 
-    for (int key_count = 0; key_count < max_key_count; ++key_count)
+    for (int key_count = max_key_count/2; key_count < max_key_count; ++key_count)
     {
       generate_keys_int(keys, key_count, 42);
       memcpy(sorted_keys, keys, sizeof(keys));

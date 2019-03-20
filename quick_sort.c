@@ -1,7 +1,5 @@
 #include "quick_sort.h"
 
-#include <stdio.h>
-
 // Temporary workaround linking issue on _WIN32
 #if defined(_WIN32)
   #define WA_INLINE
@@ -157,21 +155,40 @@ void quick_sort(int* base_keys, const int base_key_count, const quick_pivot_inde
     const int pivot_key = keys[pivot_index];
     
     const quick_partition_result_t result = quick_partition(keys, key_count, pivot_index, pivot_key);
-
     const int left_key_count = result.left_dutch_index + 1;
-    if (left_key_count > 1)
-    {
-      stack_top = stack_top + 1;
-      stack_keys[stack_top] = keys;
-      stack_key_count[stack_top] = left_key_count;
-    }
-
     const int right_key_count = key_count - result.right_dutch_index;
-    if (right_key_count > 1)
+
+    if (left_key_count > right_key_count)
     {
-      stack_top = stack_top + 1;
-      stack_keys[stack_top] = keys + result.right_dutch_index;
-      stack_key_count[stack_top] = right_key_count;
+      if (left_key_count > 1)
+      {
+        stack_top = stack_top + 1;
+        stack_keys[stack_top] = keys;
+        stack_key_count[stack_top] = left_key_count;
+      }
+      
+      if (right_key_count > 1)
+      {
+        stack_top = stack_top + 1;
+        stack_keys[stack_top] = keys + result.right_dutch_index;
+        stack_key_count[stack_top] = right_key_count;
+      }
+    }
+    else
+    {
+      if (right_key_count > 1)
+      {
+        stack_top = stack_top + 1;
+        stack_keys[stack_top] = keys + result.right_dutch_index;
+        stack_key_count[stack_top] = right_key_count;
+      }
+
+      if (left_key_count > 1)
+      {
+        stack_top = stack_top + 1;
+        stack_keys[stack_top] = keys;
+        stack_key_count[stack_top] = left_key_count;
+      }
     }
   }
 }

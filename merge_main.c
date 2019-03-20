@@ -1,5 +1,3 @@
-#include <stdio.h>
-
 #include "debug.h"
 #include "merge_sort.h"
 
