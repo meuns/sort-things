@@ -5,6 +5,7 @@
 #include "benchmark.h"
 #include "debug.h"
 
+#include "insert_sort.h"
 #include "heap_sort.h"
 #include "merge_sort.h"
 #include "quick_sort.h"
@@ -12,6 +13,11 @@
 #include "std_sort.h"
 
 typedef void (*sort_function_t)(int* keys, const int key_count, int* temp_keys);
+
+void wrap_insert_sort(int* keys, const int key_count, int* temp_keys __attribute__((unused)))
+{
+  insert_sort(keys, key_count);
+}
 
 void wrap_std_sort(int* keys, const int key_count, int* temp_keys __attribute__((unused)))
 {
@@ -47,8 +53,8 @@ benchmark_t;
 
 int main()
 {
-  const int key_count = 200000;
-  const int repeat_count = 25;
+  const int key_count = 1000000;
+  const int repeat_count = 20;
   int* ref_keys = (int*)malloc(key_count * sizeof(int));
   int* temp_keys = (int*)malloc(key_count * sizeof(int));
   int* keys = (int*)malloc(key_count * sizeof(int));
@@ -79,7 +85,7 @@ int main()
 
       benchmark_scope_t* scope1 = benchmark_begin();
       sort_function(keys, key_count, temp_keys);
-      duration += benchmark_end(scope1);
+      duration += benchmark_end_us(scope1);
     }
 
     printf("Function %s took %d us\n", sort_name, duration / repeat_count);
