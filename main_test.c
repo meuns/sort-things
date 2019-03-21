@@ -107,12 +107,12 @@ int main()
 
     for (int key_count = 0; key_count < max_key_count; ++key_count)
     {
-      generate_keys_int(keys, key_count, 42);
+      test_generate_keys_int(keys, key_count, 42);
       memcpy(sorted_keys, keys, sizeof(keys));
 
       sort_function(sorted_keys, key_count);
 
-      if (!key_counts_are_equal_int(keys, sorted_keys, key_count))
+      if (!test_key_counts_are_equal_int(keys, sorted_keys, key_count))
       {
         printf("\nTesting histogram function %d and key count %d failed...\n", sort_index, key_count);
         for (int key_index = 0; key_index < key_count; ++key_index) { printf("%d, ", keys[key_index]); } printf("\n");
@@ -120,7 +120,7 @@ int main()
         return 1;
       }
 
-      if (!keys_are_sorted_int(sorted_keys, key_count))
+      if (!test_keys_are_sorted_int(sorted_keys, key_count))
       {
         printf("\nTesting sort function %d and key count %d failed...\n", sort_index, key_count);
         for (int key_index = 0; key_index < key_count; ++key_index) { printf("%d, ", keys[key_index]); } printf("\n");
@@ -152,12 +152,12 @@ int main()
 
     for (int key_count = 0; key_count < max_key_count; ++key_count)
     {
-      generate_keys_char(keys_char, key_count, 42);
+      test_generate_keys_char(keys_char, key_count, 42);
       memcpy(sorted_keys_char, keys_char, sizeof(keys_char));
 
       sort_function(sorted_keys_char, key_count);
 
-      if (!key_counts_are_equal_char(keys_char, sorted_keys_char, key_count))
+      if (!test_key_counts_are_equal_char(keys_char, sorted_keys_char, key_count))
       {
         printf("\nTesting histogram function %d and key count %d failed...\n", sort_index, key_count);
         for (int key_index = 0; key_index < key_count; ++key_index) { printf("%d, ", keys_char[key_index]); } printf("\n");
@@ -165,7 +165,7 @@ int main()
         return 1;
       }
       
-      if (!keys_are_sorted_char(sorted_keys_char, key_count))
+      if (!test_keys_are_sorted_char(sorted_keys_char, key_count))
       {
         printf("\nTesting sort function %d and key count %d failed...\n", sort_index, key_count);
         for (int key_index = 0; key_index < key_count; ++key_index) { printf("%d, ", keys_char[key_index]); } printf("\n");

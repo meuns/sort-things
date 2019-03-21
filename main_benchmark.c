@@ -4,7 +4,6 @@
 
 #include "benchmark.h"
 #include "debug.h"
-#include "test.h"
 
 #include "heap_sort.h"
 #include "merge_sort.h"
@@ -40,7 +39,7 @@ int main()
   int* temp_keys = (int*)malloc(key_count * sizeof(int));
   int* keys = (int*)malloc(key_count * sizeof(int));
 
-  generate_keys_int(ref_keys, key_count, 42);
+  benchmark_generate_random_keys(ref_keys, key_count, 42, INT_MIN, INT_MAX);
 
   sort_function_t sort_functions[] =
   {
@@ -62,15 +61,7 @@ int main()
     sort_function(keys, key_count, temp_keys);
     int duration = benchmark_end(scope1);
 
-    if (!keys_are_sorted_int(keys, key_count))
-    {
-      printf("Function %d failed...\n", sort_index);
-      return 1;
-    }
-    else
-    {
-      printf("Function %d took %d ms\n", sort_index, duration);
-    }
+    printf("Function %d took %d ms\n", sort_index, duration);
   }
 
   free(keys);

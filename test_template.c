@@ -3,18 +3,18 @@
   #error Please define CONCAT_SUFFIX and KEY_TYPE before including test_template.c
 #endif
 
-int CONCAT_SUFFIX(key_counts_are_equal)(KEY_TYPE* keys, KEY_TYPE* sorted_keys, const int key_count)
+int CONCAT_SUFFIX(test_key_counts_are_equal)(KEY_TYPE* keys, KEY_TYPE* sorted_keys, const long long int key_count)
 {
   long long int min_key = keys[0];
   long long int max_key = keys[0];
 
-  for (int key_index = 1; key_index < key_count; ++key_index)
+  for (long long int key_index = 1; key_index < key_count; ++key_index)
   {
     min_key = min(min_key, keys[key_index]);
     max_key = max(max_key, keys[key_index]);
   }
 
-  for (int key_index = 0; key_index < key_count; ++key_index)
+  for (long long int key_index = 0; key_index < key_count; ++key_index)
   {
     min_key = min(min_key, sorted_keys[key_index]);
     max_key = max(max_key, sorted_keys[key_index]);
@@ -22,27 +22,27 @@ int CONCAT_SUFFIX(key_counts_are_equal)(KEY_TYPE* keys, KEY_TYPE* sorted_keys, c
 
   const long long int histogram_size = max_key - min_key + 1;
 
-  int* histogram = (int*)malloc(sizeof(int) * (size_t)histogram_size);
-  int* sorted_histogram = (int*)malloc(sizeof(int) * (size_t)histogram_size);
+  long long int* histogram = (long long int*)malloc(sizeof(long long int) * (size_t)histogram_size);
+  long long int* sorted_histogram = (long long int*)malloc(sizeof(long long int) * (size_t)histogram_size);
 
-  for (int entry_index = 0; entry_index < histogram_size; ++entry_index)
+  for (long long int entry_index = 0; entry_index < histogram_size; ++entry_index)
   {
     histogram[entry_index] = 0;
     sorted_histogram[entry_index] = 0;
   }
 
-  for (int key_index = 0; key_index < key_count; ++key_index)
+  for (long long int key_index = 0; key_index < key_count; ++key_index)
   {
     histogram[keys[key_index] - min_key]++;
   }
 
-  for (int key_index = 0; key_index < key_count; ++key_index)
+  for (long long int key_index = 0; key_index < key_count; ++key_index)
   {
     sorted_histogram[sorted_keys[key_index] - min_key]++;
   }
 
   int result = 1;
-  for (int entry_index = 0; entry_index < histogram_size; ++entry_index)
+  for (long long int entry_index = 0; entry_index < histogram_size; ++entry_index)
   {
     if (histogram[entry_index] != sorted_histogram[entry_index])
     {
@@ -56,10 +56,10 @@ int CONCAT_SUFFIX(key_counts_are_equal)(KEY_TYPE* keys, KEY_TYPE* sorted_keys, c
   return result;
 }
 
-int CONCAT_SUFFIX(keys_are_sorted)(KEY_TYPE* const keys, const int key_count)
+int CONCAT_SUFFIX(test_keys_are_sorted)(KEY_TYPE* const keys, const long long int key_count)
 {
   KEY_TYPE key = keys[0];
-  for (int key_index = 1; key_index < key_count; ++key_index)
+  for (long long int key_index = 1; key_index < key_count; ++key_index)
   {
     const KEY_TYPE next_key = keys[key_index];
     if (key > next_key)

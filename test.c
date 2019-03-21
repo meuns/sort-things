@@ -20,7 +20,7 @@ static inline long long int max(long long int a, long long int b)
 #undef CONCAT_SUFFIX
 #undef KEY_TYPE
 
-void generate_keys_int(int* keys, const int key_count, const unsigned int seed)
+void test_generate_keys_int(int* keys, const long long int key_count, const unsigned int seed)
 {
   srand(seed);
   
@@ -36,7 +36,7 @@ void generate_keys_int(int* keys, const int key_count, const unsigned int seed)
 #undef CONCAT_SUFFIX
 #undef KEY_TYPE
 
-void generate_keys_char(signed char* keys, const int key_count, const unsigned int seed)
+void test_generate_keys_char(signed char* keys, const long long int key_count, const unsigned int seed)
 {
   srand(seed);
   
