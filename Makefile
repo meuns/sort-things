@@ -2,7 +2,7 @@
 include Configuration
 
 # Projects
-all: bubble$(EXE_SUFFIX) insert$(EXE_SUFFIX) heap$(EXE_SUFFIX) merge$(EXE_SUFFIX) quick$(EXE_SUFFIX) count$(EXE_SUFFIX) radix$(EXE_SUFFIX) main_test$(EXE_SUFFIX) main_benchmark$(EXE_SUFFIX)
+all: bubble$(EXE_SUFFIX) insert$(EXE_SUFFIX) heap$(EXE_SUFFIX) merge$(EXE_SUFFIX) quick$(EXE_SUFFIX) count$(EXE_SUFFIX) radix$(EXE_SUFFIX) test$(EXE_SUFFIX) benchmark$(EXE_SUFFIX)
 
 # If we depend on $(BUILD_DIR_PATH) for each sort, we modify its timestamp and make link everything again
 BUILD_PROJECT_DEPENDENCIES=$(filter-out $(wildcard $(BUILD_DIR_PATH)), $(BUILD_DIR_PATH)) Configuration
@@ -69,7 +69,7 @@ ALL_SORT_HEADERS=bubble_sort.h insert_sort.h heap_sort.h merge_sort.h quick_sort
 ALL_SORT_MODULES=$(BUILD_DIR_PATH)/bubble_sort.o $(BUILD_DIR_PATH)/insert_sort.o $(BUILD_DIR_PATH)/heap_sort.o $(BUILD_DIR_PATH)/merge_sort.o $(BUILD_DIR_PATH)/quick_sort.o $(BUILD_DIR_PATH)/count_sort.o $(BUILD_DIR_PATH)/radix_sort.o
 
 MAIN_TEST_MODULES=$(ALL_SORT_MODULES) $(BUILD_DIR_PATH)/main_test.o $(BUILD_DIR_PATH)/test.o $(BUILD_DIR_PATH)/debug.o
-main_test$(EXE_SUFFIX): $(BUILD_PROJECT_DEPENDENCIES) $(MAIN_TEST_MODULES)
+test$(EXE_SUFFIX): $(BUILD_PROJECT_DEPENDENCIES) $(MAIN_TEST_MODULES)
 	$(CC) -o $@ $(MAIN_TEST_MODULES) $(LDFLAGS)
 
 $(BUILD_DIR_PATH)/main_test.o: $(ALL_SORT_HEADERS) test.h debug.h main_test.c
@@ -77,24 +77,28 @@ $(BUILD_DIR_PATH)/test.o: test.h test.c
 $(BUILD_DIR_PATH)/debug.o: debug.h debug.c
 
 # Benchmark
-MAIN_BENCHMARK_MODULES=$(ALL_SORT_MODULES) $(BUILD_DIR_PATH)/main_benchmark.o $(BUILD_DIR_PATH)/benchmark.o $(BUILD_DIR_PATH)/test.o $(BUILD_DIR_PATH)/debug.o
-main_benchmark$(EXE_SUFFIX): $(BUILD_PROJECT_DEPENDENCIES) $(MAIN_BENCHMARK_MODULES)
+MAIN_BENCHMARK_MODULES=$(ALL_SORT_MODULES) $(BUILD_DIR_PATH)/main_benchmark.o $(BUILD_DIR_PATH)/benchmark.o $(BUILD_DIR_PATH)/std_sort.o $(BUILD_DIR_PATH)/test.o $(BUILD_DIR_PATH)/debug.o
+benchmark$(EXE_SUFFIX): $(BUILD_PROJECT_DEPENDENCIES) $(MAIN_BENCHMARK_MODULES)
 	$(CC) -o $@ $(MAIN_BENCHMARK_MODULES) $(LDFLAGS)
 
-$(BUILD_DIR_PATH)/main_benchmark.o: $(ALL_SORT_HEADERS) benchmark.h debug.h main_benchmark.c
+$(BUILD_DIR_PATH)/main_benchmark.o: $(ALL_SORT_HEADERS) benchmark.h std_sort.h debug.h main_benchmark.c
 $(BUILD_DIR_PATH)/benchmark.o: benchmark.h benchmark.c
+$(BUILD_DIR_PATH)/std_sort.o: std_sort.h std_sort.cpp
 
 # Build rules
 $(BUILD_DIR_PATH)/%.o: %.c $(BUILD_MODULE_DEPENDENCIES)
 	$(CC) -o $@ -c $< $(CFLAGS)
 
+$(BUILD_DIR_PATH)/%.o: %.cpp $(BUILD_MODULE_DEPENDENCIES)
+	$(CXX) -o $@ -c $< $(CXXFLAGS)
+
 $(BUILD_DIR_PATH):
 	mkdir -p $(BUILD_DIR_PATH)
 
 clean:
-	rm -f bubble insert heap merge quick count radix main_test main_benchmark
-	rm -f bubble_d insert_d heap_d merge_d quick_d count_d radix_d main_test_d main_benchmark_d
-	rm -f bubble_lto insert_lto heap_lto merge_lto quick_lto count_lto radix_lto main_test_lto main_benchmark_lto
+	rm -f bubble insert heap merge quick count radix test benchmark
+	rm -f bubble_d insert_d heap_d merge_d quick_d count_d radix_d test_d benchmark_d
+	rm -f bubble_lto insert_lto heap_lto merge_lto quick_lto count_lto radix_lto test_lto benchmark_lto
 	rm -f .release/*.o .debug/*.o
 	rm -f .release_lto/*.o .debug_lto/*.o
 	rm -rf .release .debug

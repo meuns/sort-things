@@ -9,8 +9,14 @@
 #include "merge_sort.h"
 #include "quick_sort.h"
 #include "radix_sort.h"
+#include "std_sort.h"
 
 typedef void (*sort_function_t)(int* keys, const int key_count, int* temp_keys);
+
+void wrap_std_sort(int* keys, const int key_count, int* temp_keys __attribute__((unused)))
+{
+  std_sort(keys, key_count);
+}
 
 void wrap_heap_sort(int* keys, const int key_count, int* temp_keys __attribute__((unused)))
 {
@@ -32,36 +38,51 @@ void wrap_radix_sort(int* keys, const int key_count, int* temp_keys)
   radix_sort(keys, key_count, temp_keys);
 }
 
+typedef struct
+{
+  sort_function_t sort_function;
+  const char* sort_name;
+}
+benchmark_t;
+
 int main()
 {
-  const int key_count = 1000000;
+  const int key_count = 200000;
+  const int repeat_count = 25;
   int* ref_keys = (int*)malloc(key_count * sizeof(int));
   int* temp_keys = (int*)malloc(key_count * sizeof(int));
   int* keys = (int*)malloc(key_count * sizeof(int));
 
   benchmark_generate_random_keys(ref_keys, key_count, 42, INT_MIN, INT_MAX);
 
-  sort_function_t sort_functions[] =
+  benchmark_t benchmarks[] =
   {
-    wrap_heap_sort,
-    wrap_merge_sort,
-    wrap_quick_sort,
-    wrap_radix_sort
+    {wrap_std_sort, "std_sort"},
+    {wrap_heap_sort, "heap_sort"},
+    {wrap_merge_sort, "merge_sort"},
+    {wrap_quick_sort, "quick_sort"},
+    {wrap_radix_sort, "radix_sort"}
   };
   
-  const int sort_count = sizeof(sort_functions) / sizeof(sort_functions[0]);
+  const int sort_count = sizeof(benchmarks) / sizeof(benchmarks[0]);
   
   for (int sort_index = 0; sort_index < sort_count; ++sort_index)
   {
-    sort_function_t sort_function = sort_functions[sort_index];
+    const benchmark_t benchmark = benchmarks[sort_index];
+    const sort_function_t sort_function = benchmark.sort_function;
+    const char* sort_name = benchmark.sort_name;
 
-    memcpy(keys, ref_keys, key_count * sizeof(int));
-    
-    benchmark_scope_t* scope1 = benchmark_begin();
-    sort_function(keys, key_count, temp_keys);
-    int duration = benchmark_end(scope1);
+    int duration = 0;
+    for (int repeat = 0; repeat < repeat_count; ++repeat)
+    {
+      memcpy(keys, ref_keys, key_count * sizeof(int));
 
-    printf("Function %d took %d ms\n", sort_index, duration);
+      benchmark_scope_t* scope1 = benchmark_begin();
+      sort_function(keys, key_count, temp_keys);
+      duration += benchmark_end(scope1);
+    }
+
+    printf("Function %s took %d us\n", sort_name, duration / repeat_count);
   }
 
   free(keys);
