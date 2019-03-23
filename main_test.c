@@ -47,10 +47,22 @@ void wrap_count_sort(signed char* keys, const int key_count)
   memcpy(keys, temp_keys, sizeof(temp_keys));
 }
 
-void wrap_radix_sort(int* keys, const int key_count)
+void wrap_radix_sort_halfbyte(int* keys, const int key_count)
 {
   int temp_keys[key_count];
-  radix_sort(keys, key_count, temp_keys);
+  radix_sort_halfbyte(keys, key_count, temp_keys);
+}
+
+void wrap_radix_sort_byte(int* keys, const int key_count)
+{
+  int temp_keys[key_count];
+  radix_sort_byte(keys, key_count, temp_keys);
+}
+
+void wrap_radix_sort_short(int* keys, const int key_count)
+{
+  int temp_keys[key_count];
+  radix_sort_short(keys, key_count, temp_keys);
 }
 
 typedef struct
@@ -78,7 +90,9 @@ int main()
     {wrap_insert_sort, "insert_sort"},
     {wrap_merge_sort, "merge_sort"},
     {wrap_quick_sort, "quick_sort"},
-    {wrap_radix_sort, "radix_sort"}
+    {wrap_radix_sort_halfbyte, "radix_sort_halfbyte"},
+    {wrap_radix_sort_byte, "radix_sort_byte"},
+    {wrap_radix_sort_short, "radix_sort_short"}
   };
   
   test_char_t tests_char[] =
@@ -182,6 +196,8 @@ int main()
       }
     }
   }
+
+  printf("\n");
 
   return 0;
 }

@@ -73,7 +73,7 @@ test$(EXE_SUFFIX): $(BUILD_PROJECT_DEPENDENCIES) $(MAIN_TEST_MODULES)
 	$(CC) -o $@ $(MAIN_TEST_MODULES) $(LDFLAGS)
 
 $(BUILD_DIR_PATH)/main_test.o: $(ALL_SORT_HEADERS) test.h debug.h main_test.c
-$(BUILD_DIR_PATH)/test.o: test.h test.c
+$(BUILD_DIR_PATH)/test.o: test.h test_template.h test.c test_template.c
 $(BUILD_DIR_PATH)/debug.o: debug.h debug.c
 
 # Benchmark

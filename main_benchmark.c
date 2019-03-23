@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <limits.h>
 
 #include "benchmark.h"
 #include "debug.h"
@@ -39,9 +40,19 @@ void wrap_quick_sort(int* keys, const int key_count, int* temp_keys __attribute_
   quick_sort(keys, key_count, quick_median3_pivot_index);
 }
 
-void wrap_radix_sort(int* keys, const int key_count, int* temp_keys)
+void wrap_radix_sort_halfbyte(int* keys, const int key_count, int* temp_keys)
 {
-  radix_sort(keys, key_count, temp_keys);
+  radix_sort_halfbyte(keys, key_count, temp_keys);
+}
+
+void wrap_radix_sort_byte(int* keys, const int key_count, int* temp_keys)
+{
+  radix_sort_byte(keys, key_count, temp_keys);
+}
+
+void wrap_radix_sort_short(int* keys, const int key_count, int* temp_keys)
+{
+  radix_sort_short(keys, key_count, temp_keys);
 }
 
 typedef struct
@@ -60,14 +71,16 @@ int main()
   int* keys = (int*)malloc(key_count * sizeof(int));
 
   benchmark_generate_random_keys(ref_keys, key_count, 42, INT_MIN, INT_MAX);
-
+  
   benchmark_t benchmarks[] =
   {
     {wrap_std_sort, "std_sort"},
     {wrap_heap_sort, "heap_sort"},
-    {wrap_merge_sort, "merge_sort"},
+    {wrap_merge_sort, "merge_sort"},    
     {wrap_quick_sort, "quick_sort"},
-    {wrap_radix_sort, "radix_sort"}
+    {wrap_radix_sort_halfbyte, "radix_sort_halfbyte"},
+    {wrap_radix_sort_byte, "radix_sort_byte"},
+    {wrap_radix_sort_short, "radix_sort_short"}
   };
   
   const int sort_count = sizeof(benchmarks) / sizeof(benchmarks[0]);

@@ -121,6 +121,8 @@ void benchmark_generate_stepping_keys(int* keys, const long long int key_count, 
   for (long long int key_index = 0; key_index < key_count; ++key_index)
   {
     int new_key = (int)((double)min_key_value + step * (double)key_index);
+    assert(new_key <= max_key_value);
+    assert(min_key_value <= new_key);
     keys[key_index] = new_key;
   }
 }

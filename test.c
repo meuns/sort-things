@@ -26,7 +26,7 @@ void test_generate_keys_int(int* keys, const long long int key_count, const unsi
   
   for (int key_index = 0; key_index < key_count; ++key_index)
   {
-    keys[key_index] = rand();
+    keys[key_index] = (rand() % 65536) - 32768;
   }
 }
 

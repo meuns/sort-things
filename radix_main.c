@@ -14,7 +14,7 @@ int main()
 
   int temp_keys[key_count];
 
-  radix_sort(keys, key_count, temp_keys);
+  radix_sort_byte(keys, key_count, temp_keys);
 
   debug_print_keys(keys, key_count);
 
