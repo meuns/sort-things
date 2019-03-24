@@ -1,7 +1,7 @@
 #include "merge_sort.h"
 
 __attribute__((always_inline))
-static inline void merge_keys(int* left_keys, const int left_key_count, int* right_keys, const int right_key_count, int* merged_keys)
+static inline void merge_keys(int* restrict left_keys, const int left_key_count, int* restrict right_keys, const int right_key_count, int* restrict merged_keys)
 {
   int left_index = 0;
   int left_key = left_keys[left_index];
@@ -15,13 +15,13 @@ static inline void merge_keys(int* left_keys, const int left_key_count, int* rig
     {
       merged_keys[merged_index] = left_key;
       left_index = left_index + 1;
-      left_key = left_keys[left_index];      
+      left_key = left_keys[left_index];
     }
     else
     {
       merged_keys[merged_index] = right_key;
       right_index = right_index + 1;
-      right_key = right_keys[right_index];      
+      right_key = right_keys[right_index];
     }
     
     merged_index = merged_index + 1;
@@ -32,7 +32,7 @@ static inline void merge_keys(int* left_keys, const int left_key_count, int* rig
     merged_keys[merged_index] = left_keys[left_index];
     left_index = left_index + 1;
     merged_index = merged_index + 1;
-  }  
+  }
   
   while (right_index < right_key_count)
   {
@@ -40,17 +40,14 @@ static inline void merge_keys(int* left_keys, const int left_key_count, int* rig
     right_index = right_index + 1;
     merged_index = merged_index + 1;
   }
-  
-  const int merged_key_count = merged_index;
-  for (int copy_index = 0; copy_index < merged_key_count; ++copy_index)
-  {
-    left_keys[copy_index] = merged_keys[copy_index];
-  }
 }
 
 __attribute__((noinline))
 void merge_sort(int* keys, const int key_count, int* temp_keys)
 {
+  int* input_keys = keys;
+  int* output_keys = temp_keys;
+
   for (int left_key_count = 1; left_key_count <= key_count; left_key_count <<= 1)
   {
     int right_key_count = left_key_count;
@@ -58,7 +55,7 @@ void merge_sort(int* keys, const int key_count, int* temp_keys)
     int next_merge_index = merge_index + left_key_count + right_key_count;
     while (next_merge_index <= key_count)
     {
-      merge_keys(&keys[merge_index], left_key_count, &keys[merge_index + left_key_count], right_key_count, temp_keys);
+      merge_keys(&input_keys[merge_index], left_key_count, &input_keys[merge_index + left_key_count], right_key_count, &output_keys[merge_index]);
       merge_index = next_merge_index;
       next_merge_index = merge_index + left_key_count + right_key_count;
     }
@@ -66,7 +63,26 @@ void merge_sort(int* keys, const int key_count, int* temp_keys)
     if (merge_index + left_key_count < key_count)
     {
       right_key_count = key_count - (merge_index + left_key_count);
-      merge_keys(&keys[merge_index], left_key_count, &keys[merge_index + left_key_count], right_key_count, temp_keys);
+      merge_keys(&input_keys[merge_index], left_key_count, &input_keys[merge_index + left_key_count], right_key_count, &output_keys[merge_index]);
+    }
+    else
+    {
+      for (int copy_index = merge_index; copy_index < key_count; ++copy_index)
+      {
+        output_keys[copy_index] = input_keys[copy_index];
+      }
+    }
+
+    int* swap_keys = input_keys;
+    input_keys = output_keys;
+    output_keys = swap_keys;
+  }
+
+  if (input_keys == temp_keys)
+  {
+    for (int copy_index = 0; copy_index < key_count; ++copy_index)
+    {
+      keys[copy_index] = temp_keys[copy_index];
     }
   }
 }
