@@ -1,15 +1,29 @@
 #include "network_sort.h"
 
-#include <assert.h>
+#undef max
+#undef min
 
-#define SWAP(first_index, last_index) {\
-  const int first_key = keys[first_index]; \
-  const int last_key = keys[last_index]; \
-  if (first_key > last_key) \
-  { \
-    keys[first_index] = last_key; \
-    keys[last_index] = first_key; \
-  } \
+__attribute__((always_inline))
+static inline int min(const int a, const int b)
+{
+  return a < b ? a : b;
+}
+
+__attribute__((always_inline))
+static inline int max(const int a, const int b)
+{
+  return a > b ? a : b;
+}
+
+__attribute__((always_inline))
+static inline void network_swap(int* keys, const int key_index0, const int key_index1)
+{
+  const int key0 = keys[key_index0];
+  const int key1 = keys[key_index1];
+  const int min_key = min(key0, key1);
+  const int max_key = max(key0, key1);
+  keys[key_index0] = min_key;
+  keys[key_index1] = max_key;
 }
 
 typedef void (*network_sort_t)(int* keys);
@@ -17,481 +31,481 @@ typedef void (*network_sort_t)(int* keys);
 __attribute__((noinline))
 void network_sort_02(int* keys)
 {
-  SWAP(0, 1)
+  network_swap(keys, 0, 1);
 }
 
 __attribute__((noinline))
 void network_sort_03(int* keys)
 {
-  SWAP(1, 2)
-  SWAP(0, 2)
-  SWAP(0, 1)
+  network_swap(keys, 1, 2);
+  network_swap(keys, 0, 2);
+  network_swap(keys, 0, 1);
 }
 
 __attribute__((noinline))
 void network_sort_04(int* keys)
 {
-  SWAP(0, 1)
-  SWAP(2, 3)
-  SWAP(0, 2)
-  SWAP(1, 3)
-  SWAP(1, 2)
+  network_swap(keys, 0, 1);
+  network_swap(keys, 2, 3);
+  network_swap(keys, 0, 2);
+  network_swap(keys, 1, 3);
+  network_swap(keys, 1, 2);
 }
 
 __attribute__((noinline))
 void network_sort_05(int* keys)
 {
-  SWAP(0, 1)
-  SWAP(3, 4)
-  SWAP(2, 4)
-  SWAP(2, 3)
-  SWAP(0, 3)
-  SWAP(0, 2)
-  SWAP(1, 4)
-  SWAP(1, 3)
-  SWAP(1, 2)
+  network_swap(keys, 0, 1);
+  network_swap(keys, 3, 4);
+  network_swap(keys, 2, 4);
+  network_swap(keys, 2, 3);
+  network_swap(keys, 0, 3);
+  network_swap(keys, 0, 2);
+  network_swap(keys, 1, 4);
+  network_swap(keys, 1, 3);
+  network_swap(keys, 1, 2);
 }
 
 __attribute__((noinline))
 void network_sort_06(int* keys)
 {
-  SWAP(1, 2)
-  SWAP(0, 2)
-  SWAP(0, 1)
-  SWAP(4, 5)
-  SWAP(3, 5)
-  SWAP(3, 4)
-  SWAP(0, 3)
-  SWAP(1, 4)
-  SWAP(2, 5)
-  SWAP(2, 4)
-  SWAP(1, 3)
-  SWAP(2, 3)
+  network_swap(keys, 1, 2);
+  network_swap(keys, 0, 2);
+  network_swap(keys, 0, 1);
+  network_swap(keys, 4, 5);
+  network_swap(keys, 3, 5);
+  network_swap(keys, 3, 4);
+  network_swap(keys, 0, 3);
+  network_swap(keys, 1, 4);
+  network_swap(keys, 2, 5);
+  network_swap(keys, 2, 4);
+  network_swap(keys, 1, 3);
+  network_swap(keys, 2, 3);
 }
 
 __attribute__((noinline))
 void network_sort_07(int* keys)
 {
-  SWAP(1, 2)
-  SWAP(0, 2)
-  SWAP(0, 1)
-  SWAP(3, 4)
-  SWAP(5, 6)
-  SWAP(3, 5)
-  SWAP(4, 6)
-  SWAP(4, 5)
-  SWAP(0, 4)
-  SWAP(0, 3)
-  SWAP(1, 5)
-  SWAP(2, 6)
-  SWAP(2, 5)
-  SWAP(1, 3)
-  SWAP(2, 4)
-  SWAP(2, 3)
+  network_swap(keys, 1, 2);
+  network_swap(keys, 0, 2);
+  network_swap(keys, 0, 1);
+  network_swap(keys, 3, 4);
+  network_swap(keys, 5, 6);
+  network_swap(keys, 3, 5);
+  network_swap(keys, 4, 6);
+  network_swap(keys, 4, 5);
+  network_swap(keys, 0, 4);
+  network_swap(keys, 0, 3);
+  network_swap(keys, 1, 5);
+  network_swap(keys, 2, 6);
+  network_swap(keys, 2, 5);
+  network_swap(keys, 1, 3);
+  network_swap(keys, 2, 4);
+  network_swap(keys, 2, 3);
 }
 
 __attribute__((noinline))
 void network_sort_08(int* keys)
 {
-  SWAP(0, 1)
-  SWAP(2, 3)
-  SWAP(0, 2)
-  SWAP(1, 3)
-  SWAP(1, 2)
-  SWAP(4, 5)
-  SWAP(6, 7)
-  SWAP(4, 6)
-  SWAP(5, 7)
-  SWAP(5, 6)
-  SWAP(0, 4)
-  SWAP(1, 5)
-  SWAP(1, 4)
-  SWAP(2, 6)
-  SWAP(3, 7)
-  SWAP(3, 6)
-  SWAP(2, 4)
-  SWAP(3, 5)
-  SWAP(3, 4)
+  network_swap(keys, 0, 1);
+  network_swap(keys, 2, 3);
+  network_swap(keys, 0, 2);
+  network_swap(keys, 1, 3);
+  network_swap(keys, 1, 2);
+  network_swap(keys, 4, 5);
+  network_swap(keys, 6, 7);
+  network_swap(keys, 4, 6);
+  network_swap(keys, 5, 7);
+  network_swap(keys, 5, 6);
+  network_swap(keys, 0, 4);
+  network_swap(keys, 1, 5);
+  network_swap(keys, 1, 4);
+  network_swap(keys, 2, 6);
+  network_swap(keys, 3, 7);
+  network_swap(keys, 3, 6);
+  network_swap(keys, 2, 4);
+  network_swap(keys, 3, 5);
+  network_swap(keys, 3, 4);
 }
 
 __attribute__((noinline))
 void network_sort_09(int* keys)
 {
-  SWAP(0, 1)
-  SWAP(3, 4)
-  SWAP(6, 7)
-  SWAP(1, 2)
-  SWAP(4, 5)
-  SWAP(7, 8)
-  SWAP(0, 1)
-  SWAP(3, 4)
-  SWAP(6, 7)
-  SWAP(0, 3)
-  SWAP(3, 6)
-  SWAP(0, 3)
-  SWAP(1, 4)
-  SWAP(4, 7)
-  SWAP(1, 4)
-  SWAP(2, 5)
-  SWAP(5, 8)
-  SWAP(2, 5)
-  SWAP(1, 3)
-  SWAP(5, 7)
-  SWAP(2, 6)
-  SWAP(4, 6)
-  SWAP(2, 4)
-  SWAP(2, 3)
-  SWAP(5, 6)
+  network_swap(keys, 0, 1);
+  network_swap(keys, 3, 4);
+  network_swap(keys, 6, 7);
+  network_swap(keys, 1, 2);
+  network_swap(keys, 4, 5);
+  network_swap(keys, 7, 8);
+  network_swap(keys, 0, 1);
+  network_swap(keys, 3, 4);
+  network_swap(keys, 6, 7);
+  network_swap(keys, 0, 3);
+  network_swap(keys, 3, 6);
+  network_swap(keys, 0, 3);
+  network_swap(keys, 1, 4);
+  network_swap(keys, 4, 7);
+  network_swap(keys, 1, 4);
+  network_swap(keys, 2, 5);
+  network_swap(keys, 5, 8);
+  network_swap(keys, 2, 5);
+  network_swap(keys, 1, 3);
+  network_swap(keys, 5, 7);
+  network_swap(keys, 2, 6);
+  network_swap(keys, 4, 6);
+  network_swap(keys, 2, 4);
+  network_swap(keys, 2, 3);
+  network_swap(keys, 5, 6);
 }
 
 __attribute__((noinline))
 void network_sort_10(int* keys)
 {
-  SWAP(4, 9)
-  SWAP(3, 8)
-  SWAP(2, 7)
-  SWAP(1, 6)
-  SWAP(0, 5)
-  SWAP(1, 4)
-  SWAP(6, 9)
-  SWAP(0, 3)
-  SWAP(5, 8)
-  SWAP(0, 2)
-  SWAP(3, 6)
-  SWAP(7, 9)
-  SWAP(0, 1)
-  SWAP(2, 4)
-  SWAP(5, 7)
-  SWAP(8, 9)
-  SWAP(1, 2)
-  SWAP(4, 6)
-  SWAP(7, 8)
-  SWAP(3, 5)
-  SWAP(2, 5)
-  SWAP(6, 8)
-  SWAP(1, 3)
-  SWAP(4, 7)
-  SWAP(2, 3)
-  SWAP(6, 7)
-  SWAP(3, 4)
-  SWAP(5, 6)
-  SWAP(4, 5)
+  network_swap(keys, 4, 9);
+  network_swap(keys, 3, 8);
+  network_swap(keys, 2, 7);
+  network_swap(keys, 1, 6);
+  network_swap(keys, 0, 5);
+  network_swap(keys, 1, 4);
+  network_swap(keys, 6, 9);
+  network_swap(keys, 0, 3);
+  network_swap(keys, 5, 8);
+  network_swap(keys, 0, 2);
+  network_swap(keys, 3, 6);
+  network_swap(keys, 7, 9);
+  network_swap(keys, 0, 1);
+  network_swap(keys, 2, 4);
+  network_swap(keys, 5, 7);
+  network_swap(keys, 8, 9);
+  network_swap(keys, 1, 2);
+  network_swap(keys, 4, 6);
+  network_swap(keys, 7, 8);
+  network_swap(keys, 3, 5);
+  network_swap(keys, 2, 5);
+  network_swap(keys, 6, 8);
+  network_swap(keys, 1, 3);
+  network_swap(keys, 4, 7);
+  network_swap(keys, 2, 3);
+  network_swap(keys, 6, 7);
+  network_swap(keys, 3, 4);
+  network_swap(keys, 5, 6);
+  network_swap(keys, 4, 5);
 }
 
 __attribute__((noinline))
 void network_sort_11(int* keys)
 {
-  SWAP(0, 1)
-  SWAP(2, 3)
-  SWAP(4, 5)
-  SWAP(6, 7)
-  SWAP(8, 9)
-  SWAP(1, 3)
-  SWAP(5, 7)
-  SWAP(0, 2)
-  SWAP(4, 6)
-  SWAP(8, 10)
-  SWAP(1, 2)
-  SWAP(5, 6)
-  SWAP(9, 10)
-  SWAP(1, 5)
-  SWAP(6, 10)
-  SWAP(5, 9)
-  SWAP(2, 6)
-  SWAP(1, 5)
-  SWAP(6, 10)
-  SWAP(0, 4)
-  SWAP(3, 7)
-  SWAP(4, 8)
-  SWAP(0, 4)
-  SWAP(1, 4)
-  SWAP(7, 10)
-  SWAP(3, 8)
-  SWAP(2, 3)
-  SWAP(8, 9)
-  SWAP(2, 4)
-  SWAP(7, 9)
-  SWAP(3, 5)
-  SWAP(6, 8)
-  SWAP(3, 4)
-  SWAP(5, 6)
-  SWAP(7, 8)
+  network_swap(keys, 0, 1);
+  network_swap(keys, 2, 3);
+  network_swap(keys, 4, 5);
+  network_swap(keys, 6, 7);
+  network_swap(keys, 8, 9);
+  network_swap(keys, 1, 3);
+  network_swap(keys, 5, 7);
+  network_swap(keys, 0, 2);
+  network_swap(keys, 4, 6);
+  network_swap(keys, 8, 10);
+  network_swap(keys, 1, 2);
+  network_swap(keys, 5, 6);
+  network_swap(keys, 9, 10);
+  network_swap(keys, 1, 5);
+  network_swap(keys, 6, 10);
+  network_swap(keys, 5, 9);
+  network_swap(keys, 2, 6);
+  network_swap(keys, 1, 5);
+  network_swap(keys, 6, 10);
+  network_swap(keys, 0, 4);
+  network_swap(keys, 3, 7);
+  network_swap(keys, 4, 8);
+  network_swap(keys, 0, 4);
+  network_swap(keys, 1, 4);
+  network_swap(keys, 7, 10);
+  network_swap(keys, 3, 8);
+  network_swap(keys, 2, 3);
+  network_swap(keys, 8, 9);
+  network_swap(keys, 2, 4);
+  network_swap(keys, 7, 9);
+  network_swap(keys, 3, 5);
+  network_swap(keys, 6, 8);
+  network_swap(keys, 3, 4);
+  network_swap(keys, 5, 6);
+  network_swap(keys, 7, 8);
 }
 
 __attribute__((noinline))
 void network_sort_12(int* keys)
 {
-  SWAP(0, 1)
-  SWAP(2, 3)
-  SWAP(4, 5)
-  SWAP(6, 7)
-  SWAP(8, 9)
-  SWAP(10, 11)
-  SWAP(1, 3)
-  SWAP(5, 7)
-  SWAP(9, 11)
-  SWAP(0, 2)
-  SWAP(4, 6)
-  SWAP(8, 10)
-  SWAP(1, 2)
-  SWAP(5, 6)
-  SWAP(9, 10)
-  SWAP(1, 5)
-  SWAP(6, 10)
-  SWAP(5, 9)
-  SWAP(2, 6)
-  SWAP(1, 5)
-  SWAP(6, 10)
-  SWAP(0, 4)
-  SWAP(7, 11)
-  SWAP(3, 7)
-  SWAP(4, 8)
-  SWAP(0, 4)
-  SWAP(7, 11)
-  SWAP(1, 4)
-  SWAP(7, 10)
-  SWAP(3, 8)
-  SWAP(2, 3)
-  SWAP(8, 9)
-  SWAP(2, 4)
-  SWAP(7, 9)
-  SWAP(3, 5)
-  SWAP(6, 8)
-  SWAP(3, 4)
-  SWAP(5, 6)
-  SWAP(7, 8)
+  network_swap(keys, 0, 1);
+  network_swap(keys, 2, 3);
+  network_swap(keys, 4, 5);
+  network_swap(keys, 6, 7);
+  network_swap(keys, 8, 9);
+  network_swap(keys, 10, 11);
+  network_swap(keys, 1, 3);
+  network_swap(keys, 5, 7);
+  network_swap(keys, 9, 11);
+  network_swap(keys, 0, 2);
+  network_swap(keys, 4, 6);
+  network_swap(keys, 8, 10);
+  network_swap(keys, 1, 2);
+  network_swap(keys, 5, 6);
+  network_swap(keys, 9, 10);
+  network_swap(keys, 1, 5);
+  network_swap(keys, 6, 10);
+  network_swap(keys, 5, 9);
+  network_swap(keys, 2, 6);
+  network_swap(keys, 1, 5);
+  network_swap(keys, 6, 10);
+  network_swap(keys, 0, 4);
+  network_swap(keys, 7, 11);
+  network_swap(keys, 3, 7);
+  network_swap(keys, 4, 8);
+  network_swap(keys, 0, 4);
+  network_swap(keys, 7, 11);
+  network_swap(keys, 1, 4);
+  network_swap(keys, 7, 10);
+  network_swap(keys, 3, 8);
+  network_swap(keys, 2, 3);
+  network_swap(keys, 8, 9);
+  network_swap(keys, 2, 4);
+  network_swap(keys, 7, 9);
+  network_swap(keys, 3, 5);
+  network_swap(keys, 6, 8);
+  network_swap(keys, 3, 4);
+  network_swap(keys, 5, 6);
+  network_swap(keys, 7, 8);
 }
 
 __attribute__((noinline))
 void network_sort_13(int* keys)
 {
-  SWAP(1, 7)
-  SWAP(9, 11)
-  SWAP(3, 4)
-  SWAP(5, 8)
-  SWAP(0, 12)
-  SWAP(2, 6)
-  SWAP(0, 1)
-  SWAP(2, 3)
-  SWAP(4, 6)
-  SWAP(8, 11)
-  SWAP(7, 12)
-  SWAP(5, 9)
-  SWAP(0, 2)
-  SWAP(3, 7)
-  SWAP(10, 11)
-  SWAP(1, 4)
-  SWAP(6, 12)
-  SWAP(7, 8)
-  SWAP(11, 12)
-  SWAP(4, 9)
-  SWAP(6, 10)
-  SWAP(3, 4)
-  SWAP(5, 6)
-  SWAP(8, 9)
-  SWAP(10, 11)
-  SWAP(1, 7)
-  SWAP(2, 6)
-  SWAP(9, 11)
-  SWAP(1, 3)
-  SWAP(4, 7)
-  SWAP(8, 10)
-  SWAP(0, 5)
-  SWAP(2, 5)
-  SWAP(6, 8)
-  SWAP(9, 10)
-  SWAP(1, 2)
-  SWAP(3, 5)
-  SWAP(7, 8)
-  SWAP(4, 6)
-  SWAP(2, 3)
-  SWAP(4, 5)
-  SWAP(6, 7)
-  SWAP(8, 9)
-  SWAP(3, 4)
-  SWAP(5, 6)
+  network_swap(keys, 1, 7);
+  network_swap(keys, 9, 11);
+  network_swap(keys, 3, 4);
+  network_swap(keys, 5, 8);
+  network_swap(keys, 0, 12);
+  network_swap(keys, 2, 6);
+  network_swap(keys, 0, 1);
+  network_swap(keys, 2, 3);
+  network_swap(keys, 4, 6);
+  network_swap(keys, 8, 11);
+  network_swap(keys, 7, 12);
+  network_swap(keys, 5, 9);
+  network_swap(keys, 0, 2);
+  network_swap(keys, 3, 7);
+  network_swap(keys, 10, 11);
+  network_swap(keys, 1, 4);
+  network_swap(keys, 6, 12);
+  network_swap(keys, 7, 8);
+  network_swap(keys, 11, 12);
+  network_swap(keys, 4, 9);
+  network_swap(keys, 6, 10);
+  network_swap(keys, 3, 4);
+  network_swap(keys, 5, 6);
+  network_swap(keys, 8, 9);
+  network_swap(keys, 10, 11);
+  network_swap(keys, 1, 7);
+  network_swap(keys, 2, 6);
+  network_swap(keys, 9, 11);
+  network_swap(keys, 1, 3);
+  network_swap(keys, 4, 7);
+  network_swap(keys, 8, 10);
+  network_swap(keys, 0, 5);
+  network_swap(keys, 2, 5);
+  network_swap(keys, 6, 8);
+  network_swap(keys, 9, 10);
+  network_swap(keys, 1, 2);
+  network_swap(keys, 3, 5);
+  network_swap(keys, 7, 8);
+  network_swap(keys, 4, 6);
+  network_swap(keys, 2, 3);
+  network_swap(keys, 4, 5);
+  network_swap(keys, 6, 7);
+  network_swap(keys, 8, 9);
+  network_swap(keys, 3, 4);
+  network_swap(keys, 5, 6);
 }
 
 __attribute__((noinline))
 void network_sort_14(int* keys)
 {
-  SWAP(0, 1)
-  SWAP(2, 3)
-  SWAP(4, 5)
-  SWAP(6, 7)
-  SWAP(8, 9)
-  SWAP(10, 11)
-  SWAP(12, 13)
-  SWAP(0, 2)
-  SWAP(4, 6)
-  SWAP(8, 10)
-  SWAP(1, 3)
-  SWAP(5, 7)
-  SWAP(9, 11)
-  SWAP(0, 4)
-  SWAP(8, 12)
-  SWAP(1, 5)
-  SWAP(9, 13)
-  SWAP(2, 6)
-  SWAP(3, 7)
-  SWAP(0, 8)
-  SWAP(1, 9)
-  SWAP(2, 10)
-  SWAP(3, 11)
-  SWAP(4, 12)
-  SWAP(5, 13)
-  SWAP(5, 10)
-  SWAP(6, 9)
-  SWAP(3, 12)
-  SWAP(7, 11)
-  SWAP(1, 2)
-  SWAP(4, 8)
-  SWAP(1, 4)
-  SWAP(7, 13)
-  SWAP(2, 8)
-  SWAP(2, 4)
-  SWAP(5, 6)
-  SWAP(9, 10)
-  SWAP(11, 13)
-  SWAP(3, 8)
-  SWAP(7, 12)
-  SWAP(6, 8)
-  SWAP(10, 12)
-  SWAP(3, 5)
-  SWAP(7, 9)
-  SWAP(3, 4)
-  SWAP(5, 6)
-  SWAP(7, 8)
-  SWAP(9, 10)
-  SWAP(11, 12)
-  SWAP(6, 7)
-  SWAP(8, 9)
+  network_swap(keys, 0, 1);
+  network_swap(keys, 2, 3);
+  network_swap(keys, 4, 5);
+  network_swap(keys, 6, 7);
+  network_swap(keys, 8, 9);
+  network_swap(keys, 10, 11);
+  network_swap(keys, 12, 13);
+  network_swap(keys, 0, 2);
+  network_swap(keys, 4, 6);
+  network_swap(keys, 8, 10);
+  network_swap(keys, 1, 3);
+  network_swap(keys, 5, 7);
+  network_swap(keys, 9, 11);
+  network_swap(keys, 0, 4);
+  network_swap(keys, 8, 12);
+  network_swap(keys, 1, 5);
+  network_swap(keys, 9, 13);
+  network_swap(keys, 2, 6);
+  network_swap(keys, 3, 7);
+  network_swap(keys, 0, 8);
+  network_swap(keys, 1, 9);
+  network_swap(keys, 2, 10);
+  network_swap(keys, 3, 11);
+  network_swap(keys, 4, 12);
+  network_swap(keys, 5, 13);
+  network_swap(keys, 5, 10);
+  network_swap(keys, 6, 9);
+  network_swap(keys, 3, 12);
+  network_swap(keys, 7, 11);
+  network_swap(keys, 1, 2);
+  network_swap(keys, 4, 8);
+  network_swap(keys, 1, 4);
+  network_swap(keys, 7, 13);
+  network_swap(keys, 2, 8);
+  network_swap(keys, 2, 4);
+  network_swap(keys, 5, 6);
+  network_swap(keys, 9, 10);
+  network_swap(keys, 11, 13);
+  network_swap(keys, 3, 8);
+  network_swap(keys, 7, 12);
+  network_swap(keys, 6, 8);
+  network_swap(keys, 10, 12);
+  network_swap(keys, 3, 5);
+  network_swap(keys, 7, 9);
+  network_swap(keys, 3, 4);
+  network_swap(keys, 5, 6);
+  network_swap(keys, 7, 8);
+  network_swap(keys, 9, 10);
+  network_swap(keys, 11, 12);
+  network_swap(keys, 6, 7);
+  network_swap(keys, 8, 9);
 }
 
 __attribute__((noinline))
 void network_sort_15(int* keys)
 {
-  SWAP(0, 1)
-  SWAP(2, 3)
-  SWAP(4, 5)
-  SWAP(6, 7)
-  SWAP(8, 9)
-  SWAP(10, 11)
-  SWAP(12, 13)
-  SWAP(0, 2)
-  SWAP(4, 6)
-  SWAP(8, 10)
-  SWAP(12, 14)
-  SWAP(1, 3)
-  SWAP(5, 7)
-  SWAP(9, 11)
-  SWAP(0, 4)
-  SWAP(8, 12)
-  SWAP(1, 5)
-  SWAP(9, 13)
-  SWAP(2, 6)
-  SWAP(10, 14)
-  SWAP(3, 7)
-  SWAP(0, 8)
-  SWAP(1, 9)
-  SWAP(2, 10)
-  SWAP(3, 11)
-  SWAP(4, 12)
-  SWAP(5, 13)
-  SWAP(6, 14)
-  SWAP(5, 10)
-  SWAP(6, 9)
-  SWAP(3, 12)
-  SWAP(13, 14)
-  SWAP(7, 11)
-  SWAP(1, 2)
-  SWAP(4, 8)
-  SWAP(1, 4)
-  SWAP(7, 13)
-  SWAP(2, 8)
-  SWAP(11, 14)
-  SWAP(2, 4)
-  SWAP(5, 6)
-  SWAP(9, 10)
-  SWAP(11, 13)
-  SWAP(3, 8)
-  SWAP(7, 12)
-  SWAP(6, 8)
-  SWAP(10, 12)
-  SWAP(3, 5)
-  SWAP(7, 9)
-  SWAP(3, 4)
-  SWAP(5, 6)
-  SWAP(7, 8)
-  SWAP(9, 10)
-  SWAP(11, 12)
-  SWAP(6, 7)
-  SWAP(8, 9)
+  network_swap(keys, 0, 1);
+  network_swap(keys, 2, 3);
+  network_swap(keys, 4, 5);
+  network_swap(keys, 6, 7);
+  network_swap(keys, 8, 9);
+  network_swap(keys, 10, 11);
+  network_swap(keys, 12, 13);
+  network_swap(keys, 0, 2);
+  network_swap(keys, 4, 6);
+  network_swap(keys, 8, 10);
+  network_swap(keys, 12, 14);
+  network_swap(keys, 1, 3);
+  network_swap(keys, 5, 7);
+  network_swap(keys, 9, 11);
+  network_swap(keys, 0, 4);
+  network_swap(keys, 8, 12);
+  network_swap(keys, 1, 5);
+  network_swap(keys, 9, 13);
+  network_swap(keys, 2, 6);
+  network_swap(keys, 10, 14);
+  network_swap(keys, 3, 7);
+  network_swap(keys, 0, 8);
+  network_swap(keys, 1, 9);
+  network_swap(keys, 2, 10);
+  network_swap(keys, 3, 11);
+  network_swap(keys, 4, 12);
+  network_swap(keys, 5, 13);
+  network_swap(keys, 6, 14);
+  network_swap(keys, 5, 10);
+  network_swap(keys, 6, 9);
+  network_swap(keys, 3, 12);
+  network_swap(keys, 13, 14);
+  network_swap(keys, 7, 11);
+  network_swap(keys, 1, 2);
+  network_swap(keys, 4, 8);
+  network_swap(keys, 1, 4);
+  network_swap(keys, 7, 13);
+  network_swap(keys, 2, 8);
+  network_swap(keys, 11, 14);
+  network_swap(keys, 2, 4);
+  network_swap(keys, 5, 6);
+  network_swap(keys, 9, 10);
+  network_swap(keys, 11, 13);
+  network_swap(keys, 3, 8);
+  network_swap(keys, 7, 12);
+  network_swap(keys, 6, 8);
+  network_swap(keys, 10, 12);
+  network_swap(keys, 3, 5);
+  network_swap(keys, 7, 9);
+  network_swap(keys, 3, 4);
+  network_swap(keys, 5, 6);
+  network_swap(keys, 7, 8);
+  network_swap(keys, 9, 10);
+  network_swap(keys, 11, 12);
+  network_swap(keys, 6, 7);
+  network_swap(keys, 8, 9);
 }
 
 __attribute__((noinline))
 void network_sort_16(int* keys)
 {
-  SWAP(0, 1)
-  SWAP(2, 3)
-  SWAP(4, 5)
-  SWAP(6, 7)
-  SWAP(8, 9)
-  SWAP(10, 11)
-  SWAP(12, 13)
-  SWAP(14, 15)
-  SWAP(0, 2)
-  SWAP(4, 6)
-  SWAP(8, 10)
-  SWAP(12, 14)
-  SWAP(1, 3)
-  SWAP(5, 7)
-  SWAP(9, 11)
-  SWAP(13, 15)
-  SWAP(0, 4)
-  SWAP(8, 12)
-  SWAP(1, 5)
-  SWAP(9, 13)
-  SWAP(2, 6)
-  SWAP(10, 14)
-  SWAP(3, 7)
-  SWAP(11, 15)
-  SWAP(0, 8)
-  SWAP(1, 9)
-  SWAP(2, 10)
-  SWAP(3, 11)
-  SWAP(4, 12)
-  SWAP(5, 13)
-  SWAP(6, 14)
-  SWAP(7, 15)
-  SWAP(5, 10)
-  SWAP(6, 9)
-  SWAP(3, 12)
-  SWAP(13, 14)
-  SWAP(7, 11)
-  SWAP(1, 2)
-  SWAP(4, 8)
-  SWAP(1, 4)
-  SWAP(7, 13)
-  SWAP(2, 8)
-  SWAP(11, 14)
-  SWAP(2, 4)
-  SWAP(5, 6)
-  SWAP(9, 10)
-  SWAP(11, 13)
-  SWAP(3, 8)
-  SWAP(7, 12)
-  SWAP(6, 8)
-  SWAP(10, 12)
-  SWAP(3, 5)
-  SWAP(7, 9)
-  SWAP(3, 4)
-  SWAP(5, 6)
-  SWAP(7, 8)
-  SWAP(9, 10)
-  SWAP(11, 12)
-  SWAP(6, 7)
-  SWAP(8, 9)
+  network_swap(keys, 0, 1);
+  network_swap(keys, 2, 3);
+  network_swap(keys, 4, 5);
+  network_swap(keys, 6, 7);
+  network_swap(keys, 8, 9);
+  network_swap(keys, 10, 11);
+  network_swap(keys, 12, 13);
+  network_swap(keys, 14, 15);
+  network_swap(keys, 0, 2);
+  network_swap(keys, 4, 6);
+  network_swap(keys, 8, 10);
+  network_swap(keys, 12, 14);
+  network_swap(keys, 1, 3);
+  network_swap(keys, 5, 7);
+  network_swap(keys, 9, 11);
+  network_swap(keys, 13, 15);
+  network_swap(keys, 0, 4);
+  network_swap(keys, 8, 12);
+  network_swap(keys, 1, 5);
+  network_swap(keys, 9, 13);
+  network_swap(keys, 2, 6);
+  network_swap(keys, 10, 14);
+  network_swap(keys, 3, 7);
+  network_swap(keys, 11, 15);
+  network_swap(keys, 0, 8);
+  network_swap(keys, 1, 9);
+  network_swap(keys, 2, 10);
+  network_swap(keys, 3, 11);
+  network_swap(keys, 4, 12);
+  network_swap(keys, 5, 13);
+  network_swap(keys, 6, 14);
+  network_swap(keys, 7, 15);
+  network_swap(keys, 5, 10);
+  network_swap(keys, 6, 9);
+  network_swap(keys, 3, 12);
+  network_swap(keys, 13, 14);
+  network_swap(keys, 7, 11);
+  network_swap(keys, 1, 2);
+  network_swap(keys, 4, 8);
+  network_swap(keys, 1, 4);
+  network_swap(keys, 7, 13);
+  network_swap(keys, 2, 8);
+  network_swap(keys, 11, 14);
+  network_swap(keys, 2, 4);
+  network_swap(keys, 5, 6);
+  network_swap(keys, 9, 10);
+  network_swap(keys, 11, 13);
+  network_swap(keys, 3, 8);
+  network_swap(keys, 7, 12);
+  network_swap(keys, 6, 8);
+  network_swap(keys, 10, 12);
+  network_swap(keys, 3, 5);
+  network_swap(keys, 7, 9);
+  network_swap(keys, 3, 4);
+  network_swap(keys, 5, 6);
+  network_swap(keys, 7, 8);
+  network_swap(keys, 9, 10);
+  network_swap(keys, 11, 12);
+  network_swap(keys, 6, 7);
+  network_swap(keys, 8, 9);
 }
 
 __attribute__((noinline))
