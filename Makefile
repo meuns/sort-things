@@ -2,7 +2,7 @@
 include Configuration
 
 # Projects
-all: bubble$(EXE_SUFFIX) insert$(EXE_SUFFIX) heap$(EXE_SUFFIX) merge$(EXE_SUFFIX) quick$(EXE_SUFFIX) count$(EXE_SUFFIX) radix$(EXE_SUFFIX) test$(EXE_SUFFIX) benchmark$(EXE_SUFFIX)
+all: bubble$(EXE_SUFFIX) insert$(EXE_SUFFIX) heap$(EXE_SUFFIX) merge$(EXE_SUFFIX) quick$(EXE_SUFFIX) count$(EXE_SUFFIX) radix$(EXE_SUFFIX) network$(EXE_SUFFIX) test$(EXE_SUFFIX) benchmark$(EXE_SUFFIX)
 
 # If we depend on $(BUILD_DIR_PATH) for each sort, we modify its timestamp and make link everything again
 BUILD_PROJECT_DEPENDENCIES=$(filter-out $(wildcard $(BUILD_DIR_PATH)), $(BUILD_DIR_PATH)) Configuration
@@ -64,9 +64,17 @@ radix$(EXE_SUFFIX): $(BUILD_PROJECT_DEPENDENCIES) $(RADIX_MODULES)
 $(BUILD_DIR_PATH)/radix_main.o: radix_sort.h debug.h radix_main.c
 $(BUILD_DIR_PATH)/radix_sort.o: radix_sort.h radix_sort.c
 
+# Network sort
+NETWORK_MODULES=$(BUILD_DIR_PATH)/radix_sort.o $(BUILD_DIR_PATH)/radix_main.o $(BUILD_DIR_PATH)/debug.o
+network$(EXE_SUFFIX): $(BUILD_PROJECT_DEPENDENCIES) $(NETWORK_MODULES)
+	$(CC) -o $@ $(NETWORK_MODULES) $(LDFLAGS)
+
+$(BUILD_DIR_PATH)/network_main.o: network_sort.h debug.h network_main.c
+$(BUILD_DIR_PATH)/network_sort.o: network_sort.h network_sort.c
+
 # Test
 ALL_SORT_HEADERS=bubble_sort.h insert_sort.h heap_sort.h merge_sort.h quick_sort.h count_sort.h radix_sort.h
-ALL_SORT_MODULES=$(BUILD_DIR_PATH)/bubble_sort.o $(BUILD_DIR_PATH)/insert_sort.o $(BUILD_DIR_PATH)/heap_sort.o $(BUILD_DIR_PATH)/merge_sort.o $(BUILD_DIR_PATH)/quick_sort.o $(BUILD_DIR_PATH)/count_sort.o $(BUILD_DIR_PATH)/radix_sort.o
+ALL_SORT_MODULES=$(BUILD_DIR_PATH)/bubble_sort.o $(BUILD_DIR_PATH)/insert_sort.o $(BUILD_DIR_PATH)/heap_sort.o $(BUILD_DIR_PATH)/merge_sort.o $(BUILD_DIR_PATH)/quick_sort.o $(BUILD_DIR_PATH)/count_sort.o $(BUILD_DIR_PATH)/radix_sort.o $(BUILD_DIR_PATH)/network_sort.o
 
 MAIN_TEST_MODULES=$(ALL_SORT_MODULES) $(BUILD_DIR_PATH)/main_test.o $(BUILD_DIR_PATH)/test.o $(BUILD_DIR_PATH)/debug.o
 test$(EXE_SUFFIX): $(BUILD_PROJECT_DEPENDENCIES) $(MAIN_TEST_MODULES)

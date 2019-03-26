@@ -6,14 +6,26 @@
 #include "benchmark.h"
 #include "debug.h"
 
+#include "bubble_sort.h"
 #include "insert_sort.h"
 #include "heap_sort.h"
 #include "merge_sort.h"
+#include "network_sort.h"
 #include "quick_sort.h"
 #include "radix_sort.h"
 #include "std_sort.h"
 
 typedef void (*sort_function_t)(int* keys, const int key_count, int* temp_keys);
+
+void wrap_network_sort(int* keys, const int key_count, int* temp_keys __attribute__((unused)))
+{
+  network_sort(keys, key_count);
+}
+
+void wrap_bubble_sort(int* keys, const int key_count, int* temp_keys __attribute__((unused)))
+{
+  bubble_sort(keys, key_count);
+}
 
 void wrap_insert_sort(int* keys, const int key_count, int* temp_keys __attribute__((unused)))
 {
@@ -65,6 +77,7 @@ benchmark_t;
 int main()
 {
   const int key_count = 1000000;
+  const int split_key_count = 16;
   const int repeat_count = 20;
   int* ref_keys = (int*)malloc((unsigned int)key_count * sizeof(int));
   int* temp_keys = (int*)malloc((unsigned int)key_count * sizeof(int));
@@ -74,10 +87,13 @@ int main()
   
   benchmark_t benchmarks[] =
   {
-    {wrap_std_sort, "std_sort"},
+    {wrap_network_sort, "network_sort"},
+    {wrap_insert_sort, "bubble_sort"},
+    {wrap_insert_sort, "insert_sort"},
     {wrap_heap_sort, "heap_sort"},
-    {wrap_merge_sort, "merge_sort"},    
+    {wrap_merge_sort, "merge_sort"},
     {wrap_quick_sort, "quick_sort"},
+    {wrap_std_sort, "std_sort"},
     {wrap_radix_sort_halfbyte, "radix_sort_halfbyte"},
     {wrap_radix_sort_byte, "radix_sort_byte"},
     {wrap_radix_sort_short, "radix_sort_short"}
@@ -90,18 +106,28 @@ int main()
     const benchmark_t benchmark = benchmarks[sort_index];
     const sort_function_t sort_function = benchmark.sort_function;
     const char* sort_name = benchmark.sort_name;
+    const int split_count = key_count / split_key_count;
 
     int duration = 0;
-    for (int repeat = 0; repeat < repeat_count; ++repeat)
+    printf("Function %s count %d split %d :\n", sort_name, key_count, split_key_count);
+
+    for (int repeat_index = 0; repeat_index < repeat_count; ++repeat_index)
     {
+      printf("  %.3d", repeat_index);
       memcpy(keys, ref_keys, (unsigned int)key_count * sizeof(int));
 
-      benchmark_scope_t* scope1 = benchmark_begin();
-      sort_function(keys, key_count, temp_keys);
-      duration += benchmark_end_us(scope1);
+      benchmark_scope_t* scope1 = benchmark_begin();      
+      for (int split_index = 0; split_index < split_count; ++split_index)
+      {
+        sort_function(&keys[split_index * split_key_count], split_key_count, temp_keys);
+      }      
+      int repeat_duration = benchmark_end_us(scope1);
+
+      printf(" %d us\n", repeat_duration);
+      duration += repeat_duration;
     }
 
-    printf("Function %s took %d us\n", sort_name, duration / repeat_count);
+    printf("  took an average %d us\n", duration / repeat_count);
   }
 
   free(keys);

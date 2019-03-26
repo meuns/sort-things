@@ -4,12 +4,13 @@
 #include "test.h"
 
 #include "bubble_sort.h"
+#include "count_sort.h"
 #include "heap_sort.h"
 #include "insert_sort.h"
 #include "merge_sort.h"
+#include "network_sort.h"
 #include "quick_sort.h"
 #include "radix_sort.h"
-#include "count_sort.h"
 
 typedef void (*sort_function_int_t)(int* keys, const int key_count);
 typedef void (*sort_function_char_t)(signed char* keys, const int key_count);
@@ -19,14 +20,19 @@ void wrap_bubble_sort(int* keys, const int key_count)
   bubble_sort(keys, key_count);
 }
 
-void wrap_heap_sort(int* keys, const int key_count)
-{
-  heap_sort(keys, key_count);
-}
-
 void wrap_insert_sort(int* keys, const int key_count)
 {
   insert_sort(keys, key_count);
+}
+
+void wrap_network_sort(int* keys, const int key_count)
+{
+  network_sort(keys, key_count);
+}
+
+void wrap_heap_sort(int* keys, const int key_count)
+{
+  heap_sort(keys, key_count);
 }
 
 void wrap_merge_sort(int* keys, const int key_count)
@@ -69,6 +75,7 @@ typedef struct
 {
   sort_function_int_t sort_function;
   const char* sort_name;
+  int max_key_count;
 }
 test_int_t;
 
@@ -76,46 +83,58 @@ typedef struct
 {
   sort_function_char_t sort_function;
   const char* sort_name;
+  int max_key_count;
 }
 test_char_t;
 
 int main()
 {
-  const int max_key_count = 3871;
-  
-  test_int_t tests_int[] =
+  const test_int_t tests_int[] =
   {
-    {wrap_bubble_sort, "bubble_sort"},
-    {wrap_heap_sort, "heap_sort"},
-    {wrap_insert_sort, "insert_sort"},
-    {wrap_merge_sort, "merge_sort"},
-    {wrap_quick_sort, "quick_sort"},
-    {wrap_radix_sort_halfbyte, "radix_sort_halfbyte"},
-    {wrap_radix_sort_byte, "radix_sort_byte"},
-    {wrap_radix_sort_short, "radix_sort_short"}
+    {wrap_bubble_sort, "bubble_sort", 16},
+    {wrap_insert_sort, "insert_sort", 16},
+    {wrap_network_sort, "network_sort", 16},
+    {wrap_heap_sort, "heap_sort", 3871},
+    {wrap_merge_sort, "merge_sort", 3871},
+    {wrap_quick_sort, "quick_sort", 3871},
+    {wrap_radix_sort_halfbyte, "radix_sort_halfbyte", 3871},
+    {wrap_radix_sort_byte, "radix_sort_byte", 3871},
+    {wrap_radix_sort_short, "radix_sort_short", 3871}
   };
   
-  test_char_t tests_char[] =
+  const test_char_t tests_char[] =
   {
-    {wrap_count_sort, "count_sort"}
+    {wrap_count_sort, "count_sort", 3871}
   };
   
   const int sort_count_int = sizeof(tests_int) / sizeof(tests_int[0]);
   const int sort_count_char = sizeof(tests_char) / sizeof(tests_char[0]);
   
-  const int test_count = max_key_count * (sort_count_int + sort_count_char);
+  int test_count = 0;
+
+  for (int sort_index = 0; sort_index < sort_count_int; ++sort_index)
+  {
+    test_count += tests_int[sort_index].max_key_count;
+  }
+
+  for (int sort_index = 0; sort_index < sort_count_char; ++sort_index)
+  {
+    test_count += tests_char[sort_index].max_key_count;
+  }
+
   int remaining_test_count = test_count;
   int last_percent_print = -1;
   
   // int keys
-  int keys[max_key_count];
-  int sorted_keys[max_key_count];
-  
   for (int sort_index = 0; sort_index < sort_count_int; ++sort_index)
   {
     const test_int_t test_int = tests_int[sort_index];
     const sort_function_int_t sort_function = test_int.sort_function;
     const char* sort_name = test_int.sort_name;
+    const int max_key_count = test_int.max_key_count;
+
+    int keys[max_key_count];
+    int sorted_keys[max_key_count];
 
     printf("\nTesting %s\n", sort_name);
 
@@ -153,14 +172,15 @@ int main()
   }
   
   // char keys
-  signed char keys_char[max_key_count];
-  signed char sorted_keys_char[max_key_count];
-  
   for (int sort_index = 0; sort_index < sort_count_char; ++sort_index)
   {
     const test_char_t test_char = tests_char[sort_index];
     const sort_function_char_t sort_function = test_char.sort_function;
     const char* sort_name = test_char.sort_name;
+    const int max_key_count = test_char.max_key_count;
+
+    signed char keys_char[max_key_count];
+    signed char sorted_keys_char[max_key_count];
 
     printf("\nTesting %s\n", sort_name);
 
