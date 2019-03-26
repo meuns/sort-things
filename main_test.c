@@ -142,7 +142,7 @@ int main()
         return 1;
       }
 
-      const int percent_print = (int)((((float)remaining_test_count--) / test_count) * 100);
+      const int percent_print = (int)((((double)remaining_test_count--) / (double)test_count) * 100);
       if (percent_print != last_percent_print)
       {
         last_percent_print = percent_print;
@@ -187,7 +187,7 @@ int main()
         return 1;
       }
       
-      const int percent_print = (int)((((float)remaining_test_count--) / test_count) * 100);
+      const int percent_print = (int)((((double)remaining_test_count--) / (double)test_count) * 100);
       if (percent_print != last_percent_print)
       {
         last_percent_print = percent_print;

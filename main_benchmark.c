@@ -66,9 +66,9 @@ int main()
 {
   const int key_count = 1000000;
   const int repeat_count = 20;
-  int* ref_keys = (int*)malloc(key_count * sizeof(int));
-  int* temp_keys = (int*)malloc(key_count * sizeof(int));
-  int* keys = (int*)malloc(key_count * sizeof(int));
+  int* ref_keys = (int*)malloc((unsigned int)key_count * sizeof(int));
+  int* temp_keys = (int*)malloc((unsigned int)key_count * sizeof(int));
+  int* keys = (int*)malloc((unsigned int)key_count * sizeof(int));
 
   benchmark_generate_random_keys(ref_keys, key_count, 42, INT_MIN, INT_MAX);
   
@@ -94,7 +94,7 @@ int main()
     int duration = 0;
     for (int repeat = 0; repeat < repeat_count; ++repeat)
     {
-      memcpy(keys, ref_keys, key_count * sizeof(int));
+      memcpy(keys, ref_keys, (unsigned int)key_count * sizeof(int));
 
       benchmark_scope_t* scope1 = benchmark_begin();
       sort_function(keys, key_count, temp_keys);

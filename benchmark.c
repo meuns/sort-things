@@ -116,7 +116,7 @@ void benchmark_generate_unique_keys(int* keys, const long long int key_count, co
 __attribute__((noinline))
 void benchmark_generate_stepping_keys(int* keys, const long long int key_count, const int min_key_value, const int max_key_value)
 {
-  const double step = ((double)max_key_value - (double)min_key_value + 0.999) / key_count;
+  const double step = ((double)max_key_value - (double)min_key_value + 0.999) / (double)key_count;
 
   for (long long int key_index = 0; key_index < key_count; ++key_index)
   {

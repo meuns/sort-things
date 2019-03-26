@@ -96,10 +96,6 @@ $(BUILD_DIR_PATH):
 	mkdir -p $(BUILD_DIR_PATH)
 
 clean:
-	rm -f bubble insert heap merge quick count radix test benchmark
-	rm -f bubble_d insert_d heap_d merge_d quick_d count_d radix_d test_d benchmark_d
-	rm -f bubble_lto insert_lto heap_lto merge_lto quick_lto count_lto radix_lto test_lto benchmark_lto
-	rm -f .release/*.o .debug/*.o
-	rm -f .release_lto/*.o .debug_lto/*.o
-	rm -rf .release .debug
-	rm -rf .release_lto .debug_lto	
+	rm -rf *_clang_*
+	rm -rf *_gcc_*	
+	rm -rf .release* .debug* .profile*

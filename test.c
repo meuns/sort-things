@@ -42,6 +42,6 @@ void test_generate_keys_char(signed char* keys, const long long int key_count, c
   
   for (int key_index = 0; key_index < key_count; ++key_index)
   {
-    keys[key_index] = (signed char)(rand() % 256) - 128;
+    keys[key_index] = (signed char)((rand() % 256) - 128);
   }
 }
