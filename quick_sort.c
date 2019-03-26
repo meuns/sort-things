@@ -136,6 +136,11 @@ static inline quick_partition_result_t quick_partition(int* keys, const int key_
 __attribute__((noinline))
 void quick_sort(int* base_keys, const int base_key_count, const quick_pivot_index_t quick_pivot_index)
 {
+  if (base_key_count < 2)
+  {
+    return;
+  }
+
   const int stack_size = 32;
   int* stack_keys[stack_size];
   int stack_key_count[stack_size];
