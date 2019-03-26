@@ -11,6 +11,9 @@ endif
 ifeq ($(COMPILER), GCC)
 	BUILD_DIR_PATH:=$(BUILD_DIR_PATH)_gcc
 	EXE_SUFFIX:=$(EXE_SUFFIX)_gcc
+else ifeq ($(COMPILER), CLANGCL)
+	BUILD_DIR_PATH:=$(BUILD_DIR_PATH)_clangcl
+	EXE_SUFFIX:=$(EXE_SUFFIX)_clangcl
 else
 	BUILD_DIR_PATH:=$(BUILD_DIR_PATH)_clang
 	EXE_SUFFIX:=$(EXE_SUFFIX)_clang
@@ -31,31 +34,53 @@ endif
 ifeq ($(COMPILER), GCC)
 	CC=gcc
 	CXX=gcc	
-	CFLAGS_COMMON=-std=c11 -D_XOPEN_SOURCE=600 -Wall -Wextra -Wpedantic -Wformat -Wbool-compare -Wcast-qual -Wconversion -Winit-self -Wrestrict -Wunused -Werror
-	CXXFLAGS_COMMON=-std=c++14 -D_XOPEN_SOURCE=600 -Wall -Wextra -Wpedantic -Wformat -Wbool-compare -Wcast-qual -Wconversion -Winit-self -Wrestrict -Wunused -Werror
+	CFLAGS=-std=c11 -D_XOPEN_SOURCE=600 -Wall -Wextra -Wpedantic -Wformat -Wbool-compare -Wcast-qual -Wconversion -Winit-self -Wrestrict -Wunused -Werror
+	CXXFLAGS=-std=c++14 -D_XOPEN_SOURCE=600 -Wall -Wextra -Wpedantic -Wformat -Wbool-compare -Wcast-qual -Wconversion -Winit-self -Wrestrict -Wunused -Werror
+	LDFLAGS=
+else ifeq ($(COMPILER), CLANGCL)
+	CC=clang-cl
+	CXX=clang-cl
+	CFLAGS=
+	CXXFLAGS=
 	LDFLAGS=
 else
 	CC=clang
 	CXX=clang
-	CFLAGS_COMMON=-std=c11 -D_XOPEN_SOURCE=600 -Weverything -Werror -Wno-gnu-empty-initializer -Wno-zero-length-array -Wno-vla -Wno-missing-prototypes
-	CXXFLAGS_COMMON=-std=c++14 -D_XOPEN_SOURCE=600 -Weverything -Werror -Wno-gnu-empty-initializer -Wno-zero-length-array -Wno-vla -Wno-missing-prototypes
+	CFLAGS=-std=c11 -D_XOPEN_SOURCE=600 -Weverything -Werror -Wno-gnu-empty-initializer -Wno-zero-length-array -Wno-vla -Wno-missing-prototypes
+	CXXFLAGS=-std=c++14 -D_XOPEN_SOURCE=600 -Weverything -Werror -Wno-gnu-empty-initializer -Wno-zero-length-array -Wno-vla -Wno-missing-prototypes
 	LDFLAGS=
 endif
 
-ifeq ($(BUILD), DEBUG)
-	CFLAGS=$(CFLAGS_COMMON) -g -O0
-	CXXFLAGS=$(CXXFLAGS_COMMON) -g -O0
-else ifeq ($(BUILD), PROFILE)
-	CFLAGS=$(CFLAGS_COMMON) -g -D NDEBUG -O2
-	CXXFLAGS=$(CXXFLAGS_COMMON) -g -D NDEBUG -O2
+ifeq ($(COMPILER), CLANGCL)
+	ifeq ($(BUILD), DEBUG)
+		CFLAGS+=-Zi -MTd -fuse-ld=lld
+		CXXFLAGS+=-Zi -MTd -fuse-ld=lld
+		LDFLAGS+=-DEBUG:FULL
+	else ifeq ($(BUILD), PROFILE)
+		CFLAGS+=-Zi -MTd -fuse-ld=lld
+		CXXFLAGS+=-Zi -MTd -fuse-ld=lld
+		LDFLAGS+=-DEBUG:FULL
+	else
+		CFLAGS+=-fuse-ld=lld
+		CXXFLAGS+=-fuse-ld=lld
+		LDFLAGS+=
+	endif
 else
-	CFLAGS=$(CFLAGS_COMMON) -D NDEBUG -O2
-	CXXFLAGS=$(CXXFLAGS_COMMON) -D NDEBUG -O2
-	ifeq ($(COMPILER), CLANG)
-		ifeq ($(LTO), 1)
-			CFLAGS+=-flto
-			CXXFLAGS+=-flto
-			LDFLAGS+=-flto -fuse-ld=gold -Wl
+	ifeq ($(BUILD), DEBUG)
+		CFLAGS+=-g -O0
+		CXXFLAGS+=-g -O0
+	else ifeq ($(BUILD), PROFILE)
+		CFLAGS+=-g -D NDEBUG -O2
+		CXXFLAGS+=-g -D NDEBUG -O2
+	else
+		CFLAGS+=-D NDEBUG -O2
+		CXXFLAGS+=-D NDEBUG -O2
+		ifeq ($(COMPILER), CLANG)
+			ifeq ($(LTO), 1)
+				CFLAGS+=-flto
+				CXXFLAGS+=-flto
+				LDFLAGS+=-flto -fuse-ld=gold -Wl
+			endif
 		endif
 	endif
 endif

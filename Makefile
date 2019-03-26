@@ -97,5 +97,6 @@ $(BUILD_DIR_PATH):
 
 clean:
 	rm -rf *_clang_*
+	rm -rf *_clangcl_*
 	rm -rf *_gcc_*	
 	rm -rf .release* .debug* .profile*
