@@ -1,9 +1,19 @@
 # Configure build
-CC=clang
-CXX=clang
+ifeq ($(CLANG), 1)
+	CC=clang
+	CXX=clang
+else ifeq ($(GCC), 1)
+	CC=gcc
+	CXX=gcc
+endif
 
-CFLAGS_COMMON=-std=c11 -D_XOPEN_SOURCE=600 -Weverything -Werror -Wno-gnu-empty-initializer -Wno-zero-length-array -Wno-vla -Wno-missing-prototypes
-CXXFLAGS_COMMON=-std=c++14 -D_XOPEN_SOURCE=600 -Weverything -Werror -Wno-gnu-empty-initializer -Wno-zero-length-array -Wno-vla -Wno-missing-prototypes
+ifeq ($(CLANG), 1)
+	CFLAGS_COMMON=-std=c11 -D_XOPEN_SOURCE=600 -Weverything -Werror -Wno-gnu-empty-initializer -Wno-zero-length-array -Wno-vla -Wno-missing-prototypes
+	CXXFLAGS_COMMON=-std=c++14 -D_XOPEN_SOURCE=600 -Weverything -Werror -Wno-gnu-empty-initializer -Wno-zero-length-array -Wno-vla -Wno-missing-prototypes
+else ifeq ($(GCC), 1)
+	CFLAGS_COMMON=-std=c11 -D_XOPEN_SOURCE=600 -Wall -Werror
+	CXXFLAGS_COMMON=-std=c++14 -D_XOPEN_SOURCE=600 -Wall -Werror
+endif
 
 ifeq ($(DEBUG), 1)
 	CFLAGS=$(CFLAGS_COMMON) -g -O0
@@ -17,11 +27,23 @@ else
 	LDFLAGS=
 	BUILD_DIR_PATH=./.release
 	EXE_SUFFIX=
+	ifeq ($(CLANG), 1)
+		ifeq ($(LTO), 1)
+			CFLAGS+=-flto
+			CXXFLAGS+=-flto
+			LDFLAGS+=-flto -fuse-ld=gold -Wl
+		endif
+	endif
+endif
+
+ifeq ($(CLANG), 1)
+	BUILD_DIR_PATH:=$(BUILD_DIR_PATH)_clang
+	EXE_SUFFIX:=$(EXE_SUFFIX)_clang
 	ifeq ($(LTO), 1)
-		CFLAGS+=-flto
-		CXXFLAGS+=-flto
-		LDFLAGS+=-flto -fuse-ld=gold -Wl
 		BUILD_DIR_PATH:=$(BUILD_DIR_PATH)_lto
 		EXE_SUFFIX:=$(EXE_SUFFIX)_lto
 	endif
+else ifeq ($(GCC), 1)
+	BUILD_DIR_PATH:=$(BUILD_DIR_PATH)_gcc
+	EXE_SUFFIX:=$(EXE_SUFFIX)_gcc
 endif
