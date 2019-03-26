@@ -76,6 +76,7 @@ typedef struct
   sort_function_int_t sort_function;
   const char* sort_name;
   int max_key_count;
+  int key_step;
 }
 test_int_t;
 
@@ -84,6 +85,7 @@ typedef struct
   sort_function_char_t sort_function;
   const char* sort_name;
   int max_key_count;
+  int key_step;
 }
 test_char_t;
 
@@ -91,20 +93,20 @@ int main()
 {
   const test_int_t tests_int[] =
   {
-    {wrap_bubble_sort, "bubble_sort", 16},
-    {wrap_insert_sort, "insert_sort", 16},
-    {wrap_network_sort, "network_sort", 16},
-    {wrap_heap_sort, "heap_sort", 3871},
-    {wrap_merge_sort, "merge_sort", 3871},
-    {wrap_quick_sort, "quick_sort", 3871},
-    {wrap_radix_sort_halfbyte, "radix_sort_halfbyte", 3871},
-    {wrap_radix_sort_byte, "radix_sort_byte", 3871},
-    {wrap_radix_sort_short, "radix_sort_short", 3871}
+    {wrap_bubble_sort, "bubble_sort", 16, 1},
+    {wrap_insert_sort, "insert_sort", 16, 1},
+    {wrap_network_sort, "network_sort", 16, 1},
+    {wrap_heap_sort, "heap_sort", 3871, 1},
+    {wrap_merge_sort, "merge_sort", 3871, 1},
+    {wrap_quick_sort, "quick_sort", 3871, 1},
+    {wrap_radix_sort_halfbyte, "radix_sort_halfbyte", 3871, 1},
+    {wrap_radix_sort_byte, "radix_sort_byte", 3871, 1},
+    {wrap_radix_sort_short, "radix_sort_short", 3871, 1}
   };
   
   const test_char_t tests_char[] =
   {
-    {wrap_count_sort, "count_sort", 3871}
+    {wrap_count_sort, "count_sort", 3871, 1}
   };
   
   const int sort_count_int = sizeof(tests_int) / sizeof(tests_int[0]);
@@ -132,13 +134,14 @@ int main()
     const sort_function_int_t sort_function = test_int.sort_function;
     const char* sort_name = test_int.sort_name;
     const int max_key_count = test_int.max_key_count;
+    const int key_step = test_int.key_step;
 
     int keys[max_key_count];
     int sorted_keys[max_key_count];
 
     printf("\nTesting %s\n", sort_name);
 
-    for (int key_count = 0; key_count < max_key_count; ++key_count)
+    for (int key_count = 0; key_count < max_key_count; key_count += key_step)
     {
       test_generate_keys_int(keys, key_count, 42);
       memcpy(sorted_keys, keys, sizeof(keys));
@@ -178,13 +181,14 @@ int main()
     const sort_function_char_t sort_function = test_char.sort_function;
     const char* sort_name = test_char.sort_name;
     const int max_key_count = test_char.max_key_count;
+    const int key_step = test_char.key_step;
 
     signed char keys_char[max_key_count];
     signed char sorted_keys_char[max_key_count];
 
     printf("\nTesting %s\n", sort_name);
 
-    for (int key_count = 0; key_count < max_key_count; ++key_count)
+    for (int key_count = 0; key_count < max_key_count; key_count += key_step)
     {
       test_generate_keys_char(keys_char, key_count, 42);
       memcpy(sorted_keys_char, keys_char, sizeof(keys_char));
