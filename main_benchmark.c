@@ -71,13 +71,51 @@ typedef struct
 {
   sort_function_t sort_function;
   const char* sort_name;
+  long long int is_enabled;
 }
 benchmark_t;
 
-int main()
+int check_option(int argc, char** argv, const char* option)
 {
+  const size_t length = strlen(option);
+  
+  for (int argument_index = 0; argument_index < argc; ++argument_index)
+  {
+    const char* argument = argv[argument_index];
+    if (strstr(argument, option))
+    {
+      if (strlen(argument) > length)
+      {
+        return atoi(&argument[length]);
+      }
+      else
+      {
+        return 0;
+      }
+    }
+  }
+
+  return 0;
+}
+
+int main(int argc, char** argv)
+{
+  benchmark_t benchmarks[] =
+  {
+    {wrap_network_sort, "network_sort", check_option(argc, argv, "--network-sort=")},
+    {wrap_insert_sort, "bubble_sort", check_option(argc, argv, "--bubble-sort=")},
+    {wrap_insert_sort, "insert_sort", check_option(argc, argv, "--insert-sort=")},
+    {wrap_heap_sort, "heap_sort", check_option(argc, argv, "--heap-sort=")},
+    {wrap_merge_sort, "merge_sort", check_option(argc, argv, "--merge-sort=")},
+    {wrap_quick_sort, "quick_sort", check_option(argc, argv, "--quick-sort=")},
+    {wrap_std_sort, "std_sort", check_option(argc, argv, "--std-sort=")},
+    {wrap_radix_sort_halfbyte, "radix_sort_halfbyte", check_option(argc, argv, "--radix-halfbyte-sort=")},
+    {wrap_radix_sort_byte, "radix_sort_byte", check_option(argc, argv, "--radix-byte-sort=")},
+    {wrap_radix_sort_short, "radix_sort_short", check_option(argc, argv, "--radix-short-sort=")}
+  };
+
   const int key_count = 1000000;
-  const int split_key_count = 16;
+  const int split_key_count = check_option(argc, argv, "--split=");
   const int repeat_count = 20;
   int* ref_keys = (int*)malloc((unsigned int)key_count * sizeof(int));
   int* temp_keys = (int*)malloc((unsigned int)key_count * sizeof(int));
@@ -85,25 +123,16 @@ int main()
 
   benchmark_generate_random_keys(ref_keys, key_count, 42, INT_MIN, INT_MAX);
   
-  benchmark_t benchmarks[] =
-  {
-    {wrap_network_sort, "network_sort"},
-    {wrap_insert_sort, "bubble_sort"},
-    {wrap_insert_sort, "insert_sort"},
-    {wrap_heap_sort, "heap_sort"},
-    {wrap_merge_sort, "merge_sort"},
-    {wrap_quick_sort, "quick_sort"},
-    {wrap_std_sort, "std_sort"},
-    {wrap_radix_sort_halfbyte, "radix_sort_halfbyte"},
-    {wrap_radix_sort_byte, "radix_sort_byte"},
-    {wrap_radix_sort_short, "radix_sort_short"}
-  };
-  
   const int sort_count = sizeof(benchmarks) / sizeof(benchmarks[0]);
   
   for (int sort_index = 0; sort_index < sort_count; ++sort_index)
   {
     const benchmark_t benchmark = benchmarks[sort_index];
+    if (benchmark.is_enabled == 0)
+    {
+      continue;
+    }
+
     const sort_function_t sort_function = benchmark.sort_function;
     const char* sort_name = benchmark.sort_name;
     const int split_count = key_count / split_key_count;
