@@ -28,13 +28,13 @@ static inline void network_swap(int* keys, const int key_index0, const int key_i
 
 typedef void (*network_sort_t)(int* keys);
 
-__attribute__((noinline))
+__attribute__((always_inline))
 void network_sort_02(int* keys)
 {
   network_swap(keys, 0, 1);
 }
 
-__attribute__((noinline))
+__attribute__((always_inline))
 void network_sort_03(int* keys)
 {
   network_swap(keys, 1, 2);
@@ -42,7 +42,7 @@ void network_sort_03(int* keys)
   network_swap(keys, 0, 1);
 }
 
-__attribute__((noinline))
+__attribute__((always_inline))
 void network_sort_04(int* keys)
 {
   network_swap(keys, 0, 1);
@@ -52,7 +52,7 @@ void network_sort_04(int* keys)
   network_swap(keys, 1, 2);
 }
 
-__attribute__((noinline))
+__attribute__((always_inline))
 void network_sort_05(int* keys)
 {
   network_swap(keys, 0, 1);
@@ -66,7 +66,7 @@ void network_sort_05(int* keys)
   network_swap(keys, 1, 2);
 }
 
-__attribute__((noinline))
+__attribute__((always_inline))
 void network_sort_06(int* keys)
 {
   network_swap(keys, 1, 2);
@@ -83,7 +83,7 @@ void network_sort_06(int* keys)
   network_swap(keys, 2, 3);
 }
 
-__attribute__((noinline))
+__attribute__((always_inline))
 void network_sort_07(int* keys)
 {
   network_swap(keys, 1, 2);
@@ -104,7 +104,7 @@ void network_sort_07(int* keys)
   network_swap(keys, 2, 3);
 }
 
-__attribute__((noinline))
+__attribute__((always_inline))
 void network_sort_08(int* keys)
 {
   network_swap(keys, 0, 1);
@@ -128,7 +128,7 @@ void network_sort_08(int* keys)
   network_swap(keys, 3, 4);
 }
 
-__attribute__((noinline))
+__attribute__((always_inline))
 void network_sort_09(int* keys)
 {
   network_swap(keys, 0, 1);
@@ -158,7 +158,7 @@ void network_sort_09(int* keys)
   network_swap(keys, 5, 6);
 }
 
-__attribute__((noinline))
+__attribute__((always_inline))
 void network_sort_10(int* keys)
 {
   network_swap(keys, 4, 9);
@@ -192,7 +192,7 @@ void network_sort_10(int* keys)
   network_swap(keys, 4, 5);
 }
 
-__attribute__((noinline))
+__attribute__((always_inline))
 void network_sort_11(int* keys)
 {
   network_swap(keys, 0, 1);
@@ -232,7 +232,7 @@ void network_sort_11(int* keys)
   network_swap(keys, 7, 8);
 }
 
-__attribute__((noinline))
+__attribute__((always_inline))
 void network_sort_12(int* keys)
 {
   network_swap(keys, 0, 1);
@@ -276,7 +276,7 @@ void network_sort_12(int* keys)
   network_swap(keys, 7, 8);
 }
 
-__attribute__((noinline))
+__attribute__((always_inline))
 void network_sort_13(int* keys)
 {
   network_swap(keys, 1, 7);
@@ -326,7 +326,7 @@ void network_sort_13(int* keys)
   network_swap(keys, 5, 6);
 }
 
-__attribute__((noinline))
+__attribute__((always_inline))
 void network_sort_14(int* keys)
 {
   network_swap(keys, 0, 1);
@@ -382,7 +382,7 @@ void network_sort_14(int* keys)
   network_swap(keys, 8, 9);
 }
 
-__attribute__((noinline))
+__attribute__((always_inline))
 void network_sort_15(int* keys)
 {
   network_swap(keys, 0, 1);
@@ -443,7 +443,7 @@ void network_sort_15(int* keys)
   network_swap(keys, 8, 9);
 }
 
-__attribute__((noinline))
+__attribute__((always_inline))
 void network_sort_16(int* keys)
 {
   network_swap(keys, 0, 1);
@@ -511,7 +511,7 @@ void network_sort_16(int* keys)
 __attribute__((noinline))
 void network_sort(int* keys, const int key_count)
 {
-  static network_sort_t sorts[] = {
+  static const network_sort_t sorts[] = {
     0,
     0,
     network_sort_02,
