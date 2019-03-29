@@ -75,7 +75,7 @@ typedef struct
 }
 benchmark_t;
 
-int check_option(int argc, char** argv, const char* option)
+int check_option(int argc, char** argv, const char* option, int default_value)
 {
   const size_t length = strlen(option);
   
@@ -90,32 +90,32 @@ int check_option(int argc, char** argv, const char* option)
       }
       else
       {
-        return 0;
+        return default_value;
       }
     }
   }
 
-  return 0;
+  return default_value;
 }
 
 int main(int argc, char** argv)
 {
   benchmark_t benchmarks[] =
   {
-    {wrap_network_sort, "network_sort", check_option(argc, argv, "--network-sort=")},
-    {wrap_insert_sort, "bubble_sort", check_option(argc, argv, "--bubble-sort=")},
-    {wrap_insert_sort, "insert_sort", check_option(argc, argv, "--insert-sort=")},
-    {wrap_heap_sort, "heap_sort", check_option(argc, argv, "--heap-sort=")},
-    {wrap_merge_sort, "merge_sort", check_option(argc, argv, "--merge-sort=")},
-    {wrap_quick_sort, "quick_sort", check_option(argc, argv, "--quick-sort=")},
-    {wrap_std_sort, "std_sort", check_option(argc, argv, "--std-sort=")},
-    {wrap_radix_sort_halfbyte, "radix_sort_halfbyte", check_option(argc, argv, "--radix-halfbyte-sort=")},
-    {wrap_radix_sort_byte, "radix_sort_byte", check_option(argc, argv, "--radix-byte-sort=")},
-    {wrap_radix_sort_short, "radix_sort_short", check_option(argc, argv, "--radix-short-sort=")}
+    {wrap_network_sort, "network_sort", check_option(argc, argv, "--network-sort=", 0)},
+    {wrap_insert_sort, "bubble_sort", check_option(argc, argv, "--bubble-sort=", 0)},
+    {wrap_insert_sort, "insert_sort", check_option(argc, argv, "--insert-sort=", 0)},
+    {wrap_heap_sort, "heap_sort", check_option(argc, argv, "--heap-sort=", 0)},
+    {wrap_merge_sort, "merge_sort", check_option(argc, argv, "--merge-sort=", 0)},
+    {wrap_quick_sort, "quick_sort", check_option(argc, argv, "--quick-sort=", 0)},
+    {wrap_std_sort, "std_sort", check_option(argc, argv, "--std-sort=", 0)},
+    {wrap_radix_sort_halfbyte, "radix_sort_halfbyte", check_option(argc, argv, "--radix-halfbyte-sort=", 0)},
+    {wrap_radix_sort_byte, "radix_sort_byte", check_option(argc, argv, "--radix-byte-sort=", 0)},
+    {wrap_radix_sort_short, "radix_sort_short", check_option(argc, argv, "--radix-short-sort=", 0)}
   };
 
   const int key_count = 1000000;
-  const int split_key_count = check_option(argc, argv, "--split=");
+  const int split_key_count = check_option(argc, argv, "--split=", 1000);
   const int repeat_count = 20;
   int* ref_keys = (int*)malloc((unsigned int)key_count * sizeof(int));
   int* temp_keys = (int*)malloc((unsigned int)key_count * sizeof(int));
