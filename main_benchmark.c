@@ -1,3 +1,4 @@
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -85,19 +86,21 @@ int check_option(int argc, char** argv, const char* long_option, const char* sho
     const char* argument = argv[argument_index];
     if (strstr(argument, long_option))
     {
-      int value = strtol(&argument[long_length], NULL, 10);
+      errno = 0;
+      long int value = strtol(&argument[long_length], NULL, 10);
       if (errno == 0)
       {
-        return value;
+        return (int)value;
       }
     }
 
     if (strstr(argument, short_option))
     {
-      int value = strtol(&argument[short_length], NULL, 10);
+      errno = 0;
+      long int value = strtol(&argument[short_length], NULL, 10);
       if (errno == 0)
       {
-        return value;
+        return (int)value;
       }
     }
   }
@@ -171,6 +174,8 @@ int main(int argc, char** argv)
   free(keys);
   free(temp_keys);
   free(ref_keys);
+
+  printf("Done !\n");
 
   return 0;
 }
