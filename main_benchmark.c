@@ -93,7 +93,7 @@ int main(int argc, char** argv)
   };
 
   const int key_count = option_parse_command_line(argc, argv, "--key-count=", "-k=", 1 << 24);
-  const int split_key_count = option_parse_command_line(argc, argv, "--split-key-count=", "-s=", 1 << 5);
+  const int split_key_count = option_parse_command_line(argc, argv, "--split-key-count=", "-s=", key_count);
   const int repeat_count = 20;
 
   int* ref_keys = (int*)malloc((unsigned int)key_count * sizeof(int));
