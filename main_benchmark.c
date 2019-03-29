@@ -84,7 +84,7 @@ int check_option(int argc, char** argv, const char* long_option, const char* sho
   for (int argument_index = 1; argument_index < argc; ++argument_index)
   {
     const char* argument = argv[argument_index];
-    if (strstr(argument, long_option))
+    if (strncmp(argument, long_option, long_length) == 0)
     {
       errno = 0;
       long int value = strtol(&argument[long_length], NULL, 10);
@@ -94,7 +94,7 @@ int check_option(int argc, char** argv, const char* long_option, const char* sho
       }
     }
 
-    if (strstr(argument, short_option))
+    if (strncmp(argument, short_option, short_length) == 0)
     {
       errno = 0;
       long int value = strtol(&argument[short_length], NULL, 10);
@@ -124,19 +124,18 @@ int main(int argc, char** argv)
     {wrap_radix_sort_short, "radix_sort_short", check_option(argc, argv, "--radix-short-sort=", "-rss=", 0)}
   };
 
-  const int key_count = 1000000;
-  const int split_key_count = check_option(argc, argv, "--split-key-count=", "-s=", 1000);
+  const int key_count = check_option(argc, argv, "--key-count=", "-k=", 1 << 24);
+  const int split_key_count = check_option(argc, argv, "--split-key-count=", "-s=", 1 << 5);
   const int repeat_count = 20;
+
   int* ref_keys = (int*)malloc((unsigned int)key_count * sizeof(int));
   int* temp_keys = (int*)malloc((unsigned int)key_count * sizeof(int));
   int* keys = (int*)malloc((unsigned int)key_count * sizeof(int));
-
   benchmark_generate_random_keys(ref_keys, key_count, 42, INT_MIN, INT_MAX);
-  
-  const int sort_count = sizeof(benchmarks) / sizeof(benchmarks[0]);
 
   printf("Key Count %d Split %d\n", key_count, split_key_count);
-  
+
+  const int sort_count = sizeof(benchmarks) / sizeof(benchmarks[0]);
   for (int sort_index = 0; sort_index < sort_count; ++sort_index)
   {
     const benchmark_t benchmark = benchmarks[sort_index];
@@ -157,11 +156,11 @@ int main(int argc, char** argv)
       printf("  %.3d", repeat_index);
       memcpy(keys, ref_keys, (unsigned int)key_count * sizeof(int));
 
-      benchmark_scope_t* scope1 = benchmark_begin();      
+      benchmark_scope_t* scope1 = benchmark_begin();
       for (int split_index = 0; split_index < split_count; ++split_index)
       {
         sort_function(&keys[split_index * split_key_count], split_key_count, temp_keys);
-      }      
+      }
       int repeat_duration = benchmark_end_us(scope1);
 
       printf(" %d us\n", repeat_duration);
