@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "option.h"
 #include "test.h"
 
 #include "bubble_sort.h"
@@ -76,7 +77,7 @@ typedef struct
   sort_function_int_t sort_function;
   const char* sort_name;
   int max_key_count;
-  int key_step;
+  int is_enabled;
 }
 test_int_t;
 
@@ -85,28 +86,28 @@ typedef struct
   sort_function_char_t sort_function;
   const char* sort_name;
   int max_key_count;
-  int key_step;
+  int is_enabled;
 }
 test_char_t;
 
-int main()
+int main(int argc, char** argv)
 {
   const test_int_t tests_int[] =
   {
-    {wrap_bubble_sort, "bubble_sort", 16, 1},
-    {wrap_insert_sort, "insert_sort", 16, 1},
-    {wrap_network_sort, "network_sort", 16, 1},
-    {wrap_heap_sort, "heap_sort", 3871, 1},
-    {wrap_merge_sort, "merge_sort", 3871, 1},
-    {wrap_quick_sort, "quick_sort", 3871, 1},
-    {wrap_radix_sort_halfbyte, "radix_sort_halfbyte", 3871, 1},
-    {wrap_radix_sort_byte, "radix_sort_byte", 3871, 1},
-    {wrap_radix_sort_short, "radix_sort_short", 3871, 1}
+    {wrap_bubble_sort, "bubble_sort", 16, option_parse_command_line(argc, argv, "--bubble-sort=", "-bs=", 0)},
+    {wrap_insert_sort, "insert_sort", 16, option_parse_command_line(argc, argv, "--insert-sort=", "-is=", 0)},
+    {wrap_network_sort, "network_sort", 16, option_parse_command_line(argc, argv, "--network-sort=", "-ns=", 0)},
+    {wrap_heap_sort, "heap_sort", 3871, option_parse_command_line(argc, argv, "--heap-sort=", "-hs=", 0)},
+    {wrap_merge_sort, "merge_sort", 3871, option_parse_command_line(argc, argv, "--merge-sort=", "-ms=", 0)},
+    {wrap_quick_sort, "quick_sort", 3871, option_parse_command_line(argc, argv, "--quick-sort=", "-qs=", 0)},
+    {wrap_radix_sort_halfbyte, "radix_sort_halfbyte", 3871, option_parse_command_line(argc, argv, "--radix-halfbyte-sort=", "-rhs=", 0)},
+    {wrap_radix_sort_byte, "radix_sort_byte", 3871, option_parse_command_line(argc, argv, "--radix-byte-sort=", "-rs=", 0)},
+    {wrap_radix_sort_short, "radix_sort_short", 3871, option_parse_command_line(argc, argv, "--radix-short-sort=", "-rss=", 0)}
   };
   
   const test_char_t tests_char[] =
   {
-    {wrap_count_sort, "count_sort", 3871, 1}
+    {wrap_count_sort, "count_sort", 3871, option_parse_command_line(argc, argv, "--count-sort=", "-cs=", 0)}
   };
   
   const int sort_count_int = sizeof(tests_int) / sizeof(tests_int[0]);
@@ -131,10 +132,15 @@ int main()
   for (int sort_index = 0; sort_index < sort_count_int; ++sort_index)
   {
     const test_int_t test_int = tests_int[sort_index];
+    if (!test_int.is_enabled)
+    {
+      continue;
+    }
+
     const sort_function_int_t sort_function = test_int.sort_function;
     const char* sort_name = test_int.sort_name;
     const int max_key_count = test_int.max_key_count;
-    const int key_step = test_int.key_step;
+    const int key_step = 1;
 
     int keys[max_key_count];
     int sorted_keys[max_key_count];
@@ -178,10 +184,15 @@ int main()
   for (int sort_index = 0; sort_index < sort_count_char; ++sort_index)
   {
     const test_char_t test_char = tests_char[sort_index];
+    if (!test_char.is_enabled)
+    {
+      continue;
+    }
+
     const sort_function_char_t sort_function = test_char.sort_function;
     const char* sort_name = test_char.sort_name;
     const int max_key_count = test_char.max_key_count;
-    const int key_step = test_char.key_step;
+    const int key_step = 1;
 
     signed char keys_char[max_key_count];
     signed char sorted_keys_char[max_key_count];

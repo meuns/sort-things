@@ -76,7 +76,7 @@ $(BUILD_DIR_PATH)/network_sort.o: network_sort.h network_sort.c
 ALL_SORT_HEADERS=bubble_sort.h insert_sort.h heap_sort.h merge_sort.h quick_sort.h count_sort.h radix_sort.h
 ALL_SORT_MODULES=$(BUILD_DIR_PATH)/bubble_sort.o $(BUILD_DIR_PATH)/insert_sort.o $(BUILD_DIR_PATH)/heap_sort.o $(BUILD_DIR_PATH)/merge_sort.o $(BUILD_DIR_PATH)/quick_sort.o $(BUILD_DIR_PATH)/count_sort.o $(BUILD_DIR_PATH)/radix_sort.o $(BUILD_DIR_PATH)/network_sort.o
 
-MAIN_TEST_MODULES=$(ALL_SORT_MODULES) $(BUILD_DIR_PATH)/main_test.o $(BUILD_DIR_PATH)/test.o $(BUILD_DIR_PATH)/debug.o
+MAIN_TEST_MODULES=$(ALL_SORT_MODULES) $(BUILD_DIR_PATH)/main_test.o $(BUILD_DIR_PATH)/test.o $(BUILD_DIR_PATH)/debug.o $(BUILD_DIR_PATH)/option.o
 test$(EXE_SUFFIX): $(BUILD_PROJECT_DEPENDENCIES) $(MAIN_TEST_MODULES)
 	$(CC) -o $@ $(MAIN_TEST_MODULES) $(LDFLAGS)
 
@@ -85,13 +85,14 @@ $(BUILD_DIR_PATH)/test.o: test.h test_template.h test.c test_template.c
 $(BUILD_DIR_PATH)/debug.o: debug.h debug.c
 
 # Benchmark
-MAIN_BENCHMARK_MODULES=$(ALL_SORT_MODULES) $(BUILD_DIR_PATH)/main_benchmark.o $(BUILD_DIR_PATH)/benchmark.o $(BUILD_DIR_PATH)/std_sort.o $(BUILD_DIR_PATH)/test.o $(BUILD_DIR_PATH)/debug.o
+MAIN_BENCHMARK_MODULES=$(ALL_SORT_MODULES) $(BUILD_DIR_PATH)/main_benchmark.o $(BUILD_DIR_PATH)/benchmark.o $(BUILD_DIR_PATH)/std_sort.o $(BUILD_DIR_PATH)/option.o $(BUILD_DIR_PATH)/test.o $(BUILD_DIR_PATH)/debug.o
 benchmark$(EXE_SUFFIX): $(BUILD_PROJECT_DEPENDENCIES) $(MAIN_BENCHMARK_MODULES)
 	$(CC) -o $@ $(MAIN_BENCHMARK_MODULES) $(LDFLAGS)
 
 $(BUILD_DIR_PATH)/main_benchmark.o: $(ALL_SORT_HEADERS) benchmark.h std_sort.h debug.h main_benchmark.c
 $(BUILD_DIR_PATH)/benchmark.o: benchmark.h benchmark.c
 $(BUILD_DIR_PATH)/std_sort.o: std_sort.h std_sort.cpp
+$(BUILD_DIR_PATH)/option.o: option.h option.c
 
 # Build rules
 $(BUILD_DIR_PATH)/%.o: %.c $(BUILD_MODULE_DEPENDENCIES)
