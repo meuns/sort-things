@@ -75,22 +75,29 @@ typedef struct
 }
 benchmark_t;
 
-int check_option(int argc, char** argv, const char* option, int default_value)
+int check_option(int argc, char** argv, const char* long_option, const char* short_option, int default_value)
 {
-  const size_t length = strlen(option);
-  
-  for (int argument_index = 0; argument_index < argc; ++argument_index)
+  const size_t long_length = strlen(long_option);
+  const size_t short_length = strlen(short_option);
+
+  for (int argument_index = 1; argument_index < argc; ++argument_index)
   {
     const char* argument = argv[argument_index];
-    if (strstr(argument, option))
+    if (strstr(argument, long_option))
     {
-      if (strlen(argument) > length)
+      int value = strtol(&argument[long_length], NULL, 10);
+      if (errno == 0)
       {
-        return atoi(&argument[length]);
+        return value;
       }
-      else
+    }
+
+    if (strstr(argument, short_option))
+    {
+      int value = strtol(&argument[short_length], NULL, 10);
+      if (errno == 0)
       {
-        return default_value;
+        return value;
       }
     }
   }
@@ -100,22 +107,22 @@ int check_option(int argc, char** argv, const char* option, int default_value)
 
 int main(int argc, char** argv)
 {
-  benchmark_t benchmarks[] =
+  const benchmark_t benchmarks[] =
   {
-    {wrap_network_sort, "network_sort", check_option(argc, argv, "--network-sort=", 0)},
-    {wrap_insert_sort, "bubble_sort", check_option(argc, argv, "--bubble-sort=", 0)},
-    {wrap_insert_sort, "insert_sort", check_option(argc, argv, "--insert-sort=", 0)},
-    {wrap_heap_sort, "heap_sort", check_option(argc, argv, "--heap-sort=", 0)},
-    {wrap_merge_sort, "merge_sort", check_option(argc, argv, "--merge-sort=", 0)},
-    {wrap_quick_sort, "quick_sort", check_option(argc, argv, "--quick-sort=", 0)},
-    {wrap_std_sort, "std_sort", check_option(argc, argv, "--std-sort=", 0)},
-    {wrap_radix_sort_halfbyte, "radix_sort_halfbyte", check_option(argc, argv, "--radix-halfbyte-sort=", 0)},
-    {wrap_radix_sort_byte, "radix_sort_byte", check_option(argc, argv, "--radix-byte-sort=", 0)},
-    {wrap_radix_sort_short, "radix_sort_short", check_option(argc, argv, "--radix-short-sort=", 0)}
+    {wrap_network_sort, "network_sort", check_option(argc, argv, "--network-sort=", "-ns=", 0)},
+    {wrap_insert_sort, "bubble_sort", check_option(argc, argv, "--bubble-sort=", "-bs=", 0)},
+    {wrap_insert_sort, "insert_sort", check_option(argc, argv, "--insert-sort=", "-is=", 0)},
+    {wrap_heap_sort, "heap_sort", check_option(argc, argv, "--heap-sort=", "-hs=", 0)},
+    {wrap_merge_sort, "merge_sort", check_option(argc, argv, "--merge-sort=", "-ms=", 0)},
+    {wrap_quick_sort, "quick_sort", check_option(argc, argv, "--quick-sort=", "-qs=", 0)},
+    {wrap_std_sort, "std_sort", check_option(argc, argv, "--std-sort=", "-ss=", 0)},
+    {wrap_radix_sort_halfbyte, "radix_sort_halfbyte", check_option(argc, argv, "--radix-halfbyte-sort=", "-rhs=", 0)},
+    {wrap_radix_sort_byte, "radix_sort_byte", check_option(argc, argv, "--radix-byte-sort=", "-rs=", 0)},
+    {wrap_radix_sort_short, "radix_sort_short", check_option(argc, argv, "--radix-short-sort=", "-rss=", 0)}
   };
 
   const int key_count = 1000000;
-  const int split_key_count = check_option(argc, argv, "--split=", 1000);
+  const int split_key_count = check_option(argc, argv, "--split-key-count=", "-s=", 1000);
   const int repeat_count = 20;
   int* ref_keys = (int*)malloc((unsigned int)key_count * sizeof(int));
   int* temp_keys = (int*)malloc((unsigned int)key_count * sizeof(int));
@@ -124,6 +131,8 @@ int main(int argc, char** argv)
   benchmark_generate_random_keys(ref_keys, key_count, 42, INT_MIN, INT_MAX);
   
   const int sort_count = sizeof(benchmarks) / sizeof(benchmarks[0]);
+
+  printf("Key Count %d Split %d\n", key_count, split_key_count);
   
   for (int sort_index = 0; sort_index < sort_count; ++sort_index)
   {
