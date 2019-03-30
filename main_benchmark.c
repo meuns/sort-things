@@ -124,14 +124,15 @@ int main(int argc, char** argv)
       printf("  %.3d", repeat_index);
       memcpy(keys, ref_keys, (unsigned int)key_count * sizeof(int));
 
-      benchmark_scope_t* scope1 = benchmark_begin();
+      int repeat_duration = 0;
       for (int split_index = 0; split_index < split_count; ++split_index)
       {
+        benchmark_scope_t* scope1 = benchmark_begin();
         sort_function(&keys[split_index * split_key_count], split_key_count, temp_keys);
+        repeat_duration += benchmark_end_us(scope1);
       }
-      int repeat_duration = benchmark_end_us(scope1);
 
-      printf(" %d us\n", repeat_duration);
+      printf(" %dus\n", repeat_duration);
       duration += repeat_duration;
     }
 
