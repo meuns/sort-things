@@ -40,6 +40,9 @@ merge$(EXE_SUFFIX): $(BUILD_PROJECT_DEPENDENCIES) $(MERGE_MODULES)
 $(BUILD_DIR_PATH)/merge_main.o: merge_sort.h debug.h merge_main.c
 $(BUILD_DIR_PATH)/merge_sort.o: merge_sort.h merge_sort.c
 
+# Merge sort hybrid
+$(BUILD_DIR_PATH)/merge_sort_hybrid.o: merge_sort_hybrid.h merge_sort_hybrid.c
+
 # Quick sort
 QUICK_MODULES=$(BUILD_DIR_PATH)/quick_sort.o $(BUILD_DIR_PATH)/quick_main.o $(BUILD_DIR_PATH)/debug.o
 quick$(EXE_SUFFIX): $(BUILD_PROJECT_DEPENDENCIES) $(QUICK_MODULES)
@@ -73,8 +76,8 @@ $(BUILD_DIR_PATH)/network_main.o: network_sort.h debug.h network_main.c
 $(BUILD_DIR_PATH)/network_sort.o: network_sort.h network_sort.c
 
 # Test
-ALL_SORT_HEADERS=bubble_sort.h insert_sort.h heap_sort.h merge_sort.h quick_sort.h count_sort.h radix_sort.h
-ALL_SORT_MODULES=$(BUILD_DIR_PATH)/bubble_sort.o $(BUILD_DIR_PATH)/insert_sort.o $(BUILD_DIR_PATH)/heap_sort.o $(BUILD_DIR_PATH)/merge_sort.o $(BUILD_DIR_PATH)/quick_sort.o $(BUILD_DIR_PATH)/count_sort.o $(BUILD_DIR_PATH)/radix_sort.o $(BUILD_DIR_PATH)/network_sort.o
+ALL_SORT_HEADERS=bubble_sort.h insert_sort.h heap_sort.h merge_sort.h merge_sort_hybrid.h quick_sort.h count_sort.h radix_sort.h
+ALL_SORT_MODULES=$(BUILD_DIR_PATH)/bubble_sort.o $(BUILD_DIR_PATH)/insert_sort.o $(BUILD_DIR_PATH)/heap_sort.o $(BUILD_DIR_PATH)/merge_sort.o $(BUILD_DIR_PATH)/merge_sort_hybrid.o $(BUILD_DIR_PATH)/quick_sort.o $(BUILD_DIR_PATH)/count_sort.o $(BUILD_DIR_PATH)/radix_sort.o $(BUILD_DIR_PATH)/network_sort.o
 
 MAIN_TEST_MODULES=$(ALL_SORT_MODULES) $(BUILD_DIR_PATH)/main_test.o $(BUILD_DIR_PATH)/test.o $(BUILD_DIR_PATH)/debug.o $(BUILD_DIR_PATH)/option.o
 test$(EXE_SUFFIX): $(BUILD_PROJECT_DEPENDENCIES) $(MAIN_TEST_MODULES)

@@ -48,6 +48,11 @@ void wrap_merge_sort(int* keys, const int key_count, int* temp_keys)
   merge_sort(keys, key_count, temp_keys);
 }
 
+void wrap_merge_sort_hybrid(int* keys, const int key_count, int* temp_keys)
+{
+  merge_sort_hybrid(keys, key_count, temp_keys);
+}
+
 void wrap_quick_sort(int* keys, const int key_count, int* temp_keys __attribute__((unused)))
 {
   quick_sort(keys, key_count, quick_median3_pivot_index);
@@ -85,6 +90,7 @@ int main(int argc, char** argv)
     {wrap_insert_sort, "insert_sort", option_parse_command_line(argc, argv, "--insert-sort=", "-is=", 0)},
     {wrap_heap_sort, "heap_sort", option_parse_command_line(argc, argv, "--heap-sort=", "-hs=", 0)},
     {wrap_merge_sort, "merge_sort", option_parse_command_line(argc, argv, "--merge-sort=", "-ms=", 0)},
+    {wrap_merge_sort_hybrid, "merge_sort_hybrid", option_parse_command_line(argc, argv, "--merge-sort-hybrid=", "-msh=", 0)},
     {wrap_quick_sort, "quick_sort", option_parse_command_line(argc, argv, "--quick-sort=", "-qs=", 0)},
     {wrap_std_sort, "std_sort", option_parse_command_line(argc, argv, "--std-sort=", "-ss=", 0)},
     {wrap_radix_sort_halfbyte, "radix_sort_halfbyte", option_parse_command_line(argc, argv, "--radix-halfbyte-sort=", "-rhs=", 0)},

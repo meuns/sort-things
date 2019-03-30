@@ -9,6 +9,7 @@
 #include "heap_sort.h"
 #include "insert_sort.h"
 #include "merge_sort.h"
+#include "merge_sort_hybrid.h"
 #include "network_sort.h"
 #include "quick_sort.h"
 #include "radix_sort.h"
@@ -40,6 +41,12 @@ void wrap_merge_sort(int* keys, const int key_count)
 {
   int temp_keys[key_count];
   merge_sort(keys, key_count, temp_keys);
+}
+
+void wrap_merge_sort_hybrid(int* keys, const int key_count)
+{
+  int temp_keys[key_count];
+  merge_sort_hybrid(keys, key_count, temp_keys);
 }
 
 void wrap_quick_sort(int* keys, const int key_count)
@@ -99,6 +106,7 @@ int main(int argc, char** argv)
     {wrap_network_sort, "network_sort", 16, option_parse_command_line(argc, argv, "--network-sort=", "-ns=", 0)},
     {wrap_heap_sort, "heap_sort", 3871, option_parse_command_line(argc, argv, "--heap-sort=", "-hs=", 0)},
     {wrap_merge_sort, "merge_sort", 3871, option_parse_command_line(argc, argv, "--merge-sort=", "-ms=", 0)},
+    {wrap_merge_sort_hybrid, "merge_sort_hybrid", 3871, option_parse_command_line(argc, argv, "--merge-sort-hybrid=", "-msh=", 0)},
     {wrap_quick_sort, "quick_sort", 3871, option_parse_command_line(argc, argv, "--quick-sort=", "-qs=", 0)},
     {wrap_radix_sort_halfbyte, "radix_sort_halfbyte", 3871, option_parse_command_line(argc, argv, "--radix-halfbyte-sort=", "-rhs=", 0)},
     {wrap_radix_sort_byte, "radix_sort_byte", 3871, option_parse_command_line(argc, argv, "--radix-byte-sort=", "-rs=", 0)},

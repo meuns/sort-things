@@ -1,7 +1,7 @@
 #include "merge_sort.h"
 
 __attribute__((always_inline))
-static inline void merge_keys(int* restrict left_keys, const int left_key_count, int* restrict right_keys, const int right_key_count, int* restrict merged_keys)
+void merge_keys(int* restrict left_keys, const int left_key_count, int* restrict right_keys, const int right_key_count, int* restrict merged_keys)
 {
   int left_index = 0;
   int left_key = left_keys[left_index];
