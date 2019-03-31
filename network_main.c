@@ -1,19 +1,23 @@
 #include "debug.h"
 #include "network_sort.h"
 
+#include <stdlib.h>
+
 int main()
 {
-  int keys[] = {
-    11, 12, 0, 2,
-    5, 4, 14, 1,
-    9, 9, 6, 6,
-    1, 2, 3, 17
-  };
-  
-  int key_count = sizeof(keys) / sizeof(keys[0]);
+  const int key_count = rand() % 16;
+  int* keys = (int*)malloc(sizeof(int) * (unsigned)key_count);
+
+  for (int key_index = 0; key_index < key_count; ++key_index)
+  {
+    keys[key_index] = key_index % 4;
+  }
   
   network_sort(keys, key_count);
   
   debug_print_keys(keys, key_count);
+
+  free(keys);
+
   return 0;
 }

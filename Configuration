@@ -17,9 +17,12 @@ else ifeq ($(COMPILER), CLANGCL)
 else
 	BUILD_DIR_PATH:=$(BUILD_DIR_PATH)_clang
 	EXE_SUFFIX:=$(EXE_SUFFIX)_clang
-	ifeq ($(LTO), 1)
+	ifeq ($(LTO), ENABLE)
 		BUILD_DIR_PATH:=$(BUILD_DIR_PATH)_lto
 		EXE_SUFFIX:=$(EXE_SUFFIX)_lto
+	else ifeq ($(LTO), VALIDATE)
+		BUILD_DIR_PATH:=$(BUILD_DIR_PATH)_lto_v
+		EXE_SUFFIX:=$(EXE_SUFFIX)_lto_v
 	endif
 endif
 
@@ -75,12 +78,14 @@ else
 	else
 		CFLAGS+=-D NDEBUG -O2
 		CXXFLAGS+=-D NDEBUG -O2
-		ifeq ($(COMPILER), CLANG)
-			ifeq ($(LTO), 1)
-				CFLAGS+=-flto
-				CXXFLAGS+=-flto
-				LDFLAGS+=-flto -fuse-ld=gold -Wl
-			endif
+		ifeq ($(LTO), ENABLE)
+			CFLAGS+=-flto
+			CXXFLAGS+=-flto
+			LDFLAGS+=-flto -fuse-ld=gold -Wl
+		else ifeq ($(LTO), VALIDATE)
+			CFLAGS+=-flto -save-temps=obj
+			CXXFLAGS+=-flto -save-temps=obj
+			LDFLAGS+=-flto -fuse-ld=gold -Wl,-plugin-opt=save-temps
 		endif
 	endif
 endif

@@ -1,4 +1,4 @@
-#include "merge_sort_hybrid.h"
+#include "merge_hybrid_sort.h"
 
 #include "merge_sort.h"
 #include "network_sort.h"
