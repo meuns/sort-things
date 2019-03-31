@@ -6,8 +6,8 @@
 int main()
 {
   const int key_count = 1024;
-  int* keys = (int*)malloc(sizeof(int) * key_count);
-  int* temp_keys = (int*)malloc(sizeof(int) * key_count);
+  int* keys = (int*)malloc(sizeof(int) * (unsigned)key_count);
+  int* temp_keys = (int*)malloc(sizeof(int) * (unsigned)key_count);
 
   for (int key_index = 0; key_index < key_count; ++key_index)
   {
