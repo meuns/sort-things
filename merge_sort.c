@@ -1,7 +1,14 @@
 #include "merge_sort.h"
 
+// Temporary workaround linking issue on _WIN32
+#if defined(_WIN32)
+  #define WA_INLINE
+#else
+  #define WA_INLINE inline
+#endif
+
 __attribute__((always_inline))
-inline void merge_keys(int* restrict left_keys, const int left_key_count, int* restrict right_keys, const int right_key_count, int* restrict merged_keys)
+WA_INLINE void merge_keys(int* restrict left_keys, const int left_key_count, int* restrict right_keys, const int right_key_count, int* restrict merged_keys)
 {
   int left_index = 0;
   int left_key = left_keys[left_index];
