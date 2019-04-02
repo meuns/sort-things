@@ -37,16 +37,14 @@ inline void network_sort_02(int* keys)
 __attribute__((always_inline))
 inline void network_sort_03(int* keys)
 {
-  // Resorted by dependencies
-  network_swap(keys, 0, 1);
-  network_swap(keys, 0, 2);  
   network_swap(keys, 1, 2);
+  network_swap(keys, 0, 2);
+  network_swap(keys, 0, 1);
 }
 
 __attribute__((always_inline))
 inline void network_sort_04(int* keys)
 {
-  // Resorted by dependencies
   network_swap(keys, 0, 1);
   network_swap(keys, 2, 3);
   network_swap(keys, 0, 2);
@@ -57,16 +55,15 @@ inline void network_sort_04(int* keys)
 __attribute__((always_inline))
 inline void network_sort_05(int* keys)
 {
-  // Resorted by dependencies
   network_swap(keys, 0, 1);
+  network_swap(keys, 3, 4);
+  network_swap(keys, 2, 4);
   network_swap(keys, 2, 3);
+  network_swap(keys, 0, 3);
   network_swap(keys, 0, 2);
+  network_swap(keys, 1, 4);
   network_swap(keys, 1, 3);
   network_swap(keys, 1, 2);
-  network_swap(keys, 0, 4);
-  network_swap(keys, 1, 4);
-  network_swap(keys, 2, 4);  
-  network_swap(keys, 3, 4);
 }
 
 __attribute__((always_inline))
