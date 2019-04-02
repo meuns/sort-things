@@ -8,6 +8,9 @@ else
 	BUILD_DIR_PATH=./.release
 endif
 
+BRANCH_NAME=network_rewrite
+BUILD_DIR_PATH:=$(BUILD_DIR_PATH)_$(BRANCH_NAME)
+
 ifeq ($(COMPILER), GCC)
 	BUILD_DIR_PATH:=$(BUILD_DIR_PATH)_gcc
 	EXE_SUFFIX:=$(EXE_SUFFIX)_gcc
