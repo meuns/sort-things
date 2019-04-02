@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "option.h"
@@ -84,6 +85,7 @@ typedef struct
   sort_function_int_t sort_function;
   const char* sort_name;
   int max_key_count;
+  int repeat_count;
   int is_enabled;
 }
 test_int_t;
@@ -93,6 +95,7 @@ typedef struct
   sort_function_char_t sort_function;
   const char* sort_name;
   int max_key_count;
+  int repeat_count;
   int is_enabled;
 }
 test_char_t;
@@ -101,21 +104,21 @@ int main(int argc, char** argv)
 {
   const test_int_t tests_int[] =
   {
-    {wrap_bubble_sort, "bubble_sort", 16, option_parse_command_line(argc, argv, "--bubble-sort=", "-bs=", 0)},
-    {wrap_insert_sort, "insert_sort", 16, option_parse_command_line(argc, argv, "--insert-sort=", "-is=", 0)},
-    {wrap_network_sort, "network_sort", 16, option_parse_command_line(argc, argv, "--network-sort=", "-ns=", 0)},
-    {wrap_heap_sort, "heap_sort", 3871, option_parse_command_line(argc, argv, "--heap-sort=", "-hs=", 0)},
-    {wrap_merge_sort, "merge_sort", 3871, option_parse_command_line(argc, argv, "--merge-sort=", "-ms=", 0)},
-    {wrap_merge_sort_hybrid, "merge_sort_hybrid", 3871, option_parse_command_line(argc, argv, "--merge-sort-hybrid=", "-msh=", 0)},
-    {wrap_quick_sort, "quick_sort", 3871, option_parse_command_line(argc, argv, "--quick-sort=", "-qs=", 0)},
-    {wrap_radix_sort_halfbyte, "radix_sort_halfbyte", 3871, option_parse_command_line(argc, argv, "--radix-halfbyte-sort=", "-rsh=", 0)},
-    {wrap_radix_sort_byte, "radix_sort_byte", 3871, option_parse_command_line(argc, argv, "--radix-byte-sort=", "-rs=", 0)},
-    {wrap_radix_sort_short, "radix_sort_short", 3871, option_parse_command_line(argc, argv, "--radix-short-sort=", "-rss=", 0)}
+    {wrap_bubble_sort, "bubble_sort", 16, 16, option_parse_command_line(argc, argv, "--bubble-sort=", "-bs=", 0)},
+    {wrap_insert_sort, "insert_sort", 16, 16, option_parse_command_line(argc, argv, "--insert-sort=", "-is=", 0)},
+    {wrap_network_sort, "network_sort", 16, 16, option_parse_command_line(argc, argv, "--network-sort=", "-ns=", 0)},
+    {wrap_heap_sort, "heap_sort", 3871, 1, option_parse_command_line(argc, argv, "--heap-sort=", "-hs=", 0)},
+    {wrap_merge_sort, "merge_sort", 3871, 1, option_parse_command_line(argc, argv, "--merge-sort=", "-ms=", 0)},
+    {wrap_merge_sort_hybrid, "merge_sort_hybrid", 3871, 1, option_parse_command_line(argc, argv, "--merge-sort-hybrid=", "-msh=", 0)},
+    {wrap_quick_sort, "quick_sort", 3871, 1, option_parse_command_line(argc, argv, "--quick-sort=", "-qs=", 0)},
+    {wrap_radix_sort_halfbyte, "radix_sort_halfbyte", 3871, 1, option_parse_command_line(argc, argv, "--radix-halfbyte-sort=", "-rsh=", 0)},
+    {wrap_radix_sort_byte, "radix_sort_byte", 3871, 1, option_parse_command_line(argc, argv, "--radix-byte-sort=", "-rs=", 0)},
+    {wrap_radix_sort_short, "radix_sort_short", 3871, 1, option_parse_command_line(argc, argv, "--radix-short-sort=", "-rss=", 0)}
   };
   
   const test_char_t tests_char[] =
   {
-    {wrap_count_sort, "count_sort", 3871, option_parse_command_line(argc, argv, "--count-sort=", "-cs=", 0)}
+    {wrap_count_sort, "count_sort", 3871, 3871, option_parse_command_line(argc, argv, "--count-sort=", "-cs=", 0)}
   };
   
   const int sort_count_int = sizeof(tests_int) / sizeof(tests_int[0]);
@@ -148,6 +151,7 @@ int main(int argc, char** argv)
     const sort_function_int_t sort_function = test_int.sort_function;
     const char* sort_name = test_int.sort_name;
     const int max_key_count = test_int.max_key_count;
+    const int repeat_count = test_int.repeat_count;
     const int key_step = 1;
 
     int keys[max_key_count];
@@ -157,33 +161,38 @@ int main(int argc, char** argv)
 
     for (int key_count = 0; key_count < max_key_count; key_count += key_step)
     {
-      test_generate_keys_int(keys, key_count, 42);
-      memcpy(sorted_keys, keys, sizeof(keys));
+      srand(42);
 
-      sort_function(sorted_keys, key_count);
-
-      if (!test_key_counts_are_equal_int(keys, sorted_keys, key_count))
+      for (int repeat_index = 0; repeat_index < repeat_count; ++repeat_index)
       {
-        printf("\nTesting histogram function %d and key count %d failed...\n", sort_index, key_count);
-        for (int key_index = 0; key_index < key_count; ++key_index) { printf("%d, ", keys[key_index]); } printf("\n");
-        for (int key_index = 0; key_index < key_count; ++key_index) { printf("%d, ", sorted_keys[key_index]); } printf("\n");
-        return 1;
-      }
+        test_generate_keys_int(keys, key_count, (unsigned)abs(rand()));
+        memcpy(sorted_keys, keys, sizeof(keys));
 
-      if (!test_keys_are_sorted_int(sorted_keys, key_count))
-      {
-        printf("\nTesting sort function %d and key count %d failed...\n", sort_index, key_count);
-        for (int key_index = 0; key_index < key_count; ++key_index) { printf("%d, ", keys[key_index]); } printf("\n");
-        for (int key_index = 0; key_index < key_count; ++key_index) { printf("%d, ", sorted_keys[key_index]); } printf("\n");
-        return 1;
-      }
+        sort_function(sorted_keys, key_count);
 
-      const int percent_print = (int)((((double)remaining_test_count--) / (double)test_count) * 100);
-      if (percent_print != last_percent_print)
-      {
-        last_percent_print = percent_print;
-        printf(".");
-        fflush(stdout);
+        if (!test_key_counts_are_equal_int(keys, sorted_keys, key_count))
+        {
+          printf("\nTesting histogram function %d and key count %d failed...\n", sort_index, key_count);
+          for (int key_index = 0; key_index < key_count; ++key_index) { printf("%d, ", keys[key_index]); } printf("\n");
+          for (int key_index = 0; key_index < key_count; ++key_index) { printf("%d, ", sorted_keys[key_index]); } printf("\n");
+          return 1;
+        }
+
+        if (!test_keys_are_sorted_int(sorted_keys, key_count))
+        {
+          printf("\nTesting sort function %d and key count %d failed...\n", sort_index, key_count);
+          for (int key_index = 0; key_index < key_count; ++key_index) { printf("%d, ", keys[key_index]); } printf("\n");
+          for (int key_index = 0; key_index < key_count; ++key_index) { printf("%d, ", sorted_keys[key_index]); } printf("\n");
+          return 1;
+        }
+
+        const int percent_print = (int)((((double)remaining_test_count--) / (double)test_count) * 100);
+        if (percent_print != last_percent_print)
+        {
+          last_percent_print = percent_print;
+          printf(".");
+          fflush(stdout);
+        }
       }
     }
   }

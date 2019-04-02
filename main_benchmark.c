@@ -101,6 +101,7 @@ int main(int argc, char** argv)
 
   const int key_count = option_parse_command_line(argc, argv, "--key-count=", "-k=", 1 << 24);
   const int split_key_count = option_parse_command_line(argc, argv, "--split-key-count=", "-s=", key_count);
+  const int inner_scope = option_parse_command_line(argc, argv, "--inner-scope=", "-i=", 1);
   const int repeat_count = 20;
 
   int* ref_keys = (int*)malloc((unsigned int)key_count * sizeof(int));
@@ -123,27 +124,43 @@ int main(int argc, char** argv)
     const char* sort_name = benchmark.sort_name;
     const int split_count = key_count / split_key_count;
 
-    int duration = 0;
-    printf("Function %s count %d split %d :\n", sort_name, key_count, split_key_count);
+    int duration = 0;    
+    printf("Function %s count %d split %d inner %d:\n", sort_name, key_count, split_key_count, inner_scope);
 
     for (int repeat_index = 0; repeat_index < repeat_count; ++repeat_index)
     {
       printf("  %.3d", repeat_index);
       memcpy(keys, ref_keys, (unsigned int)key_count * sizeof(int));
 
-      int repeat_duration = 0;
-      for (int split_index = 0; split_index < split_count; ++split_index)
+      if (inner_scope)
       {
-        benchmark_scope_t* scope1 = benchmark_begin();
-        sort_function(&keys[split_index * split_key_count], split_key_count, temp_keys);
-        repeat_duration += benchmark_end_us(scope1);
+        int repeat_duration = 0;        
+        for (int split_index = 0; split_index < split_count; ++split_index)
+        {
+          benchmark_scope_t* inner_scope1 = benchmark_begin();
+          sort_function(&keys[split_index * split_key_count], split_key_count, temp_keys);
+          repeat_duration += benchmark_end_us(inner_scope1);
+        }
+        
+        printf(" %dus\n", repeat_duration);
+        duration += repeat_duration;
       }
-
-      printf(" %dus\n", repeat_duration);
-      duration += repeat_duration;
+      else
+      {
+        int repeat_duration = 0;
+        benchmark_scope_t* inner_scope1 = benchmark_begin();
+        for (int split_index = 0; split_index < split_count; ++split_index)
+        {
+          sort_function(&keys[split_index * split_key_count], split_key_count, temp_keys);
+        }
+        repeat_duration += benchmark_end_us(inner_scope1);
+        
+        printf(" %dus\n", repeat_duration);
+        duration += repeat_duration;
+      }
     }
 
-    printf("  took an average %d us\n", duration / repeat_count);
+    printf("  took an average %dus\n", duration / repeat_count);
   }
 
   free(keys);

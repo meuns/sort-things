@@ -19,19 +19,100 @@ typedef struct benchmark_scope_s
     struct timespec start_time;
     struct timespec end_time;
   #endif
+  int is_used;
 }
 benchmark_scope_t;
 
-static benchmark_scope_t benchmark_ring_buffer[64];
+static benchmark_scope_t benchmark_ring_buffer[64] = 
+{
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+  {.is_used = 0},
+};
+
 static const int benchmark_ring_size = sizeof(benchmark_ring_buffer) / sizeof(benchmark_ring_buffer[0]);
 static int benchmark_ring_head = 0;
 
 __attribute__((noinline))
 benchmark_scope_t* benchmark_begin(void)
 {
-  benchmark_scope_t* new_scope = &benchmark_ring_buffer[benchmark_ring_head];
-  benchmark_ring_head = (benchmark_ring_head + 1) % benchmark_ring_size;
+  benchmark_scope_t* new_scope = 0;
+  int previous_ring_head = benchmark_ring_head;
+  do
+  {
+    new_scope = &benchmark_ring_buffer[benchmark_ring_head];
+    benchmark_ring_head = (benchmark_ring_head + 1) % benchmark_ring_size;
+  }
+  while (benchmark_ring_head != previous_ring_head && new_scope->is_used);
 
+  if (new_scope->is_used)
+  {
+    return 0;
+  }
+
+  new_scope->is_used = 1;
+  
   #if defined(_WIN32)
     QueryPerformanceCounter(&new_scope->start_time);
     QueryPerformanceFrequency(&new_scope->frequency);
@@ -45,6 +126,8 @@ benchmark_scope_t* benchmark_begin(void)
 __attribute__((always_inline))
 static inline int benchmark_end(benchmark_scope_t* scope, const long long int divisor)
 {
+  scope->is_used = 0;
+
   #if defined(_WIN32)
     QueryPerformanceCounter(&scope->end_time);
     const long long int duration = scope->end_time.QuadPart - scope->start_time.QuadPart;
