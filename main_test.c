@@ -108,7 +108,7 @@ int main(int argc, char** argv)
     {wrap_merge_sort, "merge_sort", 3871, option_parse_command_line(argc, argv, "--merge-sort=", "-ms=", 0)},
     {wrap_merge_sort_hybrid, "merge_sort_hybrid", 3871, option_parse_command_line(argc, argv, "--merge-sort-hybrid=", "-msh=", 0)},
     {wrap_quick_sort, "quick_sort", 3871, option_parse_command_line(argc, argv, "--quick-sort=", "-qs=", 0)},
-    {wrap_radix_sort_halfbyte, "radix_sort_halfbyte", 3871, option_parse_command_line(argc, argv, "--radix-halfbyte-sort=", "-rhs=", 0)},
+    {wrap_radix_sort_halfbyte, "radix_sort_halfbyte", 3871, option_parse_command_line(argc, argv, "--radix-halfbyte-sort=", "-rsh=", 0)},
     {wrap_radix_sort_byte, "radix_sort_byte", 3871, option_parse_command_line(argc, argv, "--radix-byte-sort=", "-rs=", 0)},
     {wrap_radix_sort_short, "radix_sort_short", 3871, option_parse_command_line(argc, argv, "--radix-short-sort=", "-rss=", 0)}
   };
