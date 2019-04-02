@@ -86,7 +86,7 @@ typedef struct
   const char* sort_name;
   int max_key_count;
   int repeat_count;
-  int is_enabled;
+  long int is_enabled;
 }
 test_int_t;
 
@@ -96,7 +96,7 @@ typedef struct
   const char* sort_name;
   int max_key_count;
   int repeat_count;
-  int is_enabled;
+  long int is_enabled;
 }
 test_char_t;
 
