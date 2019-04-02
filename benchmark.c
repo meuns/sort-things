@@ -19,7 +19,7 @@ typedef struct benchmark_scope_s
     struct timespec start_time;
     struct timespec end_time;
   #endif
-  int is_used;
+  long int is_used;
 }
 benchmark_scope_t;
 
