@@ -110,10 +110,23 @@ __attribute__((always_inline))
 inline void network_sort_08(int* keys)
 {
   // Resorted by dependencies
-  network_swap(keys, 0, 1);
-  network_swap(keys, 2, 3);
-  network_swap(keys, 4, 5);
-  network_swap(keys, 6, 7);
+  // Serialize first reads
+  const int key0 = keys[0];
+  const int key1 = keys[1];
+  const int key2 = keys[2];
+  const int key3 = keys[3];
+  const int key4 = keys[4];
+  const int key5 = keys[5];
+  const int key6 = keys[6];
+  const int key7 = keys[7];
+  keys[0] = min(key0, key1);
+  keys[1] = max(key0, key1);
+  keys[2] = min(key2, key3);
+  keys[3] = max(key2, key3);
+  keys[4] = min(key4, key5);
+  keys[5] = max(key4, key5);
+  keys[6] = min(key6, key7);
+  keys[7] = max(key6, key7);
   network_swap(keys, 0, 2);
   network_swap(keys, 1, 3);
   network_swap(keys, 4, 6);
@@ -449,14 +462,39 @@ inline void network_sort_15(int* keys)
 __attribute__((always_inline))
 inline void network_sort_16(int* keys)
 {
-  network_swap(keys, 0, 1);
-  network_swap(keys, 2, 3);
-  network_swap(keys, 4, 5);
-  network_swap(keys, 6, 7);
-  network_swap(keys, 8, 9);
-  network_swap(keys, 10, 11);
-  network_swap(keys, 12, 13);
-  network_swap(keys, 14, 15);
+  // Serialize first reads
+  const int key0 = keys[0];
+  const int key1 = keys[1];
+  const int key2 = keys[2];
+  const int key3 = keys[3];
+  const int key4 = keys[4];
+  const int key5 = keys[5];
+  const int key6 = keys[6];
+  const int key7 = keys[7];
+  const int key8 = keys[8];
+  const int key9 = keys[9];
+  const int key10 = keys[10];
+  const int key11 = keys[11];
+  const int key12 = keys[12];
+  const int key13 = keys[13];
+  const int key14 = keys[14];
+  const int key15 = keys[15];
+  keys[0] = min(key0, key1);
+  keys[1] = max(key0, key1);
+  keys[2] = min(key2, key3);
+  keys[3] = max(key2, key3);
+  keys[4] = min(key4, key5);
+  keys[5] = max(key4, key5);
+  keys[6] = min(key6, key7);
+  keys[7] = max(key6, key7);
+  keys[8] = min(key8, key9);
+  keys[9] = max(key8, key9);
+  keys[10] = min(key10, key11);
+  keys[11] = max(key10, key11);
+  keys[12] = min(key12, key13);
+  keys[13] = max(key12, key13);
+  keys[14] = max(key14, key15);
+  keys[15] = max(key14, key15);
   network_swap(keys, 0, 2);
   network_swap(keys, 4, 6);
   network_swap(keys, 8, 10);
