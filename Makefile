@@ -101,40 +101,40 @@ $(BUILD_DIR_PATH)/benchmark.o: benchmark.h benchmark.c
 $(BUILD_DIR_PATH)/std_sort.o: std_sort.h std_sort.cpp
 $(BUILD_DIR_PATH)/option.o: option.h option.c
 
-# Deploy
+# Deploy (we assume updated binaries and don't build nor link anything)
 deploy: bubble insert heap merge merge_hybrid quick count radix network test benchmark
 
-bubble: $(BUILD_DIR_PATH)/bubble$(EXE_SUFFIX)
+bubble:
 	cp $(BUILD_DIR_PATH)/bubble$(EXE_SUFFIX) bubble
 
-insert: $(BUILD_DIR_PATH)/insert$(EXE_SUFFIX)
+insert:
 	cp $(BUILD_DIR_PATH)/insert$(EXE_SUFFIX) insert
 
-heap: $(BUILD_DIR_PATH)/heap$(EXE_SUFFIX)
+heap:
 	cp $(BUILD_DIR_PATH)/heap$(EXE_SUFFIX) heap
 
-merge: $(BUILD_DIR_PATH)/merge$(EXE_SUFFIX)
+merge:
 	cp $(BUILD_DIR_PATH)/merge$(EXE_SUFFIX) merge
 
-merge_hybrid: $(BUILD_DIR_PATH)/merge_hybrid$(EXE_SUFFIX)
+merge_hybrid:
 	cp $(BUILD_DIR_PATH)/merge_hybrid$(EXE_SUFFIX) merge_hybrid
 
-quick: $(BUILD_DIR_PATH)/quick$(EXE_SUFFIX)
+quick:
 	cp $(BUILD_DIR_PATH)/quick$(EXE_SUFFIX) quick
 
-count: $(BUILD_DIR_PATH)/count$(EXE_SUFFIX)
+count:
 	cp $(BUILD_DIR_PATH)/count$(EXE_SUFFIX) count
 
-radix: $(BUILD_DIR_PATH)/radix$(EXE_SUFFIX)
+radix:
 	cp $(BUILD_DIR_PATH)/radix$(EXE_SUFFIX) radix
 
-network: $(BUILD_DIR_PATH)/network$(EXE_SUFFIX)
+network:
 	cp $(BUILD_DIR_PATH)/network$(EXE_SUFFIX) network
 
-test: $(BUILD_DIR_PATH)/test$(EXE_SUFFIX)
+test:
 	cp $(BUILD_DIR_PATH)/test$(EXE_SUFFIX) test
 
-benchmark: $(BUILD_DIR_PATH)/benchmark$(EXE_SUFFIX)
+benchmark:
 	cp $(BUILD_DIR_PATH)/benchmark$(EXE_SUFFIX) benchmark
 
 # Inlining validation
@@ -154,6 +154,9 @@ $(BUILD_DIR_PATH)/%.ll: $(BUILD_DIR_PATH)/%.bc
 
 $(BUILD_DIR_PATH):
 	mkdir -p $(BUILD_DIR_PATH)
+
+# Phony
+.PHONY: deploy bubble insert heap merge merge_hybrid quick count radix network test benchmark clean
 
 # Clean
 clean:
