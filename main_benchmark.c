@@ -99,8 +99,8 @@ int main(int argc, char** argv)
     {wrap_radix_sort_short, "radix_sort_short", option_parse_command_line(argc, argv, "--radix-short-sort=", "-rss=", 0)}
   };
 
-  const int key_count = option_parse_command_line(argc, argv, "--key-count=", "-k=", 1 << 24);
-  const int split_key_count = option_parse_command_line(argc, argv, "--split-key-count=", "-s=", key_count);
+  const int key_count = option_parse_command_line(argc, argv, "--key-count=", "-kc=", 1) << option_parse_command_line(argc, argv, "--key-pow2=", "-kp=", 24);
+  const int split_key_count = option_parse_command_line(argc, argv, "--split-key-count=", "-sc=", 1) << option_parse_command_line(argc, argv, "--split-key-pow2", "-sp=", 24);
   const int inner_scope = option_parse_command_line(argc, argv, "--inner-scope=", "-i=", 1);
   const int repeat_count = 20;
 
