@@ -1,8 +1,12 @@
 # Configure build
 include Configuration
 
+EXE_NAMES=bubble insert heap merge merge_hybrid quick count radix network test benchmark
+
+BUILD_EXE_PATHS=$(addprefix $(BUILD_DIR_PATH)/, $(addsuffix $(EXE_SUFFIX), $(EXE_NAMES)))
+
 # Projects
-all: $(BUILD_DIR_PATH)/bubble$(EXE_SUFFIX) $(BUILD_DIR_PATH)/insert$(EXE_SUFFIX) $(BUILD_DIR_PATH)/heap$(EXE_SUFFIX) $(BUILD_DIR_PATH)/merge$(EXE_SUFFIX) $(BUILD_DIR_PATH)/merge_hybrid$(EXE_SUFFIX) $(BUILD_DIR_PATH)/quick$(EXE_SUFFIX) $(BUILD_DIR_PATH)/count$(EXE_SUFFIX) $(BUILD_DIR_PATH)/radix$(EXE_SUFFIX) $(BUILD_DIR_PATH)/network$(EXE_SUFFIX) $(BUILD_DIR_PATH)/test$(EXE_SUFFIX) $(BUILD_DIR_PATH)/benchmark$(EXE_SUFFIX)
+all: $(BUILD_EXE_PATHS)
 
 # If we depend on $(BUILD_DIR_PATH) for each sort, we modify its timestamp and make link everything again
 BUILD_PROJECT_DEPENDENCIES=$(filter-out $(wildcard $(BUILD_DIR_PATH)), $(BUILD_DIR_PATH)) Configuration
@@ -101,40 +105,42 @@ $(BUILD_DIR_PATH)/benchmark.o: benchmark.h benchmark.c
 $(BUILD_DIR_PATH)/std_sort.o: std_sort.h std_sort.cpp
 $(BUILD_DIR_PATH)/option.o: option.h option.c
 
-# Deploy (we assume updated binaries and don't build nor link anything)
-deploy: bubble insert heap merge merge_hybrid quick count radix network test benchmark
+# Deploy (we assume updated binaries and don't build nor link anything
+DEPLOY_EXE_PATHS=$(EXE_NAMES)
+DEPLOY_EXE_TARGETS=$(addprefix deploy_, $(EXE_NAMES))
+deploy: $(DEPLOY_EXE_TARGETS)
 
-bubble:
+deploy_bubble:
 	cp $(BUILD_DIR_PATH)/bubble$(EXE_SUFFIX) bubble
 
-insert:
+deploy_insert:
 	cp $(BUILD_DIR_PATH)/insert$(EXE_SUFFIX) insert
 
-heap:
+deploy_heap:
 	cp $(BUILD_DIR_PATH)/heap$(EXE_SUFFIX) heap
 
-merge:
+deploy_merge:
 	cp $(BUILD_DIR_PATH)/merge$(EXE_SUFFIX) merge
 
-merge_hybrid:
+deploy_merge_hybrid:
 	cp $(BUILD_DIR_PATH)/merge_hybrid$(EXE_SUFFIX) merge_hybrid
 
-quick:
+deploy_quick:
 	cp $(BUILD_DIR_PATH)/quick$(EXE_SUFFIX) quick
 
-count:
+deploy_count:
 	cp $(BUILD_DIR_PATH)/count$(EXE_SUFFIX) count
 
-radix:
+deploy_radix:
 	cp $(BUILD_DIR_PATH)/radix$(EXE_SUFFIX) radix
 
-network:
+deploy_network:
 	cp $(BUILD_DIR_PATH)/network$(EXE_SUFFIX) network
 
-test:
+deploy_test:
 	cp $(BUILD_DIR_PATH)/test$(EXE_SUFFIX) test
 
-benchmark:
+deploy_benchmark:
 	cp $(BUILD_DIR_PATH)/benchmark$(EXE_SUFFIX) benchmark
 
 # Inlining validation
@@ -156,7 +162,7 @@ $(BUILD_DIR_PATH):
 	mkdir -p $(BUILD_DIR_PATH)
 
 # Phony
-.PHONY: deploy bubble insert heap merge merge_hybrid quick count radix network test benchmark clean
+.PHONY: deploy clean $(DEPLOY_EXE_TARGETS)
 
 # Clean
 clean:
@@ -164,3 +170,5 @@ clean:
 	rm -rf *_clangcl_*
 	rm -rf *_gcc_*	
 	rm -rf .release* .debug* .profile*
+	rm -rf $(DEPLOY_EXE_PATHS)
+
