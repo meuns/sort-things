@@ -2,11 +2,22 @@
 
 #include <limits.h>
 
+// Temporary workaround linking issue on _WIN32
+#if defined(_WIN32)
+  #define WA_INLINE
+#else
+  #define WA_INLINE inline
+#endif
+
 typedef int (*radix_key_t)(const int key, const int byte_index);
 
+typedef int (*radix_should_sort_digit_t)(int* restrict histogram, const int histogram_size, const int key_count);
+
 __attribute__((always_inline))
-static inline int radix_must_sort_digit(int* restrict histogram, const int histogram_size, const int key_count)
+WA_INLINE int radix_should_sort_digit(int* restrict histogram, const int histogram_size, const int key_count)
 {
+  // Using this requires some knowledges about the key distribution or 
+  // this is a performance loss even for very large array (1<<20 uniformly distributed keys)
   for (int bin_index = 0; bin_index < histogram_size; ++bin_index)
   {
     if (histogram[bin_index] == key_count)
@@ -15,6 +26,12 @@ static inline int radix_must_sort_digit(int* restrict histogram, const int histo
     }
   }
 
+  return 1;
+}
+
+__attribute__((always_inline))
+WA_INLINE int radix_always_sort_digit(int* restrict histogram __attribute__((unused)), const int histogram_size __attribute__((unused)), const int key_count __attribute__((unused)))
+{
   return 1;
 }
 
@@ -181,7 +198,7 @@ static inline int radix_key_byteX(const int key, const int pass_index)
 }
 
 __attribute__((noinline))
-void radix_sort_byte(int* restrict keys, const int key_count, int* restrict temp_keys)
+void radix_sort_byte(int* restrict keys, const int key_count, int* restrict temp_keys, radix_should_sort_digit_t should_sort_digit)
 {
   const int histogram_size = UCHAR_MAX + 1;
   int histogram0[histogram_size];
@@ -210,10 +227,10 @@ void radix_sort_byte(int* restrict keys, const int key_count, int* restrict temp
     histogram3[key_bin3]++;
   }
 
-  const int must_sort0 = radix_must_sort_digit(histogram0, histogram_size, key_count);
-  const int must_sort1 = radix_must_sort_digit(histogram1, histogram_size, key_count);
-  const int must_sort2 = radix_must_sort_digit(histogram2, histogram_size, key_count);
-  const int must_sort3 = radix_must_sort_digit(histogram3, histogram_size, key_count);
+  const int must_sort0 = should_sort_digit(histogram0, histogram_size, key_count);
+  const int must_sort1 = should_sort_digit(histogram1, histogram_size, key_count);
+  const int must_sort2 = should_sort_digit(histogram2, histogram_size, key_count);
+  const int must_sort3 = should_sort_digit(histogram3, histogram_size, key_count);
   
   for (int bin_index = 1; bin_index < histogram_size; ++bin_index)
   {

@@ -71,7 +71,7 @@ void wrap_radix_sort_halfbyte(int* keys, const int key_count)
 void wrap_radix_sort_byte(int* keys, const int key_count)
 {
   int temp_keys[key_count];
-  radix_sort_byte(keys, key_count, temp_keys);
+  radix_sort_byte(keys, key_count, temp_keys, radix_always_sort_digit);
 }
 
 void wrap_radix_sort_short(int* keys, const int key_count)
