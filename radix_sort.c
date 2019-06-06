@@ -5,6 +5,20 @@
 typedef int (*radix_key_t)(const int key, const int byte_index);
 
 __attribute__((always_inline))
+static inline int radix_must_sort_digit(int* restrict histogram, const int histogram_size, const int key_count)
+{
+  for (int bin_index = 0; bin_index < histogram_size; ++bin_index)
+  {
+    if (histogram[bin_index] == key_count)
+    {
+      return 0;
+    }
+  }
+
+  return 1;
+}
+
+__attribute__((always_inline))
 static inline int radix_key_halfbyte7(const int key, const int byte_index __attribute__((unused)))
 {
   const unsigned int flipped_key = (unsigned int)key ^ 0x80000000U;
@@ -195,6 +209,11 @@ void radix_sort_byte(int* restrict keys, const int key_count, int* restrict temp
     histogram2[key_bin2]++;
     histogram3[key_bin3]++;
   }
+
+  const int must_sort0 = radix_must_sort_digit(histogram0, histogram_size, key_count);
+  const int must_sort1 = radix_must_sort_digit(histogram1, histogram_size, key_count);
+  const int must_sort2 = radix_must_sort_digit(histogram2, histogram_size, key_count);
+  const int must_sort3 = radix_must_sort_digit(histogram3, histogram_size, key_count);
   
   for (int bin_index = 1; bin_index < histogram_size; ++bin_index)
   {
@@ -207,38 +226,65 @@ void radix_sort_byte(int* restrict keys, const int key_count, int* restrict temp
   
   int* input_keys = keys;
   int* output_keys = temp_keys;
-  for (int key_index = key_count - 1; key_index >= 0; --key_index)
+
+  if (must_sort0)
   {
-    const int key = input_keys[key_index];
-    const int key_bin = radix_key_byteX(key, 0);
-    output_keys[--histogram0[key_bin]] = key;
+    for (int key_index = key_count - 1; key_index >= 0; --key_index)
+    {
+      const int key = input_keys[key_index];
+      const int key_bin = radix_key_byteX(key, 0);
+      output_keys[--histogram0[key_bin]] = key;
+    }
+
+    input_keys = temp_keys;
+    output_keys = keys;
   }
 
-  input_keys = temp_keys;
-  output_keys = keys;
-  for (int key_index = key_count - 1; key_index >= 0; --key_index)
+  if (must_sort1)
   {
-    const int key = input_keys[key_index];
-    const int key_bin = radix_key_byteX(key, 1);
-    output_keys[--histogram1[key_bin]] = key;
+    for (int key_index = key_count - 1; key_index >= 0; --key_index)
+    {
+      const int key = input_keys[key_index];
+      const int key_bin = radix_key_byteX(key, 1);
+      output_keys[--histogram1[key_bin]] = key;
+    }
+
+    input_keys = keys;
+    output_keys = temp_keys;
   }
 
-  input_keys = keys;
-  output_keys = temp_keys;
-  for (int key_index = key_count - 1; key_index >= 0; --key_index)
+  if (must_sort2)
   {
-    const int key = input_keys[key_index];
-    const int key_bin = radix_key_byteX(key, 2);
-    output_keys[--histogram2[key_bin]] = key;
+    for (int key_index = key_count - 1; key_index >= 0; --key_index)
+    {
+      const int key = input_keys[key_index];
+      const int key_bin = radix_key_byteX(key, 2);
+      output_keys[--histogram2[key_bin]] = key;
+    }
+
+    input_keys = temp_keys;
+    output_keys = keys;
   }
 
-  input_keys = temp_keys;
-  output_keys = keys;
-  for (int key_index = key_count - 1; key_index >= 0; --key_index)
+  if (must_sort3)
   {
-    const int key = input_keys[key_index];
-    const int key_bin = radix_key_byte3(key, 3);
-    output_keys[--histogram3[key_bin]] = key;
+    for (int key_index = key_count - 1; key_index >= 0; --key_index)
+    {
+      const int key = input_keys[key_index];
+      const int key_bin = radix_key_byte3(key, 3);
+      output_keys[--histogram3[key_bin]] = key;
+    }
+
+    input_keys = temp_keys;
+    output_keys = keys;
+  }
+
+  if (output_keys == keys)
+  {
+    for (int key_index = 0; key_index < key_count; ++key_index)
+    {
+      output_keys[key_index] = input_keys[key_index];
+    }
   }
 }
 
