@@ -99,9 +99,12 @@ int main(int argc, char** argv)
     {wrap_radix_sort_short, "radix_sort_short", option_parse_command_line(argc, argv, "--radix-short-sort=", "-rss=", 0)}
   };
 
-  const int key_count = option_parse_command_line(argc, argv, "--key-count=", "-kc=", 1) << option_parse_command_line(argc, argv, "--key-pow2=", "-kp=", 24);
-  const int split_key_count = option_parse_command_line(argc, argv, "--split-key-count=", "-sc=", 1) << option_parse_command_line(argc, argv, "--split-key-pow2", "-sp=", 24);
+  const int key_power = option_parse_command_line(argc, argv, "--key-pow2=", "-kp=", 24);
+  const int key_count = option_parse_command_line(argc, argv, "--key-count=", "-kc=", 1) << key_power;
+  const int split_key_power = option_parse_command_line(argc, argv, "--split-key-pow2", "-sp=", key_power);
+  const int split_key_count = option_parse_command_line(argc, argv, "--split-key-count=", "-sc=", 1) << split_key_power;
   const int inner_scope = option_parse_command_line(argc, argv, "--inner-scope=", "-i=", 1);
+  const int verbose = option_parse_command_line(argc, argv, "--verbose=", "-v=", 1);
   const int repeat_count = 20;
 
   int* ref_keys = (int*)malloc((unsigned int)key_count * sizeof(int));
@@ -109,7 +112,10 @@ int main(int argc, char** argv)
   int* keys = (int*)malloc((unsigned int)key_count * sizeof(int));
   benchmark_generate_random_keys(ref_keys, key_count, 42, INT_MIN, INT_MAX);
 
-  printf("Key Count %d Split %d\n", key_count, split_key_count);
+  if (verbose)
+  {
+    printf("Key Count %d Split %d\n", key_count, split_key_count);
+  }
 
   const int sort_count = sizeof(benchmarks) / sizeof(benchmarks[0]);
   for (int sort_index = 0; sort_index < sort_count; ++sort_index)
@@ -124,12 +130,20 @@ int main(int argc, char** argv)
     const char* sort_name = benchmark.sort_name;
     const int split_count = key_count / split_key_count;
 
-    int duration = 0;    
-    printf("Function %s count %d split %d inner %d:\n", sort_name, key_count, split_key_count, inner_scope);
+    int duration = 0;
+
+    if (verbose)
+    {
+      printf("Function %s count %d split %d inner %d:\n", sort_name, key_count, split_key_count, inner_scope);
+    }
 
     for (int repeat_index = 0; repeat_index < repeat_count; ++repeat_index)
     {
-      printf("  %.3d", repeat_index);
+      if (verbose)
+      {
+        printf("  %.3d", repeat_index);
+      }
+
       memcpy(keys, ref_keys, (unsigned int)key_count * sizeof(int));
 
       if (inner_scope)
@@ -142,7 +156,11 @@ int main(int argc, char** argv)
           repeat_duration += benchmark_end_us(inner_scope1);
         }
         
-        printf(" %dus\n", repeat_duration);
+        if (verbose)
+        {
+          printf(" %dus\n", repeat_duration);
+        }
+
         duration += repeat_duration;
       }
       else
@@ -155,19 +173,34 @@ int main(int argc, char** argv)
         }
         repeat_duration += benchmark_end_us(inner_scope1);
         
-        printf(" %dus\n", repeat_duration);
+        if (verbose)
+        {
+          printf(" %dus\n", repeat_duration);
+        }
+
         duration += repeat_duration;
       }
     }
 
-    printf("  took an average %dus\n", duration / repeat_count);
+    const int average_duration = duration / repeat_count;
+    if (verbose)
+    {
+      printf("  took an average %dus\n", average_duration);
+    }
+    else
+    {
+      printf("  %dus\n", average_duration);
+    }
   }
 
   free(keys);
   free(temp_keys);
   free(ref_keys);
 
-  printf("Done !\n");
+  if (verbose)
+  {
+    printf("Done !\n");
+  }
 
   return 0;
 }
