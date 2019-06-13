@@ -1,5 +1,7 @@
 #include "radix_sort.h"
 
+#include "debug.h"
+
 #include <limits.h>
 
 typedef int (*radix_key_t)(const int key, const int byte_index);
@@ -185,7 +187,7 @@ void radix_sort_byte(int* restrict keys, const int key_count, int* restrict temp
   
   for (int key_index = 0; key_index < key_count; ++key_index)
   {
-    const int key = keys[key_index];
+    const int key = -keys[key_index];
     const int key_bin0 = radix_key_byteX(key, 0);
     const int key_bin1 = radix_key_byteX(key, 1);
     const int key_bin2 = radix_key_byteX(key, 2);
@@ -196,49 +198,69 @@ void radix_sort_byte(int* restrict keys, const int key_count, int* restrict temp
     histogram3[key_bin3]++;
   }
   
-  for (int bin_index = 1; bin_index < histogram_size; ++bin_index)
+  const int last_bin_index = histogram_size - 1;
+  int sum0 = histogram0[last_bin_index];
+  int sum1 = histogram1[last_bin_index];
+  int sum2 = histogram2[last_bin_index];
+  int sum3 = histogram3[last_bin_index];
+
+  histogram0[last_bin_index] = 0;
+  histogram1[last_bin_index] = 0;
+  histogram2[last_bin_index] = 0;
+  histogram3[last_bin_index] = 0;
+
+  for (int bin_index = last_bin_index - 1; bin_index >= 0; --bin_index)
   {
-    const int previous_bin_index = bin_index - 1;
-    histogram0[bin_index] += histogram0[previous_bin_index];
-    histogram1[bin_index] += histogram1[previous_bin_index];
-    histogram2[bin_index] += histogram2[previous_bin_index];
-    histogram3[bin_index] += histogram3[previous_bin_index];
+    const int next0 = histogram0[bin_index];
+    const int next1 = histogram1[bin_index];
+    const int next2 = histogram2[bin_index];
+    const int next3 = histogram3[bin_index];
+
+    histogram0[bin_index] = sum0;
+    histogram1[bin_index] = sum1;
+    histogram2[bin_index] = sum2;
+    histogram3[bin_index] = sum3;
+
+    sum0 += next0;
+    sum1 += next1;
+    sum2 += next2;
+    sum3 += next3;
   }
   
   int* input_keys = keys;
   int* output_keys = temp_keys;
-  for (int key_index = key_count - 1; key_index >= 0; --key_index)
+  for (int key_index = 0; key_index < key_count; ++key_index)
   {
-    const int key = input_keys[key_index];
+    const int key = -input_keys[key_index];
     const int key_bin = radix_key_byteX(key, 0);
-    output_keys[--histogram0[key_bin]] = key;
+    output_keys[histogram0[key_bin]++] = key;
   }
 
   input_keys = temp_keys;
   output_keys = keys;
-  for (int key_index = key_count - 1; key_index >= 0; --key_index)
+  for (int key_index = 0; key_index < key_count; ++key_index)
   {
     const int key = input_keys[key_index];
     const int key_bin = radix_key_byteX(key, 1);
-    output_keys[--histogram1[key_bin]] = key;
+    output_keys[histogram1[key_bin]++] = key;
   }
 
   input_keys = keys;
   output_keys = temp_keys;
-  for (int key_index = key_count - 1; key_index >= 0; --key_index)
+  for (int key_index = 0; key_index < key_count; ++key_index)
   {
     const int key = input_keys[key_index];
     const int key_bin = radix_key_byteX(key, 2);
-    output_keys[--histogram2[key_bin]] = key;
+    output_keys[histogram2[key_bin]++] = key;
   }
 
   input_keys = temp_keys;
   output_keys = keys;
-  for (int key_index = key_count - 1; key_index >= 0; --key_index)
+  for (int key_index = 0; key_index < key_count; ++key_index)
   {
     const int key = input_keys[key_index];
     const int key_bin = radix_key_byte3(key, 3);
-    output_keys[--histogram3[key_bin]] = key;
+    output_keys[histogram3[key_bin]++] = -key;
   }
 }
 
