@@ -172,10 +172,14 @@ __attribute__((noinline))
 void radix_sort_byte(int* restrict keys, const int key_count, int* restrict temp_keys)
 {
   const int histogram_size = UCHAR_MAX + 1;
-  int histogram0[histogram_size];
-  int histogram1[histogram_size];
-  int histogram2[histogram_size];
-  int histogram3[histogram_size];
+  int padded_histogram0[1 + histogram_size];
+  int padded_histogram1[1 + histogram_size];
+  int padded_histogram2[1 + histogram_size];
+  int padded_histogram3[1 + histogram_size];
+  int* histogram0 = &padded_histogram0[1];
+  int* histogram1 = &padded_histogram1[1];
+  int* histogram2 = &padded_histogram2[1];
+  int* histogram3 = &padded_histogram3[1];
   
   for (int bin_index = 0; bin_index < histogram_size; ++bin_index)
   {
@@ -185,6 +189,7 @@ void radix_sort_byte(int* restrict keys, const int key_count, int* restrict temp
     histogram3[bin_index] = 0;
   }
   
+  // We shift bins to the left for incrementing in forward loops
   for (int key_index = 0; key_index < key_count; ++key_index)
   {
     const int key = -keys[key_index];
@@ -192,41 +197,28 @@ void radix_sort_byte(int* restrict keys, const int key_count, int* restrict temp
     const int key_bin1 = radix_key_byteX(key, 1);
     const int key_bin2 = radix_key_byteX(key, 2);
     const int key_bin3 = radix_key_byte3(key, 3);
-    histogram0[key_bin0]++;
-    histogram1[key_bin1]++;
-    histogram2[key_bin2]++;
-    histogram3[key_bin3]++;
+    histogram0[key_bin0 - 1]++;
+    histogram1[key_bin1 - 1]++;
+    histogram2[key_bin2 - 1]++;
+    histogram3[key_bin3 - 1]++;
   }
   
-  const int last_bin_index = histogram_size - 1;
-  int sum0 = histogram0[last_bin_index] - 1;
-  int sum1 = histogram1[last_bin_index] - 1;
-  int sum2 = histogram2[last_bin_index] - 1;
-  int sum3 = histogram3[last_bin_index] - 1;
+  // We sum the histograms backwards
+  --histogram0[histogram_size - 1];
+  --histogram1[histogram_size - 1];
+  --histogram2[histogram_size - 1];
+  --histogram3[histogram_size - 1];
 
-  histogram0[last_bin_index] = -1;
-  histogram1[last_bin_index] = -1;
-  histogram2[last_bin_index] = -1;
-  histogram3[last_bin_index] = -1;
-
-  for (int bin_index = last_bin_index - 1; bin_index >= 0; --bin_index)
+  for (int bin_index = histogram_size - 2; bin_index >= 0; --bin_index)
   {
-    const int next0 = histogram0[bin_index];
-    const int next1 = histogram1[bin_index];
-    const int next2 = histogram2[bin_index];
-    const int next3 = histogram3[bin_index];
-
-    histogram0[bin_index] = sum0;
-    histogram1[bin_index] = sum1;
-    histogram2[bin_index] = sum2;
-    histogram3[bin_index] = sum3;
-
-    sum0 += next0;
-    sum1 += next1;
-    sum2 += next2;
-    sum3 += next3;
+    const int next_bin_index = bin_index + 1;
+    histogram0[bin_index] += histogram0[next_bin_index];
+    histogram1[bin_index] += histogram1[next_bin_index];
+    histogram2[bin_index] += histogram2[next_bin_index];
+    histogram3[bin_index] += histogram3[next_bin_index];
   }
   
+  // These loops sort keys from the biggest key to lowest so we flip the sign
   int* input_keys = keys;
   int* output_keys = temp_keys;
   for (int key_index = 0; key_index < key_count; ++key_index)
