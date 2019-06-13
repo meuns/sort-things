@@ -199,15 +199,15 @@ void radix_sort_byte(int* restrict keys, const int key_count, int* restrict temp
   }
   
   const int last_bin_index = histogram_size - 1;
-  int sum0 = histogram0[last_bin_index];
-  int sum1 = histogram1[last_bin_index];
-  int sum2 = histogram2[last_bin_index];
-  int sum3 = histogram3[last_bin_index];
+  int sum0 = histogram0[last_bin_index] - 1;
+  int sum1 = histogram1[last_bin_index] - 1;
+  int sum2 = histogram2[last_bin_index] - 1;
+  int sum3 = histogram3[last_bin_index] - 1;
 
-  histogram0[last_bin_index] = 0;
-  histogram1[last_bin_index] = 0;
-  histogram2[last_bin_index] = 0;
-  histogram3[last_bin_index] = 0;
+  histogram0[last_bin_index] = -1;
+  histogram1[last_bin_index] = -1;
+  histogram2[last_bin_index] = -1;
+  histogram3[last_bin_index] = -1;
 
   for (int bin_index = last_bin_index - 1; bin_index >= 0; --bin_index)
   {
@@ -216,10 +216,10 @@ void radix_sort_byte(int* restrict keys, const int key_count, int* restrict temp
     const int next2 = histogram2[bin_index];
     const int next3 = histogram3[bin_index];
 
-    histogram0[bin_index] = sum0 - 1;
-    histogram1[bin_index] = sum1 - 1;
-    histogram2[bin_index] = sum2 - 1;
-    histogram3[bin_index] = sum3 - 1;
+    histogram0[bin_index] = sum0;
+    histogram1[bin_index] = sum1;
+    histogram2[bin_index] = sum2;
+    histogram3[bin_index] = sum3;
 
     sum0 += next0;
     sum1 += next1;
