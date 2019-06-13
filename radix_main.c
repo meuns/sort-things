@@ -3,20 +3,25 @@
 
 int main()
 {
-  int keys[] = {
-    -1100, 1200, 0, 200,
-    500, -400, 1400, 100,
-    900, 900, 600, 600,
-    100, -200, 300, 1700
+  unsigned int keys[] = {
+    0x00200010,
+    0x00102010,
+    0x80000000,
+    0x80102010,
+    0x00000000,
+    0x80000002,
+    0x80000050,
+    0x00000000
   };
 
   int key_count = sizeof(keys) / sizeof(keys[0]);
 
   int temp_keys[key_count];
 
-  radix_sort_byte(keys, key_count, temp_keys);
+  radix_sort_byte((int*)keys, key_count, temp_keys);
 
-  debug_print_keys(keys, key_count);
+  debug_print_keys((int*)keys, key_count);
+  debug_print_hex_keys((int*)keys, key_count);
 
   return 0;
 }
