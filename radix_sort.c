@@ -216,10 +216,10 @@ void radix_sort_byte(int* restrict keys, const int key_count, int* restrict temp
     const int next2 = histogram2[bin_index];
     const int next3 = histogram3[bin_index];
 
-    histogram0[bin_index] = sum0;
-    histogram1[bin_index] = sum1;
-    histogram2[bin_index] = sum2;
-    histogram3[bin_index] = sum3;
+    histogram0[bin_index] = sum0 - 1;
+    histogram1[bin_index] = sum1 - 1;
+    histogram2[bin_index] = sum2 - 1;
+    histogram3[bin_index] = sum3 - 1;
 
     sum0 += next0;
     sum1 += next1;
@@ -233,7 +233,7 @@ void radix_sort_byte(int* restrict keys, const int key_count, int* restrict temp
   {
     const int key = -input_keys[key_index];
     const int key_bin = radix_key_byteX(key, 0);
-    output_keys[histogram0[key_bin]++] = key;
+    output_keys[++histogram0[key_bin]] = key;
   }
 
   input_keys = temp_keys;
@@ -242,7 +242,7 @@ void radix_sort_byte(int* restrict keys, const int key_count, int* restrict temp
   {
     const int key = input_keys[key_index];
     const int key_bin = radix_key_byteX(key, 1);
-    output_keys[histogram1[key_bin]++] = key;
+    output_keys[++histogram1[key_bin]] = key;
   }
 
   input_keys = keys;
@@ -251,7 +251,7 @@ void radix_sort_byte(int* restrict keys, const int key_count, int* restrict temp
   {
     const int key = input_keys[key_index];
     const int key_bin = radix_key_byteX(key, 2);
-    output_keys[histogram2[key_bin]++] = key;
+    output_keys[++histogram2[key_bin]] = key;
   }
 
   input_keys = temp_keys;
@@ -260,7 +260,7 @@ void radix_sort_byte(int* restrict keys, const int key_count, int* restrict temp
   {
     const int key = input_keys[key_index];
     const int key_bin = radix_key_byte3(key, 3);
-    output_keys[histogram3[key_bin]++] = -key;
+    output_keys[++histogram3[key_bin]] = -key;
   }
 }
 
