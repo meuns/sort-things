@@ -204,12 +204,13 @@ void radix_sort_byte(int* restrict keys, const int key_count, int* restrict temp
   }
   
   // We sum the histograms backwards
-  --histogram0[histogram_size - 1];
-  --histogram1[histogram_size - 1];
-  --histogram2[histogram_size - 1];
-  --histogram3[histogram_size - 1];
+  const int last_bin_index = histogram_size - 1;
+  --histogram0[last_bin_index];
+  --histogram1[last_bin_index];
+  --histogram2[last_bin_index];
+  --histogram3[last_bin_index];
 
-  for (int bin_index = histogram_size - 2; bin_index >= 0; --bin_index)
+  for (int bin_index = last_bin_index - 1; bin_index >= 0; --bin_index)
   {
     const int next_bin_index = bin_index + 1;
     histogram0[bin_index] += histogram0[next_bin_index];
