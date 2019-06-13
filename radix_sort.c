@@ -203,12 +203,12 @@ void radix_sort_byte(int* restrict keys, const int key_count, int* restrict temp
     histogram3[key_bin3 - 1]++;
   }
   
-  // We want to use preincrementation
+  // We want to use preincrementation and we know last bins are equal to 0
   const int last_bin_index = histogram_size - 1;
-  --histogram0[last_bin_index];
-  --histogram1[last_bin_index];
-  --histogram2[last_bin_index];
-  --histogram3[last_bin_index];
+  histogram0[last_bin_index] = -1;
+  histogram1[last_bin_index] = -1;
+  histogram2[last_bin_index] = -1;
+  histogram3[last_bin_index] = -1;
 
   // We sum the histograms backwards
   for (int bin_index = last_bin_index - 1; bin_index >= 0; --bin_index)
