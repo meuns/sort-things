@@ -98,7 +98,7 @@ $(BUILD_DIR_PATH)/debug.o: debug.h debug.c
 # Benchmark
 MAIN_BENCHMARK_MODULES=$(ALL_SORT_MODULES) $(BUILD_DIR_PATH)/main_benchmark.o $(BUILD_DIR_PATH)/benchmark.o $(BUILD_DIR_PATH)/std_sort.o $(BUILD_DIR_PATH)/option.o $(BUILD_DIR_PATH)/test.o $(BUILD_DIR_PATH)/debug.o
 $(BUILD_DIR_PATH)/benchmark$(EXE_SUFFIX): $(BUILD_PROJECT_DEPENDENCIES) $(MAIN_BENCHMARK_MODULES)
-	$(CC) -o $@ $(MAIN_BENCHMARK_MODULES) $(LDFLAGS)
+	$(CC) -o $@ $(MAIN_BENCHMARK_MODULES) $(LDFLAGS) -lstdc++
 
 $(BUILD_DIR_PATH)/main_benchmark.o: $(ALL_SORT_HEADERS) benchmark.h std_sort.h debug.h main_benchmark.c
 $(BUILD_DIR_PATH)/benchmark.o: benchmark.h benchmark.c
