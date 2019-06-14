@@ -8,7 +8,7 @@ else
 	BUILD_DIR_PATH=./.release
 endif
 
-BRANCH_NAME=master
+BRANCH_NAME:=$(shell git symbolic-ref --short HEAD)
 BUILD_DIR_PATH:=$(BUILD_DIR_PATH)_$(BRANCH_NAME)
 
 ifeq ($(COMPILER), GCC)
