@@ -6,3 +6,14 @@
 .release*
 .debug*
 .profile*
+benchmark
+bubble
+count
+heap
+insert
+merge
+merge_hybrid
+network
+quick
+radix
+test
