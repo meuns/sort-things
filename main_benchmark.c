@@ -51,7 +51,7 @@ void wrap_heap_sort(int* keys, const int key_count, int* temp_keys __attribute__
 
 void wrap_merge_sort(int* keys, const int key_count, int* temp_keys)
 {
-  merge_sort(keys, key_count, temp_keys);
+  merge_sort(keys, key_count, temp_keys, merge_compare_le);
 }
 
 void wrap_merge_sort_hybrid(int* keys, const int key_count, int* temp_keys)

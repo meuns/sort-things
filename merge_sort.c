@@ -7,7 +7,7 @@
   #define WA_INLINE inline
 #endif
 
-__attribute__((always_inline))
+__attribute__((noinline))
 WA_INLINE int merge_compare_le(int left_key, int right_key)
 {
   return left_key <= right_key;
