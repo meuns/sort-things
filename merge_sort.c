@@ -8,7 +8,13 @@
 #endif
 
 __attribute__((always_inline))
-WA_INLINE void merge_keys(int* restrict left_keys, const int left_key_count, int* restrict right_keys, const int right_key_count, int* restrict merged_keys)
+WA_INLINE int merge_compare_le(int left_key, int right_key)
+{
+  return left_key <= right_key;
+}
+
+__attribute__((always_inline))
+WA_INLINE void merge_keys(int* restrict left_keys, const int left_key_count, int* restrict right_keys, const int right_key_count, int* restrict merged_keys, merge_compare_keys_t merge_compare)
 {
   int left_index = 0;
   int left_key = left_keys[left_index];
@@ -18,7 +24,7 @@ WA_INLINE void merge_keys(int* restrict left_keys, const int left_key_count, int
   
   while (left_index < left_key_count && right_index < right_key_count)
   {
-    if (left_key <= right_key)
+    if (merge_compare(left_key, right_key))
     {
       merged_keys[merged_index] = left_key;
       left_index = left_index + 1;
@@ -50,7 +56,7 @@ WA_INLINE void merge_keys(int* restrict left_keys, const int left_key_count, int
 }
 
 __attribute__((noinline))
-void merge_sort(int* keys, const int key_count, int* temp_keys)
+void merge_sort(int* keys, const int key_count, int* temp_keys, merge_compare_keys_t merge_compare)
 {
   int* input_keys = keys;
   int* output_keys = temp_keys;
@@ -62,7 +68,7 @@ void merge_sort(int* keys, const int key_count, int* temp_keys)
     int next_merge_index = merge_index + left_key_count + right_key_count;
     while (next_merge_index <= key_count)
     {
-      merge_keys(&input_keys[merge_index], left_key_count, &input_keys[merge_index + left_key_count], right_key_count, &output_keys[merge_index]);
+      merge_keys(&input_keys[merge_index], left_key_count, &input_keys[merge_index + left_key_count], right_key_count, &output_keys[merge_index], merge_compare);
       merge_index = next_merge_index;
       next_merge_index = merge_index + left_key_count + right_key_count;
     }
@@ -70,7 +76,7 @@ void merge_sort(int* keys, const int key_count, int* temp_keys)
     if (merge_index + left_key_count < key_count)
     {
       right_key_count = key_count - (merge_index + left_key_count);
-      merge_keys(&input_keys[merge_index], left_key_count, &input_keys[merge_index + left_key_count], right_key_count, &output_keys[merge_index]);
+      merge_keys(&input_keys[merge_index], left_key_count, &input_keys[merge_index + left_key_count], right_key_count, &output_keys[merge_index], merge_compare);
     }
     else
     {

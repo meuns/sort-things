@@ -14,7 +14,7 @@ int main()
   
   int temp_keys[key_count];
   
-  merge_sort(keys, key_count, temp_keys);
+  merge_sort(keys, key_count, temp_keys, merge_compare_le);
   
   debug_print_keys(keys, key_count);
 
