@@ -55,8 +55,8 @@ WA_INLINE void merge_keys(int* restrict left_keys, const int left_key_count, int
   }
 }
 
-__attribute__((noinline))
-void merge_sort(int* keys, const int key_count, int* temp_keys, merge_compare_keys_t merge_compare)
+__attribute__((always_inline))
+WA_INLINE void merge_sort(int* keys, const int key_count, int* temp_keys, merge_compare_keys_t merge_compare)
 {
   int* input_keys = keys;
   int* output_keys = temp_keys;

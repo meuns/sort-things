@@ -49,9 +49,26 @@ void wrap_heap_sort(int* keys, const int key_count, int* temp_keys __attribute__
   heap_sort(keys, key_count);
 }
 
-void wrap_merge_sort(int* keys, const int key_count, int* temp_keys)
+__attribute__((always_inline))
+int benchmark_compare_le_lto(int left_key, int right_key)
 {
-  merge_sort(keys, key_count, temp_keys, merge_compare_le);
+  return left_key <= right_key;
+}
+
+void wrap_merge_sort_lto(int* keys, const int key_count, int* temp_keys)
+{
+  merge_sort(keys, key_count, temp_keys, benchmark_compare_le_lto);
+}
+
+__attribute__((noinline))
+int benchmark_compare_le_no_lto(int left_key, int right_key)
+{
+  return left_key <= right_key;
+}
+
+void wrap_merge_sort_no_lto(int* keys, const int key_count, int* temp_keys)
+{
+  merge_sort(keys, key_count, temp_keys, benchmark_compare_le_no_lto);
 }
 
 void wrap_merge_sort_hybrid(int* keys, const int key_count, int* temp_keys)
@@ -95,7 +112,8 @@ int main(int argc, char** argv)
     {wrap_insert_sort, "bubble_sort", option_parse_command_line(argc, argv, "--bubble-sort=", "-bs=", 0)},
     {wrap_insert_sort, "insert_sort", option_parse_command_line(argc, argv, "--insert-sort=", "-is=", 0)},
     {wrap_heap_sort, "heap_sort", option_parse_command_line(argc, argv, "--heap-sort=", "-hs=", 0)},
-    {wrap_merge_sort, "merge_sort", option_parse_command_line(argc, argv, "--merge-sort=", "-ms=", 0)},
+    {wrap_merge_sort_lto, "merge_sort (lto)", option_parse_command_line(argc, argv, "--merge-sort=", "-ms=", 0)},
+    {wrap_merge_sort_no_lto, "merge_sort (no lto)", option_parse_command_line(argc, argv, "--merge-sort-no-lto=", "-msnl=", 0)},
     {wrap_merge_sort_hybrid, "merge_sort_hybrid", option_parse_command_line(argc, argv, "--merge-sort-hybrid=", "-msh=", 0)},
     {wrap_quick_sort, "quick_sort", option_parse_command_line(argc, argv, "--quick-sort=", "-qs=", 0)},
     {wrap_std_sort, "std_sort", option_parse_command_line(argc, argv, "--std-sort=", "-std=", 0)},
