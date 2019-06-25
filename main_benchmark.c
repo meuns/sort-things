@@ -55,9 +55,17 @@ int benchmark_compare_le_lto(int left_key, int right_key)
   return left_key <= right_key;
 }
 
+__attribute__((always_inline))
+void benchmark_copy_lto(void* to_key, void* from_key)
+{
+  int* to_key_int = (int*)to_key;
+  int* from_key_int = (int*)from_key;
+  *to_key_int = *from_key_int;
+}
+
 void wrap_merge_sort_lto(int* keys, const int key_count, int* temp_keys)
 {
-  merge_sort(keys, key_count, temp_keys, benchmark_compare_le_lto);
+  merge_sort(keys, key_count, temp_keys, benchmark_compare_le_lto, benchmark_copy_lto);
 }
 
 __attribute__((noinline))
@@ -66,9 +74,17 @@ int benchmark_compare_le_no_lto(int left_key, int right_key)
   return left_key <= right_key;
 }
 
+__attribute__((noinline))
+void benchmark_copy_no_lto(void* to_key, void* from_key)
+{
+  int* to_key_int = (int*)to_key;
+  int* from_key_int = (int*)from_key;
+  *to_key_int = *from_key_int;
+}
+
 void wrap_merge_sort_no_lto(int* keys, const int key_count, int* temp_keys)
 {
-  merge_sort(keys, key_count, temp_keys, benchmark_compare_le_no_lto);
+  merge_sort(keys, key_count, temp_keys, benchmark_compare_le_no_lto, benchmark_copy_no_lto);
 }
 
 void wrap_merge_sort_hybrid(int* keys, const int key_count, int* temp_keys)
