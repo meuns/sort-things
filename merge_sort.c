@@ -8,27 +8,35 @@
 #endif
 
 __attribute__((always_inline))
-WA_INLINE int merge_compare_default(int left_key, int right_key)
+WA_INLINE int merge_compare_default(const void* left_key, const void* right_key)
 {
-  return left_key <= right_key;
+  const int* left_key_int = (const int*)left_key;
+  const int* right_key_int = (const int*)right_key;
+  return *left_key_int <= *right_key_int;
 }
 
 __attribute__((always_inline))
-WA_INLINE void merge_copy_default(void* to_key, void* from_key)
+WA_INLINE void merge_copy_default(void* to_key, const void* from_key)
 {
   int* to_key_int = (int*)to_key;
-  int* from_key_int = (int*)from_key;
+  const int* from_key_int = (const int*)from_key;
   *to_key_int = *from_key_int;
 }
 
 __attribute__((always_inline))
-WA_INLINE void merge_keys(int* restrict left_keys, const int left_key_count, int* restrict right_keys, const int right_key_count, int* restrict merged_keys, const merge_compare_keys_t merge_compare, const merge_copy_t merge_copy)
+WA_INLINE void merge_keys(void* restrict left_keys, const int left_key_count, void* restrict right_keys, const int right_key_count, int* restrict merged_keys, const merge_compare_keys_t merge_compare, const merge_copy_t merge_copy)
 {
+  char* left_keys_char = (char*)left_keys;
+  char* right_keys_char = (char*)right_keys;
+
   int left_index = 0;
-  int left_key = left_keys[left_index];
+  char left_key[4];
   int right_index = 0;
-  int right_key = right_keys[right_index];
+  char right_key[4];
   int merged_index = 0;
+
+  merge_copy(&left_key, &left_keys_char[left_index << 2]);
+  merge_copy(&right_key, &right_keys_char[right_index << 2]);
   
   while (left_index < left_key_count && right_index < right_key_count)
   {
@@ -36,13 +44,13 @@ WA_INLINE void merge_keys(int* restrict left_keys, const int left_key_count, int
     {
       merge_copy(&merged_keys[merged_index], &left_key);
       left_index = left_index + 1;
-      merge_copy(&left_key, &left_keys[left_index]);
+      merge_copy(&left_key, &left_keys_char[left_index << 2]);
     }
     else
     {
       merge_copy(&merged_keys[merged_index], &right_key);
       right_index = right_index + 1;
-      merge_copy(&right_key, &right_keys[right_index]);
+      merge_copy(&right_key, &right_keys_char[right_index << 2]);
     }
     
     merged_index = merged_index + 1;
@@ -50,14 +58,14 @@ WA_INLINE void merge_keys(int* restrict left_keys, const int left_key_count, int
   
   while (left_index < left_key_count)
   {
-    merge_copy(&merged_keys[merged_index], &left_keys[left_index]);
+    merge_copy(&merged_keys[merged_index], &left_keys_char[left_index << 2]);
     left_index = left_index + 1;
     merged_index = merged_index + 1;
   }
   
   while (right_index < right_key_count)
   {
-    merge_copy(&merged_keys[merged_index], &right_keys[right_index]);
+    merge_copy(&merged_keys[merged_index], &right_keys_char[right_index << 2]);
     right_index = right_index + 1;
     merged_index = merged_index + 1;
   }

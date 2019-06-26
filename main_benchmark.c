@@ -50,16 +50,18 @@ void wrap_heap_sort(int* keys, const int key_count, int* temp_keys __attribute__
 }
 
 __attribute__((always_inline))
-int benchmark_compare_le_lto(int left_key, int right_key)
+int benchmark_compare_le_lto(const void* left_key, const void* right_key)
 {
-  return left_key <= right_key;
+  const int* left_key_int = (const int*)left_key;
+  const int* right_key_int = (const int*)right_key;
+  return *left_key_int <= *right_key_int;
 }
 
 __attribute__((always_inline))
-void benchmark_copy_lto(void* to_key, void* from_key)
+void benchmark_copy_lto(void* to_key, const void* from_key)
 {
   int* to_key_int = (int*)to_key;
-  int* from_key_int = (int*)from_key;
+  const int* from_key_int = (const int*)from_key;
   *to_key_int = *from_key_int;
 }
 
@@ -69,16 +71,18 @@ void wrap_merge_sort_lto(int* keys, const int key_count, int* temp_keys)
 }
 
 __attribute__((noinline))
-int benchmark_compare_le_no_lto(int left_key, int right_key)
+int benchmark_compare_le_no_lto(const void* left_key, const void* right_key)
 {
-  return left_key <= right_key;
+  const int* left_key_int = (const int*)left_key;
+  const int* right_key_int = (const int*)right_key;
+  return *left_key_int <= *right_key_int;
 }
 
 __attribute__((noinline))
-void benchmark_copy_no_lto(void* to_key, void* from_key)
+void benchmark_copy_no_lto(void* to_key, const void* from_key)
 {
   int* to_key_int = (int*)to_key;
-  int* from_key_int = (int*)from_key;
+  const int* from_key_int = (const int*)from_key;
   *to_key_int = *from_key_int;
 }
 
