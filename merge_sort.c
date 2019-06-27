@@ -26,47 +26,50 @@ WA_INLINE void merge_copy_default(void* to_key, const void* from_key)
 }
 
 __attribute__((always_inline))
-WA_INLINE void merge_keys(void* restrict left_keys, const int left_key_count, void* restrict right_keys, const int right_key_count, int* restrict merged_keys, const merge_compare_keys_t merge_compare, const merge_copy_t merge_copy)
+WA_INLINE void merge_keys(const int key_size, void* restrict left_keys, const int left_key_count, void* restrict right_keys, const int right_key_count, void* restrict merged_keys, const merge_compare_keys_t merge_compare, const merge_copy_t merge_copy)
 {
   char* left_keys_char = (char*)left_keys;
   char* right_keys_char = (char*)right_keys;
+  char* merged_keys_char = (char*)merged_keys;
+  const int left_keys_size = left_key_count * key_size;
+  const int right_keys_size = right_key_count * key_size;
 
-  int left_index = 0;
-  char left_key[4];
-  int right_index = 0;
-  char right_key[4];
-  int merged_index = 0;
+  int left_offset = 0;
+  int right_offset = 0;
+  int merged_offset = 0;
 
-  merge_copy(&left_key, &left_keys_char[left_index << 2]);
-  merge_copy(&right_key, &right_keys_char[right_index << 2]);
+  char left_key[key_size];
+  char right_key[key_size];
+  merge_copy(&left_key, &left_keys_char[left_offset]);
+  merge_copy(&right_key, &right_keys_char[right_offset]);
   
-  while (left_index < left_key_count && right_index < right_key_count)
+  while (left_offset < left_keys_size && right_offset < right_keys_size)
   {
-    if (merge_compare(left_key, right_key))
+    if (merge_compare(&left_key, &right_key))
     {
-      merge_copy(&merged_keys[merged_index], &left_key);
-      left_index = left_index + 1;
-      merge_copy(&left_key, &left_keys_char[left_index << 2]);
+      merge_copy(&merged_keys_char[merged_offset], &left_key);
+      left_offset += key_size;
+      merge_copy(&left_key, &left_keys_char[left_offset]);
     }
     else
     {
-      merge_copy(&merged_keys[merged_index], &right_key);
-      right_index = right_index + 1;
-      merge_copy(&right_key, &right_keys_char[right_index << 2]);
+      merge_copy(&merged_keys_char[merged_offset], &right_key);
+      right_offset += key_size;
+      merge_copy(&right_key, &right_keys_char[right_offset]);
     }
     
-    merged_index = merged_index + 1;
+    merged_offset += key_size;
   }
   
   // We use memcpy because clang isn't able to replace a more generic copy loop by itself
-  memcpy(&merged_keys[merged_index], &left_keys_char[left_index << 2], (size_t)(left_key_count - left_index) * 4);
+  memcpy(&merged_keys_char[merged_offset], &left_keys_char[left_offset], (size_t)(left_keys_size - left_offset));
 
   // We use memcpy because clang isn't able to replace a more generic copy loop by itself
-  memcpy(&merged_keys[merged_index], &right_keys_char[right_index << 2], (size_t)(right_key_count - right_index) * 4);
+  memcpy(&merged_keys_char[merged_offset], &right_keys_char[right_offset], (size_t)(right_keys_size - right_offset));
 }
 
 __attribute__((always_inline))
-WA_INLINE void merge_sort(int* keys, const int key_count, int* temp_keys, const merge_compare_keys_t merge_compare, merge_copy_t merge_copy)
+WA_INLINE void merge_sort(int* restrict keys, const int key_count, int* restrict temp_keys, const merge_compare_keys_t merge_compare, merge_copy_t merge_copy)
 {
   int* input_keys = keys;
   int* output_keys = temp_keys;
@@ -78,7 +81,7 @@ WA_INLINE void merge_sort(int* keys, const int key_count, int* temp_keys, const 
     int next_merge_index = merge_index + left_key_count + right_key_count;
     while (next_merge_index <= key_count)
     {
-      merge_keys(&input_keys[merge_index], left_key_count, &input_keys[merge_index + left_key_count], right_key_count, &output_keys[merge_index], merge_compare, merge_copy);
+      merge_keys(4, &input_keys[merge_index], left_key_count, &input_keys[merge_index + left_key_count], right_key_count, &output_keys[merge_index], merge_compare, merge_copy);
       merge_index = next_merge_index;
       next_merge_index = merge_index + left_key_count + right_key_count;
     }
@@ -86,7 +89,7 @@ WA_INLINE void merge_sort(int* keys, const int key_count, int* temp_keys, const 
     if (merge_index + left_key_count < key_count)
     {
       right_key_count = key_count - (merge_index + left_key_count);
-      merge_keys(&input_keys[merge_index], left_key_count, &input_keys[merge_index + left_key_count], right_key_count, &output_keys[merge_index], merge_compare, merge_copy);
+      merge_keys(4, &input_keys[merge_index], left_key_count, &input_keys[merge_index + left_key_count], right_key_count, &output_keys[merge_index], merge_compare, merge_copy);
     }
     else
     {
