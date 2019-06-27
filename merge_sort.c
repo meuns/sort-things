@@ -1,5 +1,7 @@
 #include "merge_sort.h"
 
+#include <string.h>
+
 // Temporary workaround linking issue on _WIN32
 #if defined(_WIN32)
   #define WA_INLINE
@@ -56,19 +58,11 @@ WA_INLINE void merge_keys(void* restrict left_keys, const int left_key_count, vo
     merged_index = merged_index + 1;
   }
   
-  while (left_index < left_key_count)
-  {
-    merge_copy(&merged_keys[merged_index], &left_keys_char[left_index << 2]);
-    left_index = left_index + 1;
-    merged_index = merged_index + 1;
-  }
-  
-  while (right_index < right_key_count)
-  {
-    merge_copy(&merged_keys[merged_index], &right_keys_char[right_index << 2]);
-    right_index = right_index + 1;
-    merged_index = merged_index + 1;
-  }
+  // We use memcpy because clang isn't able to replace a more generic copy loop by itself
+  memcpy(&merged_keys[merged_index], &left_keys_char[left_index << 2], (size_t)(left_key_count - left_index) * 4);
+
+  // We use memcpy because clang isn't able to replace a more generic copy loop by itself
+  memcpy(&merged_keys[merged_index], &right_keys_char[right_index << 2], (size_t)(right_key_count - right_index) * 4);
 }
 
 __attribute__((always_inline))
