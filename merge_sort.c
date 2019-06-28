@@ -26,6 +26,21 @@ WA_INLINE void merge_copy_default(void* to_key, const void* from_key)
 }
 
 __attribute__((always_inline))
+WA_INLINE void merge_compare_and_copy_both(int key_size, char* merged_keys_char, char* left_key, char* right_key, const merge_compare_keys_t merge_compare, const merge_copy_t merge_copy)
+{
+  if(merge_compare(left_key, right_key))
+  {
+    merge_copy(&merged_keys_char[0], left_key);
+    merge_copy(&merged_keys_char[key_size], right_key);
+  }
+  else
+  {
+    merge_copy(&merged_keys_char[0], right_key);
+    merge_copy(&merged_keys_char[key_size], left_key);
+  }
+}
+
+__attribute__((always_inline))
 WA_INLINE void merge_keys(const int key_size, void* restrict left_keys, const int left_key_count, void* restrict right_keys, const int right_key_count, void* restrict merged_keys, const merge_compare_keys_t merge_compare, const merge_copy_t merge_copy)
 {
   char* left_keys_char = (char*)left_keys;
@@ -76,22 +91,8 @@ WA_INLINE void merge_keys(const int key_size, void* restrict left_keys, const in
       left_offset += key_size;
     }
 
-    if(merge_compare(&left_key, &right_key))
-    {
-      merge_copy(&merged_keys_char[merged_offset], &left_key);
-      merged_offset += key_size;
-
-      merge_copy(&merged_keys_char[merged_offset], &right_key);
-      merged_offset += key_size;
-    }
-    else
-    {
-      merge_copy(&merged_keys_char[merged_offset], &right_key);
-      merged_offset += key_size;
-
-      merge_copy(&merged_keys_char[merged_offset], &left_key);
-      merged_offset += key_size;
-    }
+    merge_compare_and_copy_both(key_size, &merged_keys_char[merged_offset], left_key, right_key, merge_compare, merge_copy);
+    merged_offset += 2 * key_size;
 
     // We use memcpy because clang isn't able to replace a more generic copy loop by itself
     memcpy(&merged_keys_char[merged_offset], &left_keys_char[left_offset], (size_t)(left_keys_size - left_offset));    
@@ -107,40 +108,15 @@ WA_INLINE void merge_keys(const int key_size, void* restrict left_keys, const in
       right_offset += key_size;
     }
 
-    if (merge_compare(&left_key, &right_key))
-    {
-      merge_copy(&merged_keys_char[merged_offset], &left_key);
-      merged_offset += key_size;
-
-      merge_copy(&merged_keys_char[merged_offset], &right_key);
-      merged_offset += key_size;
-    }
-    else
-    {
-      merge_copy(&merged_keys_char[merged_offset], &right_key);
-      merged_offset += key_size;
-
-      merge_copy(&merged_keys_char[merged_offset], &left_key);
-      merged_offset += key_size;
-    }
+    merge_compare_and_copy_both(key_size, &merged_keys_char[merged_offset], left_key, right_key, merge_compare, merge_copy);
+    merged_offset += 2 * key_size;
 
     // We use memcpy because clang isn't able to replace a more generic copy loop by itself
     memcpy(&merged_keys_char[merged_offset], &right_keys_char[right_offset], (size_t)(right_keys_size - right_offset));
   }
   else
   {
-    if (merge_compare(&left_key, &right_key))
-    {
-      merge_copy(&merged_keys_char[merged_offset], &left_key);
-      merged_offset += key_size;
-      merge_copy(&merged_keys_char[merged_offset], &right_key);
-    }
-    else
-    {
-      merge_copy(&merged_keys_char[merged_offset], &right_key);
-      merged_offset += key_size;
-      merge_copy(&merged_keys_char[merged_offset], &left_key);
-    }
+    merge_compare_and_copy_both(key_size, &merged_keys_char[merged_offset], left_key, right_key, merge_compare, merge_copy);
   }
 }
 
