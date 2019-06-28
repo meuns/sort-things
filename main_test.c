@@ -41,7 +41,7 @@ void wrap_heap_sort(int* keys, const int key_count)
 void wrap_merge_sort(int* keys, const int key_count)
 {
   int temp_keys[key_count];
-  merge_sort(keys, key_count, temp_keys, merge_compare_default, merge_copy_default);
+  merge_sort(keys, key_count, sizeof(keys[0]), temp_keys, merge_compare_default, merge_copy_default);
 }
 
 void wrap_merge_sort_hybrid(int* keys, const int key_count)

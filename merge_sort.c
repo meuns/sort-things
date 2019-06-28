@@ -41,13 +41,13 @@ WA_INLINE void merge_compare_and_copy_both(int key_size, char* merged_keys_char,
 }
 
 __attribute__((always_inline))
-WA_INLINE void merge_keys(const int key_size, void* restrict left_keys, const int left_key_count, void* restrict right_keys, const int right_key_count, void* restrict merged_keys, const merge_compare_keys_t merge_compare, const merge_copy_t merge_copy)
+WA_INLINE void merge_keys(const int key_size, void* restrict left_keys, const int left_keys_size, void* restrict right_keys, const int right_keys_size, void* restrict merged_keys, const merge_compare_keys_t merge_compare, const merge_copy_t merge_copy)
 {
   char* left_keys_char = (char*)left_keys;
   char* right_keys_char = (char*)right_keys;
   char* merged_keys_char = (char*)merged_keys;
-  const char* left_keys_char_end = left_keys_char + left_key_count * key_size;
-  const char* right_keys_char_end = right_keys_char + right_key_count * key_size;
+  const char* left_keys_char_end = left_keys_char + left_keys_size;
+  const char* right_keys_char_end = right_keys_char + right_keys_size;
 
   char left_key[key_size];
   char right_key[key_size];
@@ -117,46 +117,47 @@ WA_INLINE void merge_keys(const int key_size, void* restrict left_keys, const in
 }
 
 __attribute__((always_inline))
-WA_INLINE void merge_sort(int* restrict keys, const int key_count, int* restrict temp_keys, const merge_compare_keys_t merge_compare, merge_copy_t merge_copy)
+WA_INLINE void merge_sort(void* restrict keys, const int key_count, const int key_size, void* restrict temp_keys, const merge_compare_keys_t merge_compare, merge_copy_t merge_copy)
 {
-  int* input_keys = keys;
-  int* output_keys = temp_keys;
+  char* input_keys = keys;
+  char* output_keys = temp_keys;
+  
+  const int keys_size = key_count * key_size;
 
-  for (int left_key_count = 1; left_key_count <= key_count; left_key_count <<= 1)
+  for (int left_keys_size = key_size; left_keys_size <= keys_size; left_keys_size <<= 1)
   {
-    int right_key_count = left_key_count;
-    int merge_index = 0;
-    int next_merge_index = merge_index + left_key_count + right_key_count;
-    while (next_merge_index <= key_count)
+    int right_keys_size = left_keys_size;
+
+    const char* input_keys_end = input_keys + keys_size;
+    char* input_cursor = input_keys;
+    char* next_input_cursor = input_cursor + left_keys_size + right_keys_size;
+    char* output_cursor = output_keys;
+
+    while (next_input_cursor <= input_keys_end)
     {
-      merge_keys(4, &input_keys[merge_index], left_key_count, &input_keys[merge_index + left_key_count], right_key_count, &output_keys[merge_index], merge_compare, merge_copy);
-      merge_index = next_merge_index;
-      next_merge_index = merge_index + left_key_count + right_key_count;
+      merge_keys(key_size, input_cursor, left_keys_size, input_cursor + left_keys_size, right_keys_size, output_cursor, merge_compare, merge_copy);
+      input_cursor = next_input_cursor;
+      output_cursor += left_keys_size + right_keys_size;
+      next_input_cursor += left_keys_size + right_keys_size;
     }
     
-    if (merge_index + left_key_count < key_count)
+    if (input_cursor + left_keys_size < input_keys_end)
     {
-      right_key_count = key_count - (merge_index + left_key_count);
-      merge_keys(4, &input_keys[merge_index], left_key_count, &input_keys[merge_index + left_key_count], right_key_count, &output_keys[merge_index], merge_compare, merge_copy);
+      right_keys_size = (int)(input_keys_end - (input_cursor + left_keys_size));
+      merge_keys(key_size, input_cursor, left_keys_size, input_cursor + left_keys_size, right_keys_size, output_cursor, merge_compare, merge_copy);
     }
     else
     {
-      for (int copy_index = merge_index; copy_index < key_count; ++copy_index)
-      {
-        output_keys[copy_index] = input_keys[copy_index];
-      }
+      memcpy(output_cursor, input_cursor, (size_t)(input_keys_end - input_cursor));
     }
 
-    int* swap_keys = input_keys;
+    char* swap_keys = input_keys;
     input_keys = output_keys;
     output_keys = swap_keys;
   }
 
   if (input_keys == temp_keys)
   {
-    for (int copy_index = 0; copy_index < key_count; ++copy_index)
-    {
-      keys[copy_index] = temp_keys[copy_index];
-    }
+    memcpy(keys, temp_keys, (size_t)keys_size);
   }
 }
