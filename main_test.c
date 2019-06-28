@@ -120,6 +120,8 @@ int main(int argc, char** argv)
   {
     {wrap_count_sort, "count_sort", 3871, 3871, option_parse_command_line(argc, argv, "--count-sort=", "-cs=", 0)}
   };
+
+  const int min_key_count = option_parse_command_line(argc, argv, "--min_key-count=", "-mkc=", 0);
   
   const int sort_count_int = sizeof(tests_int) / sizeof(tests_int[0]);
   const int sort_count_char = sizeof(tests_char) / sizeof(tests_char[0]);
@@ -159,7 +161,7 @@ int main(int argc, char** argv)
 
     printf("\nTesting %s\n", sort_name);
 
-    for (int key_count = 0; key_count < max_key_count; key_count += key_step)
+    for (int key_count = min_key_count; key_count < max_key_count; key_count += key_step)
     {
       srand(42);
 
