@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -67,7 +68,8 @@ void benchmark_copy_lto(void* to_key, const void* from_key)
 
 void wrap_merge_sort_lto(int* keys, const int key_count, int* temp_keys)
 {
-  merge_sort(keys, key_count, sizeof(int), temp_keys, benchmark_compare_le_lto, benchmark_copy_lto);
+  static_assert(sizeof(int) == 4, "sizeof(int) != 4");
+  merge_sort_4(keys, key_count, temp_keys, benchmark_compare_le_lto, benchmark_copy_lto);
 }
 
 __attribute__((noinline))
@@ -88,7 +90,8 @@ void benchmark_copy_no_lto(void* to_key, const void* from_key)
 
 void wrap_merge_sort_no_lto(int* keys, const int key_count, int* temp_keys)
 {
-  merge_sort(keys, key_count, sizeof(int), temp_keys, benchmark_compare_le_no_lto, benchmark_copy_no_lto);
+  static_assert(sizeof(int) == 4, "sizeof(int) != 4");
+  merge_sort_4(keys, key_count, temp_keys, benchmark_compare_le_no_lto, benchmark_copy_no_lto);
 }
 
 void wrap_merge_sort_hybrid(int* keys, const int key_count, int* temp_keys)

@@ -116,8 +116,18 @@ WA_INLINE void merge_keys(const int key_size, void* restrict left_keys, const in
   }
 }
 
+// Workaround some inlining shit
+typedef void (*merge_keys_t)(const int key_size, void* restrict left_keys, const int left_keys_size, void* restrict right_keys, const int right_keys_size, void* restrict merged_keys, const merge_compare_keys_t merge_compare, const merge_copy_t merge_copy);
+
+// Workaround some inlining shit
 __attribute__((always_inline))
-WA_INLINE void merge_sort(void* restrict keys, const int key_count, const int key_size, void* restrict temp_keys, const merge_compare_keys_t merge_compare, merge_copy_t merge_copy)
+WA_INLINE void merge_keys_4(const int key_size __attribute__((unused)), void* restrict left_keys, const int left_keys_size, void* restrict right_keys, const int right_keys_size, void* restrict merged_keys, const merge_compare_keys_t merge_compare, const merge_copy_t merge_copy)
+{
+  merge_keys(4, left_keys, left_keys_size, right_keys, right_keys_size, merged_keys, merge_compare, merge_copy);
+}
+
+__attribute__((always_inline))
+WA_INLINE void merge_sort_x(void* restrict keys, const int key_count, const int key_size, void* restrict temp_keys, const merge_keys_t merge_keys, const merge_compare_keys_t merge_compare, merge_copy_t merge_copy)
 {
   char* input_keys = keys;
   char* output_keys = temp_keys;
@@ -160,4 +170,17 @@ WA_INLINE void merge_sort(void* restrict keys, const int key_count, const int ke
   {
     memcpy(keys, temp_keys, (size_t)keys_size);
   }
+}
+
+__attribute__((always_inline))
+WA_INLINE void merge_sort(void* restrict keys, const int key_count, const int key_size, void* restrict temp_keys, const merge_compare_keys_t merge_compare, merge_copy_t merge_copy)
+{
+  merge_sort_x(keys, key_count, key_size, temp_keys, merge_keys, merge_compare, merge_copy);
+}
+
+// Workaround some inlining shit
+__attribute__((always_inline))
+WA_INLINE void merge_sort_4(void* restrict keys, const int key_count, void* restrict temp_keys, const merge_compare_keys_t merge_compare, merge_copy_t merge_copy)
+{
+  merge_sort_x(keys, key_count, 4, temp_keys, merge_keys_4, merge_compare, merge_copy);
 }
