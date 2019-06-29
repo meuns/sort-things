@@ -31,7 +31,7 @@ void merge_sort_hybrid(int* keys, const int key_count, int* temp_keys)
     int next_merge_index = merge_index + left_key_count + right_key_count;
     while (next_merge_index <= key_count)
     {
-      merge_keys(4, &input_keys[merge_index], left_key_count, &input_keys[merge_index + left_key_count], right_key_count, &output_keys[merge_index], merge_compare_default, merge_copy_default);
+      merge_keys(&input_keys[merge_index], left_key_count, &input_keys[merge_index + left_key_count], right_key_count, &output_keys[merge_index]);
       merge_index = next_merge_index;
       next_merge_index = merge_index + left_key_count + right_key_count;
     }
@@ -39,7 +39,7 @@ void merge_sort_hybrid(int* keys, const int key_count, int* temp_keys)
     if (merge_index + left_key_count < key_count)
     {
       right_key_count = key_count - (merge_index + left_key_count);
-      merge_keys(4, &input_keys[merge_index], left_key_count, &input_keys[merge_index + left_key_count], right_key_count, &output_keys[merge_index], merge_compare_default, merge_copy_default);
+      merge_keys(&input_keys[merge_index], left_key_count, &input_keys[merge_index + left_key_count], right_key_count, &output_keys[merge_index]);
     }
     else
     {

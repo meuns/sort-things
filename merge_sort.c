@@ -10,177 +10,131 @@
 #endif
 
 __attribute__((always_inline))
-WA_INLINE int merge_compare_default(const void* left_key, const void* right_key)
+WA_INLINE void merge_compare_and_copy_both(int* restrict merged_keys, int left_key, int right_key)
 {
-  const int* left_key_int = (const int*)left_key;
-  const int* right_key_int = (const int*)right_key;
-  return *left_key_int <= *right_key_int;
-}
-
-__attribute__((always_inline))
-WA_INLINE void merge_copy_default(void* to_key, const void* from_key)
-{
-  int* to_key_int = (int*)to_key;
-  const int* from_key_int = (const int*)from_key;
-  *to_key_int = *from_key_int;
-}
-
-__attribute__((always_inline))
-WA_INLINE void merge_compare_and_copy_both(int key_size, char* merged_keys_char, char* left_key, char* right_key, const merge_compare_keys_t merge_compare, const merge_copy_t merge_copy)
-{
-  if(merge_compare(left_key, right_key))
+  if(left_key <= right_key)
   {
-    merge_copy(&merged_keys_char[0], left_key);
-    merge_copy(&merged_keys_char[key_size], right_key);
+    merged_keys[0] = left_key;
+    merged_keys[1] = right_key;
   }
   else
   {
-    merge_copy(&merged_keys_char[0], right_key);
-    merge_copy(&merged_keys_char[key_size], left_key);
+    merged_keys[0] = right_key;
+    merged_keys[1] = left_key;
   }
 }
 
 __attribute__((always_inline))
-WA_INLINE void merge_keys(const int key_size, void* restrict left_keys, const int left_keys_size, void* restrict right_keys, const int right_keys_size, void* restrict merged_keys, const merge_compare_keys_t merge_compare, const merge_copy_t merge_copy)
+WA_INLINE void merge_keys(int* restrict left_keys, const int left_key_count, int* restrict right_keys, const int right_key_count, int* restrict merged_keys)
 {
-  char* left_keys_char = (char*)left_keys;
-  char* right_keys_char = (char*)right_keys;
-  char* merged_keys_char = (char*)merged_keys;
-  const char* left_keys_char_end = left_keys_char + left_keys_size;
-  const char* right_keys_char_end = right_keys_char + right_keys_size;
+  const int* left_keys_end = left_keys + left_key_count;
+  const int* right_keys_end = right_keys + right_key_count;
 
-  char left_key[key_size];
-  char right_key[key_size];
-  merge_copy(left_key, left_keys_char);
-  left_keys_char += key_size;
-  merge_copy(right_key, right_keys_char);
-  right_keys_char += key_size;
+  int left_key = *left_keys;
+  int right_key = *right_keys;
+  left_keys++;
+  right_keys++;
   
-  while (left_keys_char < left_keys_char_end && right_keys_char < right_keys_char_end)
+  while (left_keys < left_keys_end && right_keys < right_keys_end)
   {
-    if (merge_compare(left_key, right_key))
+    if (left_key <= right_key)
     {
-      merge_copy(merged_keys_char, left_key);
-      merged_keys_char += key_size;
+      *merged_keys = left_key;
+      merged_keys++;
       
-      merge_copy(left_key, left_keys_char);
-      left_keys_char += key_size;
+      left_key = *left_keys;
+      left_keys++;
     }
     else
     {
-      merge_copy(merged_keys_char, &right_key);
-      merged_keys_char += key_size;
+      *merged_keys = right_key;
+      merged_keys++;
       
-      merge_copy(&right_key, right_keys_char);
-      right_keys_char += key_size;
+      right_key = *right_keys;
+      right_keys++;
     }
   }
 
-  if (left_keys_char < left_keys_char_end)
+  if (left_keys < left_keys_end)
   {
-    while (left_keys_char < left_keys_char_end && merge_compare(left_key, right_key))
+    while (left_keys < left_keys_end && left_key <= right_key)
     {
-      merge_copy(merged_keys_char, left_key);
-      merged_keys_char += key_size;
+      *merged_keys = left_key;
+      merged_keys++;
       
-      merge_copy(left_key, left_keys_char);
-      left_keys_char += key_size;
+      left_key = *left_keys;
+      left_keys++;
     }
 
-    merge_compare_and_copy_both(key_size, merged_keys_char, left_key, right_key, merge_compare, merge_copy);
-    merged_keys_char += 2 * key_size;
+    merge_compare_and_copy_both(merged_keys, left_key, right_key);
+    merged_keys += 2;
 
     // We use memcpy because clang isn't able to replace a more generic copy loop by itself
-    memcpy(merged_keys_char, left_keys_char, (size_t)(left_keys_char_end - left_keys_char));
+    memcpy(merged_keys, left_keys, (size_t)(left_keys_end - left_keys) * sizeof(int));
   }
-  else if (right_keys_char < right_keys_char_end)
+  else if (right_keys < right_keys_end)
   {
-    while (right_keys_char < right_keys_char_end && !merge_compare(&left_key, &right_key))
+    while (right_keys < right_keys_end && left_key > right_key)
     {      
-      merge_copy(merged_keys_char, right_key);
-      merged_keys_char += key_size;
+      *merged_keys = right_key;
+      merged_keys++;
       
-      merge_copy(right_key, right_keys_char);
-      right_keys_char += key_size;
+      right_key = *right_keys;
+      right_keys++;
     }
 
-    merge_compare_and_copy_both(key_size, merged_keys_char, left_key, right_key, merge_compare, merge_copy);
-    merged_keys_char += 2 * key_size;
+    merge_compare_and_copy_both(merged_keys, left_key, right_key);
+    merged_keys += 2;
 
     // We use memcpy because clang isn't able to replace a more generic copy loop by itself
-    memcpy(merged_keys_char, right_keys_char, (size_t)(right_keys_char_end - right_keys_char));
+    memcpy(merged_keys, right_keys, (size_t)(right_keys_end - right_keys) * sizeof(int));
   }
   else
   {
-    merge_compare_and_copy_both(key_size, merged_keys_char, left_key, right_key, merge_compare, merge_copy);
+    merge_compare_and_copy_both(merged_keys, left_key, right_key);
   }
 }
 
-// Workaround some inlining shit
-typedef void (*merge_keys_t)(const int key_size, void* restrict left_keys, const int left_keys_size, void* restrict right_keys, const int right_keys_size, void* restrict merged_keys, const merge_compare_keys_t merge_compare, const merge_copy_t merge_copy);
-
-// Workaround some inlining shit
 __attribute__((always_inline))
-WA_INLINE void merge_keys_4(const int key_size __attribute__((unused)), void* restrict left_keys, const int left_keys_size, void* restrict right_keys, const int right_keys_size, void* restrict merged_keys, const merge_compare_keys_t merge_compare, const merge_copy_t merge_copy)
+WA_INLINE void merge_sort(int* restrict keys, const int key_count, int* restrict temp_keys)
 {
-  merge_keys(4, left_keys, left_keys_size, right_keys, right_keys_size, merged_keys, merge_compare, merge_copy);
-}
+  int* input_keys = keys;
+  int* output_keys = temp_keys;
 
-__attribute__((always_inline))
-WA_INLINE void merge_sort_x(void* restrict keys, const int key_count, const int key_size, void* restrict temp_keys, const merge_keys_t merge_keys, const merge_compare_keys_t merge_compare, merge_copy_t merge_copy)
-{
-  char* input_keys = keys;
-  char* output_keys = temp_keys;
-  
-  const int keys_size = key_count * key_size;
-
-  for (int left_keys_size = key_size; left_keys_size <= keys_size; left_keys_size <<= 1)
+  for (int left_key_count = 1; left_key_count <= key_count; left_key_count <<= 1)
   {
-    int right_keys_size = left_keys_size;
+    int right_key_count = left_key_count;
 
-    const char* input_keys_end = input_keys + keys_size;
-    char* input_cursor = input_keys;
-    char* next_input_cursor = input_cursor + left_keys_size + right_keys_size;
-    char* output_cursor = output_keys;
+    const int* input_keys_end = input_keys + key_count;
+    int* input_cursor = input_keys;
+    int* next_input_cursor = input_cursor + left_key_count + right_key_count;
+    int* output_cursor = output_keys;
 
     while (next_input_cursor <= input_keys_end)
     {
-      merge_keys(key_size, input_cursor, left_keys_size, input_cursor + left_keys_size, right_keys_size, output_cursor, merge_compare, merge_copy);
+      merge_keys(input_cursor, left_key_count, input_cursor + left_key_count, right_key_count, output_cursor);
       input_cursor = next_input_cursor;
-      output_cursor += left_keys_size + right_keys_size;
-      next_input_cursor += left_keys_size + right_keys_size;
+      output_cursor += left_key_count + right_key_count;
+      next_input_cursor += left_key_count + right_key_count;
     }
     
-    if (input_cursor + left_keys_size < input_keys_end)
+    if (input_cursor + left_key_count < input_keys_end)
     {
-      right_keys_size = (int)(input_keys_end - (input_cursor + left_keys_size));
-      merge_keys(key_size, input_cursor, left_keys_size, input_cursor + left_keys_size, right_keys_size, output_cursor, merge_compare, merge_copy);
+      right_key_count = (int)(input_keys_end - (input_cursor + left_key_count));
+      merge_keys(input_cursor, left_key_count, input_cursor + left_key_count, right_key_count, output_cursor);
     }
     else
     {
-      memcpy(output_cursor, input_cursor, (size_t)(input_keys_end - input_cursor));
+      memcpy(output_cursor, input_cursor, (size_t)(input_keys_end - input_cursor) * sizeof(int));
     }
 
-    char* swap_keys = input_keys;
+    int* swap_keys = input_keys;
     input_keys = output_keys;
     output_keys = swap_keys;
   }
 
   if (input_keys == temp_keys)
   {
-    memcpy(keys, temp_keys, (size_t)keys_size);
+    memcpy(keys, temp_keys, (size_t)key_count * sizeof(int));
   }
-}
-
-__attribute__((always_inline))
-WA_INLINE void merge_sort(void* restrict keys, const int key_count, const int key_size, void* restrict temp_keys, const merge_compare_keys_t merge_compare, merge_copy_t merge_copy)
-{
-  merge_sort_x(keys, key_count, key_size, temp_keys, merge_keys, merge_compare, merge_copy);
-}
-
-// Workaround some inlining shit
-__attribute__((always_inline))
-WA_INLINE void merge_sort_4(void* restrict keys, const int key_count, void* restrict temp_keys, const merge_compare_keys_t merge_compare, merge_copy_t merge_copy)
-{
-  merge_sort_x(keys, key_count, 4, temp_keys, merge_keys_4, merge_compare, merge_copy);
 }
