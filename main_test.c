@@ -52,7 +52,7 @@ void wrap_merge_sort_hybrid(int* keys, const int key_count)
 
 void wrap_quick_sort(int* keys, const int key_count)
 {
-  quick_sort(keys, key_count, quick_median3_pivot_index);
+  quick_sort(keys, key_count, quick_median3_pivot);
 }
 
 void wrap_count_sort(signed char* keys, const int key_count)

@@ -78,7 +78,7 @@ void wrap_merge_sort_hybrid(int* keys, const int key_count, int* temp_keys)
 
 void wrap_quick_sort(int* keys, const int key_count, int* temp_keys __attribute__((unused)))
 {
-  quick_sort(keys, key_count, quick_median3_pivot_index);
+  quick_sort(keys, key_count, quick_median3_pivot);
 }
 
 void wrap_radix_sort_halfbyte(int* keys, const int key_count, int* temp_keys)
