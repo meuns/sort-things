@@ -146,8 +146,8 @@ int main(int argc, char** argv)
     {wrap_radix_sort_short, "radix_sort_short", option_parse_command_line(argc, argv, "--radix-short-sort=", "-rss=", 0)}
   };
 
-  const int min_key_power = option_parse_command_line(argc, argv, "--min-key-pow2=", "-mkp=", 0);
   const int max_key_power = option_parse_command_line(argc, argv, "--max-key-pow2=", "-kp=", 24);
+  const int min_key_power = option_parse_command_line(argc, argv, "--min-key-pow2=", "-mkp=", max_key_power);
   const int step_key_power = option_parse_command_line(argc, argv, "--step-key-pow2=", "-skp=", 10);
   const int split_count = option_parse_command_line(argc, argv, "--split-count", "-sc=", 1);
   const int inner_scope = option_parse_command_line(argc, argv, "--inner-scope=", "-i=", 1);
