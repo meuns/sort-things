@@ -56,55 +56,56 @@ static inline quick_partition_result_t quick_partition(int* const keys_begin, in
   int* left_it = keys_begin + 1;
   int* right_it = keys_end - 1;
   
-  while (*right_it >= pivot_key && right_it > left_it)
+  while (right_it > left_it)
   {
-    right_it--;
-  }
-  
-  while (*left_it < pivot_key && right_it > left_it)
-  {
-    left_it++;
-  }
-
-  while (left_it < right_it)
-  {
-    int right_key = *right_it;
-    *right_it = *left_it;
-    *left_it = right_key;
-
-    right_it--;
-    left_it++;
-
-    while (*right_it >= pivot_key && right_it > left_it)
+    while (right_it > left_it && *right_it >= pivot_key)
     {
       right_it--;
     }
     
-    while (*left_it < pivot_key && right_it > left_it)
+    while (right_it > left_it && *left_it < pivot_key)
     {
+      left_it++;
+    }
+
+    if (right_it > left_it)
+    {
+      int right_key = *right_it;
+      *right_it = *left_it;
+      *left_it = right_key;
+
+      right_it--;
       left_it++;
     }
   }
 
   int* new_pivot_it = right_it;
-  if (*right_it >= pivot_key && new_pivot_it > keys_begin)
+  if (*right_it >= pivot_key)
   {
     new_pivot_it--;
   }
 
-  keys_begin[0] = *new_pivot_it;
+  *keys_begin = *new_pivot_it;
   *new_pivot_it = pivot_key;
-
+  
   left_it = new_pivot_it;
-  while (*left_it == pivot_key && left_it > keys_begin)
+  if (left_it > keys_begin)
   {
     left_it--;
+    while (left_it > keys_begin && *left_it == pivot_key)
+    {
+      left_it--;
+    }
   }
 
   right_it = new_pivot_it;
-  while (*right_it == pivot_key && right_it < keys_end)
+  if (right_it < keys_end)
   {
     right_it++;
+    while (right_it < keys_end && *right_it == pivot_key)
+    {
+      right_it++;
+    }
   }
 
   quick_partition_result_t result;
