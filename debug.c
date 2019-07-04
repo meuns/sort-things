@@ -12,7 +12,7 @@ void debug_print_keys(int* const keys, const int key_count)
     printf("%d, ", keys[key_index]);
   }
 
-  printf("%d}\n", keys[last_key_index]);
+  printf("%d}", keys[last_key_index]);
 }
 
 void debug_print_hex_keys(int* const keys, const int key_count)
@@ -25,5 +25,5 @@ void debug_print_hex_keys(int* const keys, const int key_count)
     printf("%X, ", keys[key_index]);
   }
 
-  printf("%X}\n", keys[last_key_index]);
+  printf("%X}", keys[last_key_index]);
 }
