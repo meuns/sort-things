@@ -1,5 +1,11 @@
 #include "quick_sort.h"
 
+#include "debug.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <signal.h>
+#include <assert.h>
+
 // Temporary workaround linking issue on _WIN32
 #if defined(_WIN32)
   #define WA_INLINE
@@ -51,42 +57,37 @@ __attribute__((always_inline))
 static inline quick_partition_result_t quick_partition(int* const keys_begin, int* const keys_end, int* const pivot_key_it)
 {
   const int pivot_key = *pivot_key_it;
-  *pivot_key_it = *keys_begin;
-
-  int* left_it = keys_begin + 1;
+  int* left_it = keys_begin;
   int* right_it = keys_end - 1;
   
-  while (right_it > left_it)
+  while (left_it < right_it)
   {
-    while (right_it > left_it && *right_it >= pivot_key)
+    while (*left_it < pivot_key)
+    {
+      left_it++;
+    }    
+
+    while (*right_it > pivot_key)
     {
       right_it--;
     }
     
-    while (right_it > left_it && *left_it < pivot_key)
+    if (left_it < right_it)
     {
-      left_it++;
-    }
-
-    if (right_it > left_it)
-    {
-      int right_key = *right_it;
-      *right_it = *left_it;
+      const int left_key = *left_it;
+      const int right_key = *right_it;
+      *right_it = left_key;
       *left_it = right_key;
 
-      right_it--;
-      left_it++;
+      if (left_key == right_key)
+      {
+        right_it--;
+      }
     }
   }
 
-  int* new_pivot_it = right_it;
-  if (*right_it >= pivot_key)
-  {
-    new_pivot_it--;
-  }
-
-  *keys_begin = *new_pivot_it;
-  *new_pivot_it = pivot_key;
+  int* new_pivot_it = left_it;
+  assert(*new_pivot_it == pivot_key);
   
   left_it = new_pivot_it;
   if (left_it > keys_begin)
@@ -108,10 +109,7 @@ static inline quick_partition_result_t quick_partition(int* const keys_begin, in
     }
   }
 
-  quick_partition_result_t result;
-  result.left_dutch_end = left_it + 1;
-  result.right_dutch_begin = right_it;
-  return result;
+  return (quick_partition_result_t){left_it + 1, right_it};
 }
 
 typedef struct
