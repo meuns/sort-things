@@ -1,9 +1,5 @@
 #include "quick_sort.h"
 
-#include "debug.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <signal.h>
 #include <assert.h>
 
 // Temporary workaround linking issue on _WIN32
@@ -46,19 +42,135 @@ WA_INLINE int* quick_median3_pivot(int* const keys_begin, int* const keys_end)
   return mid_key_it;
 }
 
-typedef struct
+__attribute__((always_inline))
+WA_INLINE quick_partition_result_t quick_partition_default(int* const keys_begin, int* const keys_end, int* const pivot_key_it)
 {
-  int* left_dutch_end;
-  int* right_dutch_begin;
+  const int pivot_key = *pivot_key_it;
+  *pivot_key_it = *keys_begin;
+
+  int* left_it = keys_begin + 1;
+  int* right_it = keys_end - 1;
+  
+  while (right_it > left_it)
+  {
+    while (right_it > left_it && *right_it >= pivot_key)
+    {
+      right_it--;
+    }
+    
+    while (right_it > left_it && *left_it < pivot_key)
+    {
+      left_it++;
+    }
+
+    if (right_it > left_it)
+    {
+      int right_key = *right_it;
+      *right_it = *left_it;
+      *left_it = right_key;
+
+      right_it--;
+      left_it++;
+    }
+  }
+
+  int* new_pivot_it = right_it;
+  if (*right_it >= pivot_key)
+  {
+    new_pivot_it--;
+  }
+
+  *keys_begin = *new_pivot_it;
+  *new_pivot_it = pivot_key;
+  
+  left_it = new_pivot_it;
+  if (left_it > keys_begin)
+  {
+    left_it--;
+    while (left_it > keys_begin && *left_it == pivot_key)
+    {
+      left_it--;
+    }
+  }
+
+  right_it = new_pivot_it;
+  if (right_it < keys_end)
+  {
+    right_it++;
+    while (right_it < keys_end && *right_it == pivot_key)
+    {
+      right_it++;
+    }
+  }
+
+  quick_partition_result_t result;
+  result.left_dutch_end = left_it + 1;
+  result.right_dutch_begin = right_it;
+  return result;
 }
-quick_partition_result_t;
 
 __attribute__((always_inline))
-static inline quick_partition_result_t quick_partition(int* const keys_begin, int* const keys_end, int* const pivot_key_it)
+WA_INLINE quick_partition_result_t quick_partition_swap_then_fit(int* const keys_begin, int* const keys_end, int* const pivot_key_it)
 {
-  //debug_print_keys(keys_begin, (int)(keys_end - keys_begin));
-  //printf(" %d ", *pivot_key_it);
+  const int pivot_key = *pivot_key_it;
+  int* left_it = keys_begin;
+  int* right_it = keys_end - 1;
+  
+  while (left_it < right_it)
+  {
+    while (*left_it < pivot_key)
+    {
+      left_it++;
+    }    
 
+    while (*right_it > pivot_key)
+    {
+      right_it--;
+    }
+    
+    if (left_it < right_it)
+    {
+      const int left_key = *left_it;
+      const int right_key = *right_it;
+      *right_it = left_key;
+      *left_it = right_key;
+
+      if (left_key == right_key)
+      {
+        right_it--;
+      }
+    }
+  }
+
+  int* new_pivot_it = left_it;
+  assert(*new_pivot_it == pivot_key);
+  
+  left_it = new_pivot_it;
+  if (left_it > keys_begin)
+  {
+    left_it--;
+    while (left_it > keys_begin && *left_it == pivot_key)
+    {
+      left_it--;
+    }
+  }
+
+  right_it = new_pivot_it;
+  if (right_it < keys_end)
+  {
+    right_it++;
+    while (right_it < keys_end && *right_it == pivot_key)
+    {
+      right_it++;
+    }
+  }
+
+  return (quick_partition_result_t){left_it + 1, right_it};  
+}
+
+__attribute__((always_inline))
+WA_INLINE quick_partition_result_t quick_partition_three_ways(int* const keys_begin, int* const keys_end, int* const pivot_key_it)
+{
   const int pivot_key = *pivot_key_it;
   int* low_it = keys_begin;
   int* mid_it = keys_begin;
@@ -86,7 +198,8 @@ static inline quick_partition_result_t quick_partition(int* const keys_begin, in
     }    
   }
 
-  //debug_print_keys(keys_begin, (int)(keys_end - keys_begin));
+  assert(*low_it == pivot_key);
+  assert(*high_it > pivot_key);
 
   return (quick_partition_result_t){low_it, high_it};
 }
@@ -99,7 +212,7 @@ typedef struct
 stack_element_t;
 
 __attribute__((always_inline))
-void quick_sort(int* const base_keys, const int base_key_count, const quick_pivot_t quick_pivot)
+void quick_sort(int* const base_keys, const int base_key_count, const quick_partition_t quick_partition, const quick_pivot_t quick_pivot)
 {
   if (base_key_count < 2)
   {
@@ -123,7 +236,6 @@ void quick_sort(int* const base_keys, const int base_key_count, const quick_pivo
     int* const right_dutch_begin = result.right_dutch_begin;
     const int left_key_count = (int)(left_dutch_end - keys_begin);
     const int right_key_count = (int)(keys_end - right_dutch_begin);
-    //printf(" %d %d\n", left_key_count, right_key_count);
 
     if (left_key_count > right_key_count)
     {
