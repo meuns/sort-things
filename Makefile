@@ -1,7 +1,7 @@
 # Configure build
 include Configuration
 
-EXE_NAMES=bubble insert heap merge merge_hybrid quick count radix network test benchmark
+EXE_NAMES=bubble insert heap merge merge_hybrid quick count radix network test benchmark benchmark_quick_partition
 
 BUILD_EXE_PATHS=$(addprefix $(BUILD_DIR_PATH)/, $(addsuffix $(EXE_SUFFIX), $(EXE_NAMES)))
 
@@ -105,6 +105,15 @@ $(BUILD_DIR_PATH)/benchmark.o: benchmark.h benchmark.c
 $(BUILD_DIR_PATH)/std_sort.o: std_sort.h std_sort.cpp
 $(BUILD_DIR_PATH)/option.o: option.h option.c
 
+# Benchmark Quick Partition
+MAIN_BENCHMARK_QUICK_PARTITION_MODULES=$(BUILD_DIR_PATH)/quick_sort.o $(BUILD_DIR_PATH)/benchmark_quick_partition.o $(BUILD_DIR_PATH)/benchmark.o $(BUILD_DIR_PATH)/option.o $(BUILD_DIR_PATH)/debug.o
+$(BUILD_DIR_PATH)/benchmark_quick_partition$(EXE_SUFFIX): $(BUILD_PROJECT_DEPENDENCIES) $(MAIN_BENCHMARK_QUICK_PARTITION_MODULES)
+	$(CC) -o $@ $(MAIN_BENCHMARK_QUICK_PARTITION_MODULES) $(LDFLAGS)
+
+$(BUILD_DIR_PATH)/benchmark_quick_partition.o: $(ALL_SORT_HEADERS) benchmark.h debug.h benchmark_quick_partition.c
+$(BUILD_DIR_PATH)/benchmark.o: benchmark.h benchmark.c
+$(BUILD_DIR_PATH)/option.o: option.h option.c
+
 # Deploy (we assume updated binaries and don't build nor link anything
 DEPLOY_EXE_PATHS=$(EXE_NAMES)
 DEPLOY_EXE_TARGETS=$(addprefix deploy_, $(EXE_NAMES))
@@ -142,6 +151,9 @@ deploy_test:
 
 deploy_benchmark:
 	cp $(BUILD_DIR_PATH)/benchmark$(EXE_SUFFIX) benchmark
+
+deploy_benchmark_quick_partition:
+	cp $(BUILD_DIR_PATH)/benchmark_quick_partition$(EXE_SUFFIX) benchmark_quick_partition
 
 # Inlining validation
 LLVM_BC_FILES=$(wildcard $(BUILD_DIR_PATH)/*.bc)

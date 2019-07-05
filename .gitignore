@@ -7,6 +7,7 @@
 .debug*
 .profile*
 benchmark
+benchmark_quick_partition
 bubble
 count
 heap
