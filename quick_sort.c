@@ -56,60 +56,39 @@ quick_partition_result_t;
 __attribute__((always_inline))
 static inline quick_partition_result_t quick_partition(int* const keys_begin, int* const keys_end, int* const pivot_key_it)
 {
+  //debug_print_keys(keys_begin, (int)(keys_end - keys_begin));
+  //printf(" %d ", *pivot_key_it);
+
   const int pivot_key = *pivot_key_it;
-  int* left_it = keys_begin;
-  int* right_it = keys_end - 1;
+  int* low_it = keys_begin;
+  int* mid_it = keys_begin;
+  int* high_it = keys_end;
   
-  while (left_it < right_it)
+  while (mid_it < high_it)
   {
-    while (*left_it < pivot_key)
+    const int mid_key = *mid_it;
+    if (mid_key < pivot_key)
     {
-      left_it++;
+      *mid_it = *low_it;
+      *low_it = mid_key;
+      low_it++;
+      mid_it++;
+    }
+    else if (mid_key == pivot_key)
+    {
+      mid_it++;
+    }
+    else
+    {
+      high_it--;
+      *mid_it = *high_it;
+      *high_it = mid_key;
     }    
-
-    while (*right_it > pivot_key)
-    {
-      right_it--;
-    }
-    
-    if (left_it < right_it)
-    {
-      const int left_key = *left_it;
-      const int right_key = *right_it;
-      *right_it = left_key;
-      *left_it = right_key;
-
-      if (left_key == right_key)
-      {
-        right_it--;
-      }
-    }
   }
 
-  int* new_pivot_it = left_it;
-  assert(*new_pivot_it == pivot_key);
-  
-  left_it = new_pivot_it;
-  if (left_it > keys_begin)
-  {
-    left_it--;
-    while (left_it > keys_begin && *left_it == pivot_key)
-    {
-      left_it--;
-    }
-  }
+  //debug_print_keys(keys_begin, (int)(keys_end - keys_begin));
 
-  right_it = new_pivot_it;
-  if (right_it < keys_end)
-  {
-    right_it++;
-    while (right_it < keys_end && *right_it == pivot_key)
-    {
-      right_it++;
-    }
-  }
-
-  return (quick_partition_result_t){left_it + 1, right_it};
+  return (quick_partition_result_t){low_it, high_it};
 }
 
 typedef struct
@@ -144,6 +123,7 @@ void quick_sort(int* const base_keys, const int base_key_count, const quick_pivo
     int* const right_dutch_begin = result.right_dutch_begin;
     const int left_key_count = (int)(left_dutch_end - keys_begin);
     const int right_key_count = (int)(keys_end - right_dutch_begin);
+    //printf(" %d %d\n", left_key_count, right_key_count);
 
     if (left_key_count > right_key_count)
     {
