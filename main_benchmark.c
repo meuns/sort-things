@@ -122,7 +122,7 @@ int main(int argc, char** argv)
     {wrap_quick_sort, "quick_sort", option_parse_command_line(argc, argv, "--quick-sort=", "-qs=", 0)},
     {wrap_std_sort, "std_sort", option_parse_command_line(argc, argv, "--std-sort=", "-std=", 0)},
     {wrap_std_stable_sort, "std_stable_sort", option_parse_command_line(argc, argv, "--std-stable-sort=", "-sts=", 0)},
-    {wrap_std_qsort, "std_qsort", option_parse_command_line(argc, argv, "--std-qsort=", "-stq=", 0)},
+    //{wrap_std_qsort, "std_qsort", option_parse_command_line(argc, argv, "--std-qsort=", "-stq=", 0)},
     {wrap_radix_sort_halfbyte, "radix_sort_halfbyte", option_parse_command_line(argc, argv, "--radix-halfbyte-sort=", "-rsh=", 0)},
     {wrap_radix_sort_byte, "radix_sort_byte", option_parse_command_line(argc, argv, "--radix-byte-sort=", "-rs=", 0)},
     {wrap_radix_sort_short, "radix_sort_short", option_parse_command_line(argc, argv, "--radix-short-sort=", "-rss=", 0)}
