@@ -1,3 +1,10 @@
+# Platform
+ifeq ($(OS), Windows_NT) 
+	DETECTED_OS:=Windows
+else
+	DETECTED_OS:=$(shell sh -c 'uname 2>/dev/null || echo Unknown')
+endif
+
 # Configure build
 EXE_SUFFIX=
 ifeq ($(BUILD), DEBUG)
