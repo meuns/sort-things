@@ -116,8 +116,8 @@ WA_INLINE quick_partition_result_t quick_partition_default(int* const keys_begin
 __attribute__((always_inline))
 WA_INLINE quick_partition_result_t quick_partition_swap_by_block_then_fit(int* const keys_begin, int* const keys_end, int* const pivot_key_it)
 {
-  debug_print_keys(keys_begin, (int)(keys_end - keys_begin));
-  printf("\n");
+  //debug_print_keys(keys_begin, (int)(keys_end - keys_begin));
+  //printf("\n");
 
   const int max_left_swap_count = 8;
   const int max_right_swap_count = 8;
@@ -208,8 +208,11 @@ WA_INLINE quick_partition_result_t quick_partition_swap_by_block_then_fit(int* c
     }
   }
 
+  //debug_print_keys(keys_begin, (int)(keys_end - keys_begin));
+  //printf("\n");
+
   int* new_pivot_it = left_it;
-  assert(*new_pivot_it == pivot_key);
+  //assert(*new_pivot_it == pivot_key);
   
   left_it = new_pivot_it;
   if (left_it > keys_begin)

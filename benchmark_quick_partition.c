@@ -30,6 +30,11 @@ void wrap_quick_partition_swap_then_fit(int* const keys_begin, int* const keys_e
   quick_partition_swap_then_fit(keys_begin, keys_end, quick_median3_pivot(keys_begin, keys_end));
 }
 
+void wrap_quick_partition_swap_by_block_then_fit(int* const keys_begin, int* const keys_end)
+{
+  quick_partition_swap_by_block_then_fit(keys_begin, keys_end, quick_median3_pivot(keys_begin, keys_end));
+}
+
 void wrap_quick_partition_three_ways(int* const keys_begin, int* const keys_end)
 {
   quick_partition_three_ways(keys_begin, keys_end, quick_median3_pivot(keys_begin, keys_end));
@@ -49,9 +54,10 @@ int main(int argc, char** argv)
 
   const benchmark_t benchmarks[] =
   {
-    {wrap_quick_partition_default, "quick_sort_default_median3", quick_partition_group_is_enabled || option_parse_command_line(argc, argv, "--quick-partition-default=", "-qpd=", 0)},    
-    {wrap_quick_partition_swap_then_fit, "quick_sort_swap_then_fit_median3", quick_partition_group_is_enabled || option_parse_command_line(argc, argv, "--quick-partition-swap-then-fit=", "-qpsf=", 0)},    
-    {wrap_quick_partition_three_ways, "quick_sort_three_ways_median3", quick_partition_group_is_enabled || option_parse_command_line(argc, argv, "--quick-partition-three-ways=", "-qp3=", 0)},
+    {wrap_quick_partition_default, "quick_partition_default", quick_partition_group_is_enabled || option_parse_command_line(argc, argv, "--quick-partition-default=", "-qpd=", 0)},    
+    {wrap_quick_partition_swap_then_fit, "quick_partition_swap_then_fit", quick_partition_group_is_enabled || option_parse_command_line(argc, argv, "--quick-partition-swap-then-fit=", "-qpsf=", 0)},    
+    {wrap_quick_partition_swap_by_block_then_fit, "quick_partition_swap_by_block_then_fit", quick_partition_group_is_enabled || option_parse_command_line(argc, argv, "--quick-partition-swap-by-block-then-fit=", "-qpsbf=", 0)},        
+    {wrap_quick_partition_three_ways, "quick_partition_three_ways", quick_partition_group_is_enabled || option_parse_command_line(argc, argv, "--quick-partition-three-ways=", "-qp3=", 0)},
   };
 
   const int max_key_count = option_parse_command_line(argc, argv, "--max-key-count=", "-kc=", 1 << 24);
