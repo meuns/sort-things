@@ -1,6 +1,10 @@
 #include "quick_sort.h"
 
+#include "debug.h"
+
 #include <assert.h>
+#include <stddef.h>
+#include <stdio.h>
 
 // Temporary workaround linking issue on _WIN32
 #if defined(_WIN32)
@@ -112,9 +116,12 @@ WA_INLINE quick_partition_result_t quick_partition_default(int* const keys_begin
 __attribute__((always_inline))
 WA_INLINE quick_partition_result_t quick_partition_swap_by_block_then_fit(int* const keys_begin, int* const keys_end, int* const pivot_key_it)
 {
-  const int left_swap_count = 8;
-  const int right_swap_count = 8;
-  const int max_swap_count = left_swap_count + right_swap_count;
+  debug_print_keys(keys_begin, (int)(keys_end - keys_begin));
+  printf("\n");
+
+  const int max_left_swap_count = 8;
+  const int max_right_swap_count = 8;
+  const int max_swap_count = max_left_swap_count + max_right_swap_count;
   int* left_swaps[max_swap_count];
   int* right_swaps[max_swap_count];
 
@@ -122,33 +129,41 @@ WA_INLINE quick_partition_result_t quick_partition_swap_by_block_then_fit(int* c
   int* left_it = keys_begin;
   int* right_it = keys_end - 1;
 
-  while (right_it - left_it > max_swap_count)
+  int** const left_swaps_begin = left_swaps;
+  int** const right_swaps_begin = right_swaps;
+
+  while (right_it - left_it >= max_swap_count)
   {
-    int** left_swap_it = left_swaps;
+    int** left_swap_it = left_swaps_begin;
     int* left_block_begin = left_it;
-    int* const left_block_end = left_it + left_swap_count;
+    int* const left_block_end = left_it + max_left_swap_count;
     #pragma unroll
     for (int* left_block_it = left_block_begin; left_block_it < left_block_end; ++left_block_it)
     {
       *left_swap_it = left_block_it;
-      left_swap_it += *left_block_it < pivot_key;
+      const int swap = *left_block_it >= pivot_key;
+      left_swap_it += swap;
     }
 
-    int** right_swap_it = right_swaps;
-    int* right_block_begin = right_it;
-    int* const right_block_end = right_it + right_swap_count;
+    int** right_swap_it = right_swaps_begin;
+    int* right_block_begin = right_it - max_right_swap_count + 1;
+    int* const right_block_last = right_it;
     #pragma unroll
-    for (int* right_block_it = right_block_begin; right_block_it < right_block_end; ++right_block_it)
+    for (int* right_block_it = right_block_last; right_block_it >= right_block_begin; --right_block_it)
     {
       *right_swap_it = right_block_it;
-      right_swap_it += *right_block_it < pivot_key;
+      const int swap = *right_block_it <= pivot_key;
+      right_swap_it += swap;
     }
 
-    int swap_count = left_swap_count < right_swap_count ? left_swap_count : right_swap_count;
-    left_swap_it = left_swaps;
-    right_swap_it = right_swaps;
-    int** const left_swap_last = left_swaps + swap_count;
-    int** const right_swap_last = right_swaps + swap_count;
+    const ptrdiff_t left_swap_count = left_swap_it - left_swaps_begin;
+    const ptrdiff_t right_swap_count = right_swap_it - right_swaps_begin;
+    ptrdiff_t swap_count = left_swap_count < right_swap_count ? left_swap_count : right_swap_count;
+
+    left_swap_it = left_swaps_begin;
+    right_swap_it = right_swaps_begin;
+    int** const left_swap_last = left_swaps_begin + swap_count - 1;
+    int** const right_swap_last = right_swaps_begin + swap_count - 1;
 
     while (left_swap_it <= left_swap_last)
     {
@@ -172,7 +187,7 @@ WA_INLINE quick_partition_result_t quick_partition_swap_by_block_then_fit(int* c
     while (*left_it < pivot_key)
     {
       left_it++;
-    }    
+    }
 
     while (*right_it > pivot_key)
     {
