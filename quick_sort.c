@@ -110,6 +110,116 @@ WA_INLINE quick_partition_result_t quick_partition_default(int* const keys_begin
 }
 
 __attribute__((always_inline))
+WA_INLINE quick_partition_result_t quick_partition_swap_by_block_then_fit(int* const keys_begin, int* const keys_end, int* const pivot_key_it)
+{
+  const int left_swap_count = 8;
+  const int right_swap_count = 8;
+  const int max_swap_count = left_swap_count + right_swap_count;
+  int* left_swaps[max_swap_count];
+  int* right_swaps[max_swap_count];
+
+  const int pivot_key = *pivot_key_it;
+  int* left_it = keys_begin;
+  int* right_it = keys_end - 1;
+
+  while (right_it - left_it > max_swap_count)
+  {
+    int** left_swap_it = left_swaps;
+    int* left_block_begin = left_it;
+    int* const left_block_end = left_it + left_swap_count;
+    #pragma unroll
+    for (int* left_block_it = left_block_begin; left_block_it < left_block_end; ++left_block_it)
+    {
+      *left_swap_it = left_block_it;
+      left_swap_it += *left_block_it < pivot_key;
+    }
+
+    int** right_swap_it = right_swaps;
+    int* right_block_begin = right_it;
+    int* const right_block_end = right_it + right_swap_count;
+    #pragma unroll
+    for (int* right_block_it = right_block_begin; right_block_it < right_block_end; ++right_block_it)
+    {
+      *right_swap_it = right_block_it;
+      right_swap_it += *right_block_it < pivot_key;
+    }
+
+    int swap_count = left_swap_count < right_swap_count ? left_swap_count : right_swap_count;
+    left_swap_it = left_swaps;
+    right_swap_it = right_swaps;
+    int** const left_swap_last = left_swaps + swap_count;
+    int** const right_swap_last = right_swaps + swap_count;
+
+    while (left_swap_it <= left_swap_last)
+    {
+      int* const left_it_to_swap = *left_swap_it;
+      int* const right_it_to_swap = *right_swap_it;
+      
+      const int temp_key = *left_it_to_swap;
+      *left_it_to_swap = *right_it_to_swap;
+      *right_it_to_swap = temp_key;
+
+      left_swap_it++;
+      right_swap_it++;
+    }
+
+    left_it = *left_swap_last + 1;
+    right_it = *right_swap_last + 1;
+  }
+
+  while (left_it < right_it)
+  {
+    while (*left_it < pivot_key)
+    {
+      left_it++;
+    }    
+
+    while (*right_it > pivot_key)
+    {
+      right_it--;
+    }
+    
+    if (left_it < right_it)
+    {
+      const int left_key = *left_it;
+      const int right_key = *right_it;
+      *right_it = left_key;
+      *left_it = right_key;
+
+      if (left_key == right_key)
+      {
+        right_it--;
+      }
+    }
+  }
+
+  int* new_pivot_it = left_it;
+  assert(*new_pivot_it == pivot_key);
+  
+  left_it = new_pivot_it;
+  if (left_it > keys_begin)
+  {
+    left_it--;
+    while (left_it > keys_begin && *left_it == pivot_key)
+    {
+      left_it--;
+    }
+  }
+
+  right_it = new_pivot_it;
+  if (right_it < keys_end)
+  {
+    right_it++;
+    while (right_it < keys_end && *right_it == pivot_key)
+    {
+      right_it++;
+    }
+  }
+
+  return (quick_partition_result_t){left_it + 1, right_it};
+}
+
+__attribute__((always_inline))
 WA_INLINE quick_partition_result_t quick_partition_swap_then_fit(int* const keys_begin, int* const keys_end, int* const pivot_key_it)
 {
   const int pivot_key = *pivot_key_it;

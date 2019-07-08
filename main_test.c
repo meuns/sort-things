@@ -60,6 +60,11 @@ void wrap_quick_sort_default_middle(int* keys, const int key_count)
   quick_sort(keys, key_count, quick_partition_default, quick_middle_pivot);
 }
 
+void wrap_quick_sort_swap_by_block_then_fit_median3(int* keys, const int key_count)
+{
+  quick_sort(keys, key_count, quick_partition_swap_by_block_then_fit, quick_median3_pivot);
+}
+
 void wrap_quick_sort_swap_then_fit_median3(int* keys, const int key_count)
 {
   quick_sort(keys, key_count, quick_partition_swap_then_fit, quick_median3_pivot);
@@ -141,6 +146,7 @@ int main(int argc, char** argv)
     {wrap_quick_sort_default_middle, "quick_sort_default_middle", 3871, 1, quick_sort_group_is_enabled || option_parse_command_line(argc, argv, "--quick-sort-default-middle=", "-qsi=", 0)},
     {wrap_quick_sort_swap_then_fit_median3, "quick_sort_swap_then_fit_median3", 3871, 1, quick_sort_group_is_enabled || option_parse_command_line(argc, argv, "--quick-sort-swap-then-fit-median3=", "-qssfe=", 0)},
     {wrap_quick_sort_swap_then_fit_middle, "quick_sort_swap_then_fit_middle", 3871, 1, quick_sort_group_is_enabled || option_parse_command_line(argc, argv, "--quick-sort-swap-then-fit-middle=", "-qssfi=", 0)},
+    {wrap_quick_sort_swap_by_block_then_fit_median3, "quick_sort_swap_by_block_then_fit_median3", 3871, 1, quick_sort_group_is_enabled || option_parse_command_line(argc, argv, "--quick-sort-swap-by-block-then-fit-middle=", "-qssbfi=", 0)},
     {wrap_quick_sort_three_ways_median3, "quick_sort_three_ways_median3", 3871, 1, quick_sort_group_is_enabled || option_parse_command_line(argc, argv, "--quick-sort-three-ways-median3=", "-qs3e=", 0)},
     {wrap_quick_sort_three_ways_middle, "quick_sort_three_ways_middle", 3871, 1, quick_sort_group_is_enabled || option_parse_command_line(argc, argv, "--quick-sort-three-ways-middle=", "-qs3i=", 0)},
     {wrap_radix_sort_halfbyte, "radix_sort_halfbyte", 3871, 1, option_parse_command_line(argc, argv, "--radix-halfbyte-sort=", "-rsh=", 0)},
