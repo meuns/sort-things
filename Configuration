@@ -52,8 +52,8 @@ else ifeq ($(COMPILER), CLANGCL)
 else
 	CC=clang
 	CXX=clang
-	CFLAGS=-std=c11 -D_XOPEN_SOURCE=600 -Weverything -Werror -Wno-gnu-empty-initializer -Wno-zero-length-array -Wno-vla -Wno-missing-prototypes -save-temps=obj
-	CXXFLAGS=-std=c++14 -D_XOPEN_SOURCE=600 -Weverything -Werror -Wno-gnu-empty-initializer -Wno-zero-length-array -Wno-vla -Wno-missing-prototypes -save-temps=obj
+	CFLAGS=-std=c11 -D_XOPEN_SOURCE=600 -Weverything -Werror -Wno-gnu-empty-initializer -Wno-zero-length-array -Wno-vla -Wno-missing-prototypes -Wno-comma -save-temps=obj
+	CXXFLAGS=-std=c++14 -D_XOPEN_SOURCE=600 -Weverything -Werror -Wno-gnu-empty-initializer -Wno-zero-length-array -Wno-vla -Wno-missing-prototypes -Wno-comma -save-temps=obj
 	LDFLAGS=
 endif
 
