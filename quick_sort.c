@@ -126,7 +126,8 @@ WA_INLINE quick_partition_result_t quick_partition_swap_by_block_then_fit(int* c
   int* right_swaps[max_swap_count];
 
   const int pivot_key = *pivot_key_it;
-  int* left_it = keys_begin;
+  *pivot_key_it = *keys_begin;
+  int* left_it = keys_begin + 1;
   int* right_it = keys_end - 1;
 
   int** const left_swaps_begin = left_swaps;
@@ -208,11 +209,18 @@ WA_INLINE quick_partition_result_t quick_partition_swap_by_block_then_fit(int* c
     }
   }
 
-  //debug_print_keys(keys_begin, (int)(keys_end - keys_begin));
-  //printf("\n");
+  int* new_pivot_it = right_it;
+  if (*right_it >= pivot_key)
+  {
+    new_pivot_it--;
+  }
+  
+  *keys_begin = *new_pivot_it;
+  *new_pivot_it = pivot_key;
 
-  int* new_pivot_it = left_it;
-  //assert(*new_pivot_it == pivot_key);
+  printf("%d ", pivot_key);
+  debug_print_keys(keys_begin, (int)(keys_end - keys_begin));
+  printf("\n");
   
   left_it = new_pivot_it;
   if (left_it > keys_begin)
