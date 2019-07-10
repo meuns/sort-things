@@ -116,8 +116,8 @@ WA_INLINE quick_partition_result_t quick_partition_default(int* const keys_begin
 __attribute__((always_inline))
 WA_INLINE quick_partition_result_t quick_partition_swap_by_block_then_fit(int* const keys_begin, int* const keys_end, int* const pivot_key_it)
 {
-  //debug_print_keys(keys_begin, (int)(keys_end - keys_begin));
-  //printf("\n");
+  debug_print_keys(keys_begin, (int)(keys_end - keys_begin));
+  printf("\n");
 
   const int max_left_swap_count = 8;
   const int max_right_swap_count = 8;
@@ -126,7 +126,8 @@ WA_INLINE quick_partition_result_t quick_partition_swap_by_block_then_fit(int* c
   int* right_swaps[max_swap_count];
 
   const int pivot_key = *pivot_key_it;
-  int* left_it = keys_begin;
+  *pivot_key_it = *keys_begin;
+  int* left_it = keys_begin + 1;
   int* right_it = keys_end - 1;
 
   int** const left_swaps_begin = left_swaps;
@@ -208,11 +209,22 @@ WA_INLINE quick_partition_result_t quick_partition_swap_by_block_then_fit(int* c
     }
   }
 
-  //debug_print_keys(keys_begin, (int)(keys_end - keys_begin));
-  //printf("\n");
+  printf("%d ", pivot_key);
+  debug_print_keys(keys_begin, (int)(keys_end - keys_begin));
+  printf("\n");
 
   int* new_pivot_it = left_it;
-  //assert(*new_pivot_it == pivot_key);
+  if (*new_pivot_it >= pivot_key)
+  {
+    new_pivot_it--;
+  }
+
+  *keys_begin = *new_pivot_it;
+  *new_pivot_it = pivot_key;
+
+  printf("%d ", pivot_key);
+  debug_print_keys(keys_begin, (int)(keys_end - keys_begin));
+  printf("\n");
   
   left_it = new_pivot_it;
   if (left_it > keys_begin)
@@ -292,7 +304,7 @@ WA_INLINE quick_partition_result_t quick_partition_swap_then_fit(int* const keys
       right_it++;
     }
   }
-
+  
   return (quick_partition_result_t){left_it + 1, right_it};  
 }
 
@@ -369,11 +381,15 @@ void quick_sort(int* const base_keys, const int base_key_count, const quick_part
     {
       if (left_key_count > 1)
       {
+        assert(keys_begin);
+        assert(left_dutch_end);
         *(++stack_top_it) = (stack_element_t){keys_begin, left_dutch_end};
       }
       
       if (right_key_count > 1)
       {
+        assert(right_dutch_begin);
+        assert(keys_end);
         *(++stack_top_it) = (stack_element_t){right_dutch_begin, keys_end};
       }
     }
@@ -381,11 +397,15 @@ void quick_sort(int* const base_keys, const int base_key_count, const quick_part
     {
       if (right_key_count > 1)
       {
+        assert(right_dutch_begin);
+        assert(keys_end);
         *(++stack_top_it) = (stack_element_t){right_dutch_begin, keys_end};
       }
 
       if (left_key_count > 1)
       {
+        assert(keys_begin);
+        assert(left_dutch_end);
         *(++stack_top_it) = (stack_element_t){keys_begin, left_dutch_end};
       }
     }
