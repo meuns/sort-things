@@ -22,6 +22,9 @@ WA_INLINE int* quick_middle_pivot(int* const keys_begin, int* const keys_end)
 __attribute__((always_inline))
 WA_INLINE int* quick_median3_pivot(int* const keys_begin, int* const keys_end)
 {
+  assert(keys_begin);
+    assert(keys_end);
+
   int* low_key_it = keys_begin;
   int* mid_key_it = quick_middle_pivot(keys_begin, keys_end);
   int* high_key_it = keys_end - 1;
@@ -161,60 +164,65 @@ WA_INLINE quick_partition_result_t quick_partition_swap_by_block_then_fit(int* c
     const ptrdiff_t right_swap_count = right_swap_it - right_swaps_begin;
     ptrdiff_t swap_count = left_swap_count < right_swap_count ? left_swap_count : right_swap_count;
 
-    left_swap_it = left_swaps_begin;
-    right_swap_it = right_swaps_begin;
-    int** const left_swap_last = left_swaps_begin + swap_count - 1;
-    int** const right_swap_last = right_swaps_begin + swap_count - 1;
-
-    while (left_swap_it <= left_swap_last)
+    if (swap_count > 0)
     {
-      int* const left_it_to_swap = *left_swap_it;
-      int* const right_it_to_swap = *right_swap_it;
-      
-      const int temp_key = *left_it_to_swap;
-      *left_it_to_swap = *right_it_to_swap;
-      *right_it_to_swap = temp_key;
+        left_swap_it = left_swaps_begin;
+        right_swap_it = right_swaps_begin;
+        int** const left_swap_last = left_swaps_begin + swap_count - 1;
+        int** const right_swap_last = right_swaps_begin + swap_count - 1;
 
-      left_swap_it++;
-      right_swap_it++;
+        while (left_swap_it <= left_swap_last)
+        {
+          int* const left_it_to_swap = *left_swap_it;
+          int* const right_it_to_swap = *right_swap_it;
+
+          printf("%d <-> %d\n", *left_it_to_swap, *right_it_to_swap);
+
+          const int temp_key = *left_it_to_swap;
+          *left_it_to_swap = *right_it_to_swap;
+          *right_it_to_swap = temp_key;
+
+          left_swap_it++;
+          right_swap_it++;
+
+
+        }
+
+        left_it = (*left_swap_last) + 1;
+        right_it = (*right_swap_last) - 1;
     }
-
-    left_it = *left_swap_last + 1;
-    right_it = *right_swap_last + 1;
+    else
+    {
+        left_it = left_block_end;
+        right_it = right_block_last - 1;
+    }
   }
 
-  while (left_it < right_it)
+  while (right_it > left_it)
   {
-    while (*left_it < pivot_key)
-    {
-      left_it++;
-    }
-
-    while (*right_it > pivot_key)
+    while (right_it > left_it && *right_it >= pivot_key)
     {
       right_it--;
     }
     
-    if (left_it < right_it)
+    while (right_it > left_it && *left_it < pivot_key)
     {
-      const int left_key = *left_it;
-      const int right_key = *right_it;
-      *right_it = left_key;
+      left_it++;
+    }
+
+    if (right_it > left_it)
+    {
+      int right_key = *right_it;
+      *right_it = *left_it;
       *left_it = right_key;
 
-      if (left_key == right_key)
-      {
-        right_it--;
-      }
+      right_it--;
+      left_it++;
     }
   }
 
-  printf("%d ", pivot_key);
-  debug_print_keys(keys_begin, (int)(keys_end - keys_begin));
-  printf("\n");
-
-  int* new_pivot_it = left_it;
-  if (*new_pivot_it >= pivot_key)
+  int* new_pivot_it = right_it;
+  if (*right_it >= pivot_key)
   {
     new_pivot_it--;
   }
@@ -246,6 +254,9 @@ WA_INLINE quick_partition_result_t quick_partition_swap_by_block_then_fit(int* c
     }
   }
 
+  assert(keys_begin < left_it + 1);
+  assert(right_it<= keys_end);
+  assert(left_it + 1 <= right_it);
   return (quick_partition_result_t){left_it + 1, right_it};
 }
 
@@ -370,6 +381,8 @@ void quick_sort(int* const base_keys, const int base_key_count, const quick_part
     const stack_element_t stack_element = *stack_top_it--;
     int* const keys_begin = stack_element.keys_begin;
     int* const keys_end = stack_element.keys_end;
+    assert(keys_begin);
+    assert(keys_end);
 
     const quick_partition_result_t result = quick_partition(keys_begin, keys_end, quick_pivot(keys_begin, keys_end));
     int* const left_dutch_end = result.left_dutch_end;
