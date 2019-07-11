@@ -1,4 +1,5 @@
 .vscode
+.idea
 *.o
 *.exe
 *_clang_*
