@@ -197,9 +197,9 @@ int main(int argc, char** argv)
     int keys[max_key_count];
     int sorted_keys[max_key_count];
 
-    printf("\nTesting %s\n", sort_name);
+    printf("\nTesting %s with [%d, %d] keys\n", sort_name, min_key_count, max_key_count);
 
-    for (int key_count = min_key_count; key_count < max_key_count; key_count += key_step)
+    for (int key_count = min_key_count; key_count <= max_key_count; key_count += key_step)
     {
       srand(42);
 
