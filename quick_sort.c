@@ -117,13 +117,8 @@ WA_INLINE quick_partition_result_t quick_partition_default(int* const keys_begin
 }
 
 __attribute__((always_inline))
-WA_INLINE quick_partition_result_t quick_partition_swap_by_block_then_fit(int* const keys_begin, int* const keys_end, int* const pivot_key_it)
+WA_INLINE quick_partition_result_t quick_partition_swap_by_block_then_fit(int* const keys_begin, int* const keys_end, int* const pivot_key_it, const int max_left_swap_count, const int max_right_swap_count)
 {
-  //debug_print_keys(keys_begin, (int)(keys_end - keys_begin));
-  //printf("\n");
-
-  const int max_left_swap_count = 8;
-  const int max_right_swap_count = 8;
   const int max_swap_count = max_left_swap_count + max_right_swap_count;
   int* left_swaps[max_swap_count];
   int* right_swaps[max_swap_count];
@@ -194,8 +189,6 @@ WA_INLINE quick_partition_result_t quick_partition_swap_by_block_then_fit(int* c
         int *const left_it_to_swap = *left_swap_it;
         int *const right_it_to_swap = *right_swap_it;
 
-        //printf("%d <-> %d\n", *left_it_to_swap, *right_it_to_swap);
-
         const int temp_key = *left_it_to_swap;
         *left_it_to_swap = *right_it_to_swap;
         *right_it_to_swap = temp_key;
@@ -240,10 +233,6 @@ WA_INLINE quick_partition_result_t quick_partition_swap_by_block_then_fit(int* c
 
   *keys_begin = *new_pivot_it;
   *new_pivot_it = pivot_key;
-
-  //printf("%d ", pivot_key);
-  //debug_print_keys(keys_begin, (int)(keys_end - keys_begin));
-  //printf("\n");
   
   left_it = new_pivot_it;
   if (left_it > keys_begin)
@@ -265,10 +254,49 @@ WA_INLINE quick_partition_result_t quick_partition_swap_by_block_then_fit(int* c
     }
   }
 
-  assert(keys_begin < left_it + 1);
-  assert(right_it<= keys_end);
-  assert(left_it + 1 <= right_it);
   return (quick_partition_result_t){left_it + 1, right_it};
+}
+
+__attribute__((always_inline))
+WA_INLINE quick_partition_result_t quick_partition_swap_by_block_then_fit_8(int* const keys_begin, int* const keys_end, int* const pivot_key_it)
+{
+  return quick_partition_swap_by_block_then_fit(keys_begin, keys_end, pivot_key_it, 8, 8);
+}
+
+__attribute__((always_inline))
+WA_INLINE quick_partition_result_t quick_partition_swap_by_block_then_fit_16(int* const keys_begin, int* const keys_end, int* const pivot_key_it)
+{
+  return quick_partition_swap_by_block_then_fit(keys_begin, keys_end, pivot_key_it, 16, 16);
+}
+
+__attribute__((always_inline))
+WA_INLINE quick_partition_result_t quick_partition_swap_by_block_then_fit_32(int* const keys_begin, int* const keys_end, int* const pivot_key_it)
+{
+  return quick_partition_swap_by_block_then_fit(keys_begin, keys_end, pivot_key_it, 32, 32);
+}
+
+__attribute__((always_inline))
+WA_INLINE quick_partition_result_t quick_partition_swap_by_block_then_fit_64(int* const keys_begin, int* const keys_end, int* const pivot_key_it)
+{
+  return quick_partition_swap_by_block_then_fit(keys_begin, keys_end, pivot_key_it, 64, 64);
+}
+
+__attribute__((always_inline))
+WA_INLINE quick_partition_result_t quick_partition_swap_by_block_then_fit_128(int* const keys_begin, int* const keys_end, int* const pivot_key_it)
+{
+  return quick_partition_swap_by_block_then_fit(keys_begin, keys_end, pivot_key_it, 128, 128);
+}
+
+__attribute__((always_inline))
+WA_INLINE quick_partition_result_t quick_partition_swap_by_block_then_fit_256(int* const keys_begin, int* const keys_end, int* const pivot_key_it)
+{
+  return quick_partition_swap_by_block_then_fit(keys_begin, keys_end, pivot_key_it, 256, 256);
+}
+
+__attribute__((always_inline))
+WA_INLINE quick_partition_result_t quick_partition_swap_by_block_then_fit_1024(int* const keys_begin, int* const keys_end, int* const pivot_key_it)
+{
+  return quick_partition_swap_by_block_then_fit(keys_begin, keys_end, pivot_key_it, 512, 512);
 }
 
 __attribute__((always_inline))

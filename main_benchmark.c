@@ -88,7 +88,7 @@ void wrap_quick_sort_default_middle(int* keys, const int key_count, int* temp_ke
 
 void wrap_quick_sort_swap_by_block_then_fit_median3(int* keys, const int key_count, int* temp_keys __attribute__((unused)))
 {
-  quick_sort(keys, key_count, quick_partition_swap_by_block_then_fit, quick_median3_pivot);
+  quick_sort(keys, key_count, quick_partition_swap_by_block_then_fit_32, quick_median3_pivot);
 }
 
 void wrap_quick_sort_swap_then_fit_median3(int* keys, const int key_count, int* temp_keys __attribute__((unused)))

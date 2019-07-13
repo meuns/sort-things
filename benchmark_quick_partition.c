@@ -30,9 +30,34 @@ void wrap_quick_partition_swap_then_fit(int* const keys_begin, int* const keys_e
   quick_partition_swap_then_fit(keys_begin, keys_end, quick_median3_pivot(keys_begin, keys_end));
 }
 
-void wrap_quick_partition_swap_by_block_then_fit(int* const keys_begin, int* const keys_end)
+void wrap_quick_partition_swap_by_block_then_fit_8(int* const keys_begin, int* const keys_end)
 {
-  quick_partition_swap_by_block_then_fit(keys_begin, keys_end, quick_median3_pivot(keys_begin, keys_end));
+  quick_partition_swap_by_block_then_fit_8(keys_begin, keys_end, quick_median3_pivot(keys_begin, keys_end));
+}
+
+void wrap_quick_partition_swap_by_block_then_fit_16(int* const keys_begin, int* const keys_end)
+{
+  quick_partition_swap_by_block_then_fit_16(keys_begin, keys_end, quick_median3_pivot(keys_begin, keys_end));
+}
+
+void wrap_quick_partition_swap_by_block_then_fit_32(int* const keys_begin, int* const keys_end)
+{
+  quick_partition_swap_by_block_then_fit_32(keys_begin, keys_end, quick_median3_pivot(keys_begin, keys_end));
+}
+
+void wrap_quick_partition_swap_by_block_then_fit_64(int* const keys_begin, int* const keys_end)
+{
+  quick_partition_swap_by_block_then_fit_64(keys_begin, keys_end, quick_median3_pivot(keys_begin, keys_end));
+}
+
+void wrap_quick_partition_swap_by_block_then_fit_128(int* const keys_begin, int* const keys_end)
+{
+  quick_partition_swap_by_block_then_fit_128(keys_begin, keys_end, quick_median3_pivot(keys_begin, keys_end));
+}
+
+void wrap_quick_partition_swap_by_block_then_fit_256(int* const keys_begin, int* const keys_end)
+{
+  quick_partition_swap_by_block_then_fit_256(keys_begin, keys_end, quick_median3_pivot(keys_begin, keys_end));
 }
 
 void wrap_quick_partition_three_ways(int* const keys_begin, int* const keys_end)
@@ -51,28 +76,39 @@ benchmark_t;
 int main(int argc, char** argv)
 {
   const int quick_partition_group_is_enabled = option_parse_command_line(argc, argv, "--quick-partition=", "-qp=", 0);
+  const int quick_partition_swap_by_block_group_is_enabled = option_parse_command_line(argc, argv, "--quick-partition-swap-by-block-then-fit=", "-qpsbf=", 0);
 
   const benchmark_t benchmarks[] =
   {
-    {wrap_quick_partition_default, "quick_partition_default", quick_partition_group_is_enabled || option_parse_command_line(argc, argv, "--quick-partition-default=", "-qpd=", 0)},    
+    {wrap_quick_partition_default, "quick_partition_default", quick_partition_group_is_enabled || option_parse_command_line(argc, argv, "--quick-partition-default=", "-qpd=", 0)},
     {wrap_quick_partition_swap_then_fit, "quick_partition_swap_then_fit", quick_partition_group_is_enabled || option_parse_command_line(argc, argv, "--quick-partition-swap-then-fit=", "-qpsf=", 0)},    
-    {wrap_quick_partition_swap_by_block_then_fit, "quick_partition_swap_by_block_then_fit", quick_partition_group_is_enabled || option_parse_command_line(argc, argv, "--quick-partition-swap-by-block-then-fit=", "-qpsbf=", 0)},        
+    {wrap_quick_partition_swap_by_block_then_fit_8, "quick_partition_swap_by_block_then_fit_8", quick_partition_group_is_enabled || quick_partition_swap_by_block_group_is_enabled || option_parse_command_line(argc, argv, "--quick-partition-swap-by-block-then-fit-8=", "-qpsbf8=", 0)},
+    {wrap_quick_partition_swap_by_block_then_fit_16, "quick_partition_swap_by_block_then_fit_16", quick_partition_group_is_enabled || quick_partition_swap_by_block_group_is_enabled || option_parse_command_line(argc, argv, "--quick-partition-swap-by-block-then-fit-16=", "-qpsbf16=", 0)},
+    {wrap_quick_partition_swap_by_block_then_fit_32, "quick_partition_swap_by_block_then_fit_32", quick_partition_group_is_enabled || quick_partition_swap_by_block_group_is_enabled || option_parse_command_line(argc, argv, "--quick-partition-swap-by-block-then-fit-32=", "-qpsbf32=", 0)},
+    {wrap_quick_partition_swap_by_block_then_fit_64, "quick_partition_swap_by_block_then_fit_64", quick_partition_group_is_enabled || quick_partition_swap_by_block_group_is_enabled || option_parse_command_line(argc, argv, "--quick-partition-swap-by-block-then-fit-64=", "-qpsbf64=", 0)},
+    {wrap_quick_partition_swap_by_block_then_fit_128, "quick_partition_swap_by_block_then_fit_128", quick_partition_group_is_enabled || quick_partition_swap_by_block_group_is_enabled || option_parse_command_line(argc, argv, "--quick-partition-swap-by-block-then-fit-128=", "-qpsbf128=", 0)},
+    {wrap_quick_partition_swap_by_block_then_fit_256, "quick_partition_swap_by_block_then_fit_256", quick_partition_group_is_enabled || quick_partition_swap_by_block_group_is_enabled || option_parse_command_line(argc, argv, "--quick-partition-swap-by-block-then-fit-256=", "-qpsbf256=", 0)},
     {wrap_quick_partition_three_ways, "quick_partition_three_ways", quick_partition_group_is_enabled || option_parse_command_line(argc, argv, "--quick-partition-three-ways=", "-qp3=", 0)},
   };
 
   const int max_key_count = option_parse_command_line(argc, argv, "--max-key-count=", "-kc=", 1 << 24);
   const int min_key_count = option_parse_command_line(argc, argv, "--min-key-count=", "-mkc=", max_key_count);
-  const int step_key_count = option_parse_command_line(argc, argv, "--step-key=", "-sk=", 1 << 10);
+  const int step_key_count_multiplier = option_parse_command_line(argc, argv, "--step-key-multiplier=", "-skm=", 2);
   const int max_key_value = option_parse_command_line(argc, argv, "--max-key-value=", "-kv=", INT_MAX);
   const int min_key_value = option_parse_command_line(argc, argv, "--min-key-value=", "-mkv=", INT_MIN);
   const int split_count = option_parse_command_line(argc, argv, "--split-count", "-sc=", 1);
   const int verbose = option_parse_command_line(argc, argv, "--verbose=", "-v=", 1);
-  const int repeat_count = 20;
+  const int repeat_count = 1000;
 
   int* ref_keys = (int*)malloc((unsigned int)max_key_count * sizeof(int));
   int* temp_keys = (int*)malloc((unsigned int)max_key_count * sizeof(int));
   int* keys = (int*)malloc((unsigned int)max_key_count * sizeof(int));
   benchmark_generate_random_keys(ref_keys, max_key_count, 42, min_key_value, max_key_value);
+
+  if (!verbose)
+  {
+    printf("Partition Name;Key Count;Duration us\n");
+  }
 
   const int sort_count = sizeof(benchmarks) / sizeof(benchmarks[0]);
   for (int sort_index = 0; sort_index < sort_count; ++sort_index)
@@ -86,12 +122,7 @@ int main(int argc, char** argv)
     const wrap_quick_partition_t quick_partition = benchmark.quick_partition;
     const char* partition_name = benchmark.partition_name;
 
-    if (!verbose)
-    {
-      printf("Partition Name;Key Count;Duration us\n");
-    }
-
-    for (int key_count = min_key_count; key_count <= max_key_count; key_count += step_key_count)
+    for (int key_count = min_key_count; key_count <= max_key_count; key_count *= step_key_count_multiplier)
     {
       const int split_key_count = key_count / split_count;
 
