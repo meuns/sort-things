@@ -18,6 +18,12 @@
 #include "radix_sort.h"
 #include "std_sort.h"
 
+#if defined(WA_LINKING_INLINE_FUNCTION)
+  #define WA_INLINE
+#else
+  #define WA_INLINE inline
+#endif
+
 typedef void (*sort_function_t)(int* keys, const int key_count, int* temp_keys);
 
 void wrap_network_sort(int* keys, const int key_count, int* temp_keys __attribute__((unused)))
@@ -51,7 +57,7 @@ void wrap_heap_sort(int* keys, const int key_count, int* temp_keys __attribute__
 }
 
 __attribute__((always_inline))
-int benchmark_compare_le_lto(const void* left_key, const void* right_key)
+WA_INLINE int benchmark_compare_le_lto(const void* left_key, const void* right_key)
 {
   const int* left_key_int = (const int*)left_key;
   const int* right_key_int = (const int*)right_key;
@@ -59,7 +65,7 @@ int benchmark_compare_le_lto(const void* left_key, const void* right_key)
 }
 
 __attribute__((always_inline))
-void benchmark_copy_lto(void* to_key, const void* from_key)
+WA_INLINE void benchmark_copy_lto(void* to_key, const void* from_key)
 {
   int* to_key_int = (int*)to_key;
   const int* from_key_int = (const int*)from_key;

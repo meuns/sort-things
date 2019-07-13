@@ -6,11 +6,16 @@
 #include <stddef.h>
 #include <stdio.h>
 
-// Temporary workaround linking issue on _WIN32
-#if defined(_WIN32)
+#if defined(WA_LINKING_INLINE_FUNCTION)
   #define WA_INLINE
 #else
   #define WA_INLINE inline
+#endif
+
+#if defined(COMPILER_CLANG)
+    #define PRAGMA_UNROLL _Pragma("unroll")
+#else
+    #define PRAGMA_UNROLL
 #endif
 
 __attribute__((always_inline))
@@ -139,7 +144,7 @@ WA_INLINE quick_partition_result_t quick_partition_swap_by_block_then_fit(int* c
       int *left_block_begin = left_it;
       int *const left_block_end = left_it + max_left_swap_count;
 
-      #pragma unroll
+      PRAGMA_UNROLL
       for (int *left_block_it = left_block_begin; left_block_it < left_block_end; ++left_block_it)
       {
         *left_swap_it = left_block_it;
@@ -159,7 +164,7 @@ WA_INLINE quick_partition_result_t quick_partition_swap_by_block_then_fit(int* c
       int* right_block_begin = right_it - max_right_swap_count + 1;
       int* const right_block_last = right_it;
 
-      #pragma unroll
+      PRAGMA_UNROLL
       for (int* right_block_it = right_block_last; right_block_it >= right_block_begin; --right_block_it)
       {
         *right_swap_it = right_block_it;
@@ -402,7 +407,7 @@ typedef struct
 stack_element_t;
 
 __attribute__((always_inline))
-void quick_sort(int* const base_keys, const int base_key_count, const quick_partition_t quick_partition, const quick_pivot_t quick_pivot)
+WA_INLINE void quick_sort(int* const base_keys, const int base_key_count, const quick_partition_t quick_partition, const quick_pivot_t quick_pivot)
 {
   if (base_key_count < 2)
   {

@@ -1,9 +1,39 @@
-# Platform
+# Default options
+ifeq ($(COMPILER),)
+	COMPILER:=CLANG
+endif
+
+ifeq ($(BUILD),)
+	BUILD:=RELEASE
+endif
+
+# Platforms
 ifeq ($(OS), Windows_NT) 
 	DETECTED_OS:=Windows
+	ifeq ($(COMPILER), GCC)
+		DETECTED_TARGET:=$(shell gcc -dumpmachine)
+		ifneq (, $(findstring x86_64-w64-mingw32, $(DETECTED_TARGET)))
+			DETECTED_TARGET:=MINGW
+		else
+			ERROR_MESSAGE=$(error Unexpected DETECTED_TARGET $(DETECTED_TARGET))
+		endif
+	else ifeq ($(COMPILER), CLANG)
+		DETECTED_TARGET:=$(shell clang -dumpmachine)
+		ifneq (, $(findstring x86_64-pc-windows-msvc, $(DETECTED_TARGET)))
+			DETECTED_TARGET:=MSVC
+		else
+			ERROR_MESSAGE=$(error Unexpected DETECTED_TARGET $(DETECTED_TARGET))
+		endif
+	else ifeq ($(COMPILER), CLANGCL)
+		ERROR_MESSAGE=$(error Implement DETECTED_TARGET)
+	endif
 else
 	DETECTED_OS:=$(shell sh -c 'uname 2>/dev/null || echo Unknown')
+	ERROR_MESSAGE=$(error Implement DETECTED_TARGET)
 endif
+
+# Execute error message if any
+$(ERROR_MESSAGE)
 
 # Configure build
 EXE_SUFFIX=
@@ -11,7 +41,7 @@ ifeq ($(BUILD), DEBUG)
 	BUILD_DIR_PATH=./.debug
 else ifeq ($(BUILD), PROFILE)
 	BUILD_DIR_PATH=./.profile
-else
+else ifeq ($(BUILD), RELEASE)
 	BUILD_DIR_PATH=./.release
 endif
 
@@ -24,15 +54,12 @@ ifeq ($(COMPILER), GCC)
 else ifeq ($(COMPILER), CLANGCL)
 	BUILD_DIR_PATH:=$(BUILD_DIR_PATH)_clangcl
 	EXE_SUFFIX:=$(EXE_SUFFIX)_clangcl
-else
+else ifeq ($(COMPILER), CLANG)
 	BUILD_DIR_PATH:=$(BUILD_DIR_PATH)_clang
 	EXE_SUFFIX:=$(EXE_SUFFIX)_clang
 	ifeq ($(LTO), ENABLE)
 		BUILD_DIR_PATH:=$(BUILD_DIR_PATH)_lto
 		EXE_SUFFIX:=$(EXE_SUFFIX)_lto
-	else ifeq ($(LTO), VALIDATE)
-		BUILD_DIR_PATH:=$(BUILD_DIR_PATH)_lto_v
-		EXE_SUFFIX:=$(EXE_SUFFIX)_lto_v
 	endif
 endif
 
@@ -40,7 +67,7 @@ ifeq ($(BUILD), DEBUG)
 	EXE_SUFFIX:=$(EXE_SUFFIX)_d
 else ifeq ($(BUILD), PROFILE)
 	EXE_SUFFIX:=$(EXE_SUFFIX)_p
-else
+else ifeq ($(BUILD), RELEASE)
 	EXE_SUFFIX:=$(EXE_SUFFIX)_r
 endif
 
@@ -56,7 +83,7 @@ else ifeq ($(COMPILER), CLANGCL)
 	CFLAGS=
 	CXXFLAGS=
 	LDFLAGS=
-else
+else ifeq ($(COMPILER), CLANG)
 	CC=clang
 	CXX=clang
 	CFLAGS=-std=c11 -D_XOPEN_SOURCE=600 -Weverything -Werror -Wno-gnu-empty-initializer -Wno-zero-length-array -Wno-vla -Wno-missing-prototypes -save-temps=obj
@@ -73,7 +100,7 @@ ifeq ($(COMPILER), CLANGCL)
 		CFLAGS+=-Zi -MTd -fuse-ld=lld
 		CXXFLAGS+=-Zi -MTd -fuse-ld=lld
 		LDFLAGS+=-DEBUG:FULL
-	else
+	else ifeq ($(BUILD), RELEASE)
 		CFLAGS+=-fuse-ld=lld
 		CXXFLAGS+=-fuse-ld=lld
 		LDFLAGS+=
@@ -82,10 +109,11 @@ else
 	ifeq ($(BUILD), DEBUG)
 		CFLAGS+=-g -O0
 		CXXFLAGS+=-g -O0
+		LDFLAGS+=-g
 	else ifeq ($(BUILD), PROFILE)
 		CFLAGS+=-g -D NDEBUG -O2
 		CXXFLAGS+=-g -D NDEBUG -O2
-	else
+	else ifeq ($(BUILD), RELEASE)
 		CFLAGS+=-D NDEBUG -O2
 		CXXFLAGS+=-D NDEBUG -O2
 		ifeq ($(LTO), ENABLE)
@@ -94,4 +122,10 @@ else
 			LDFLAGS+=-flto -fuse-ld=gold -Wl,-plugin-opt=save-temps
 		endif
 	endif
+endif
+
+# Platform specific compiler options
+ifeq ($(DETECTED_TARGET)_$(COMPILER), MSVC_CLANG)
+	CFLAGS+=-D WA_LINKING_INLINE_FUNCTION -Wno-comma
+	CXXFLAGS+=-D WA_LINKING_INLINE_FUNCTION -Wno-comma
 endif
