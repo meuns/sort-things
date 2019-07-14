@@ -1,21 +1,11 @@
 #include "quick_sort.h"
-
-#include "debug.h"
-
 #include <assert.h>
 #include <stddef.h>
-#include <stdio.h>
 
 #if defined(WA_LINKING_INLINE_FUNCTION)
   #define WA_INLINE
 #else
   #define WA_INLINE inline
-#endif
-
-#if defined(COMPILER_CLANG)
-    #define PRAGMA_UNROLL _Pragma("unroll")
-#else
-    #define PRAGMA_UNROLL
 #endif
 
 __attribute__((always_inline))
@@ -27,9 +17,6 @@ WA_INLINE int* quick_middle_pivot(int* const keys_begin, int* const keys_end)
 __attribute__((always_inline))
 WA_INLINE int* quick_median3_pivot(int* const keys_begin, int* const keys_end)
 {
-  assert(keys_begin);
-    assert(keys_end);
-
   int* low_key_it = keys_begin;
   int* mid_key_it = quick_middle_pivot(keys_begin, keys_end);
   int* high_key_it = keys_end - 1;
@@ -144,12 +131,10 @@ WA_INLINE quick_partition_result_t quick_partition_swap_by_block_then_fit(int* c
       int *left_block_begin = left_it;
       int *const left_block_end = left_it + max_left_swap_count;
 
-      PRAGMA_UNROLL
       for (int *left_block_it = left_block_begin; left_block_it < left_block_end; ++left_block_it)
       {
         *left_swap_it = left_block_it;
-        const int swap = *left_block_it >= pivot_key;
-        left_swap_it += swap;
+        left_swap_it += *left_block_it >= pivot_key;        
       }
 
       if (left_swap_it == left_swaps_begin)
@@ -164,12 +149,10 @@ WA_INLINE quick_partition_result_t quick_partition_swap_by_block_then_fit(int* c
       int* right_block_begin = right_it - max_right_swap_count + 1;
       int* const right_block_last = right_it;
 
-      PRAGMA_UNROLL
       for (int* right_block_it = right_block_last; right_block_it >= right_block_begin; --right_block_it)
       {
         *right_swap_it = right_block_it;
-        const int swap = *right_block_it < pivot_key;
-        right_swap_it += swap;
+        right_swap_it += *right_block_it < pivot_key;
       }
 
       if (right_swap_it == right_swaps_begin)
@@ -299,12 +282,6 @@ WA_INLINE quick_partition_result_t quick_partition_swap_by_block_then_fit_256(in
 }
 
 __attribute__((always_inline))
-WA_INLINE quick_partition_result_t quick_partition_swap_by_block_then_fit_1024(int* const keys_begin, int* const keys_end, int* const pivot_key_it)
-{
-  return quick_partition_swap_by_block_then_fit(keys_begin, keys_end, pivot_key_it, 512, 512);
-}
-
-__attribute__((always_inline))
 WA_INLINE quick_partition_result_t quick_partition_swap_then_fit(int* const keys_begin, int* const keys_end, int* const pivot_key_it)
 {
   const int pivot_key = *pivot_key_it;
@@ -425,9 +402,7 @@ WA_INLINE void quick_sort(int* const base_keys, const int base_key_count, const 
     const stack_element_t stack_element = *stack_top_it--;
     int* const keys_begin = stack_element.keys_begin;
     int* const keys_end = stack_element.keys_end;
-    assert(keys_begin);
-    assert(keys_end);
-
+    
     const quick_partition_result_t result = quick_partition(keys_begin, keys_end, quick_pivot(keys_begin, keys_end));
     int* const left_dutch_end = result.left_dutch_end;
     int* const right_dutch_begin = result.right_dutch_begin;
@@ -438,15 +413,11 @@ WA_INLINE void quick_sort(int* const base_keys, const int base_key_count, const 
     {
       if (left_key_count > 1)
       {
-        assert(keys_begin);
-        assert(left_dutch_end);
         *(++stack_top_it) = (stack_element_t){keys_begin, left_dutch_end};
       }
       
       if (right_key_count > 1)
       {
-        assert(right_dutch_begin);
-        assert(keys_end);
         *(++stack_top_it) = (stack_element_t){right_dutch_begin, keys_end};
       }
     }
@@ -454,15 +425,11 @@ WA_INLINE void quick_sort(int* const base_keys, const int base_key_count, const 
     {
       if (right_key_count > 1)
       {
-        assert(right_dutch_begin);
-        assert(keys_end);
         *(++stack_top_it) = (stack_element_t){right_dutch_begin, keys_end};
       }
 
       if (left_key_count > 1)
       {
-        assert(keys_begin);
-        assert(left_dutch_end);
         *(++stack_top_it) = (stack_element_t){keys_begin, left_dutch_end};
       }
     }
