@@ -29,7 +29,23 @@ ifeq ($(OS), Windows_NT)
 	endif
 else
 	DETECTED_OS:=$(shell sh -c 'uname 2>/dev/null || echo Unknown')
-	ERROR_MESSAGE=$(error Implement DETECTED_TARGET)
+	ifeq ($(COMPILER), GCC)
+		DETECTED_TARGET:=$(shell gcc -dumpmachine)
+		ifneq (, $(findstring x86_64-linux-gnu, $(DETECTED_TARGET)))
+			DETECTED_TARGET:=GNU
+		else
+			ERROR_MESSAGE=$(error Unexpected DETECTED_TARGET $(DETECTED_TARGET))
+		endif
+	else ifeq ($(COMPILER), CLANG)
+		DETECTED_TARGET:=$(shell clang -dumpmachine)
+		ifneq (, $(findstring x86_64-pc-linux-gnu, $(DETECTED_TARGET)))
+			DETECTED_TARGET:=GNU
+		else
+			ERROR_MESSAGE=$(error Unexpected DETECTED_TARGET $(DETECTED_TARGET))
+		endif
+	else ifeq ($(COMPILER), CLANGCL)
+		ERROR_MESSAGE=$(error Implement DETECTED_TARGET)
+	endif
 endif
 
 # Execute error message if any
