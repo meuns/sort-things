@@ -9,11 +9,11 @@ endif
 
 # Platforms
 ifeq ($(OS), Windows_NT) 
-	DETECTED_OS:=Windows
+	DETECTED_OS:=WINDOWS
 	ifeq ($(COMPILER), GCC)
 		DETECTED_TARGET:=$(shell gcc -dumpmachine)
 		ifneq (, $(findstring x86_64-w64-mingw32, $(DETECTED_TARGET)))
-			DETECTED_TARGET:=MINGW
+			DETECTED_TARGET:=MSYS
 		else
 			ERROR_MESSAGE=$(error Unexpected DETECTED_TARGET $(DETECTED_TARGET))
 		endif
@@ -21,6 +21,8 @@ ifeq ($(OS), Windows_NT)
 		DETECTED_TARGET:=$(shell clang -dumpmachine)
 		ifneq (, $(findstring x86_64-pc-windows-msvc, $(DETECTED_TARGET)))
 			DETECTED_TARGET:=MSVC
+		else ifneq (, $(findstring x86_64-pc-msys, $(DETECTED_TARGET)))
+			DETECTED_TARGET:=MSYS
 		else
 			ERROR_MESSAGE=$(error Unexpected DETECTED_TARGET $(DETECTED_TARGET))
 		endif
@@ -28,7 +30,7 @@ ifeq ($(OS), Windows_NT)
 		ERROR_MESSAGE=$(error Implement DETECTED_TARGET)
 	endif
 else
-	DETECTED_OS:=$(shell sh -c 'uname 2>/dev/null || echo Unknown')
+	DETECTED_OS:=$(shell sh -c '(uname 2>/dev/null || echo UNKNOWN) | tr "[:lower:]" "[:upper:]"')
 	ifeq ($(COMPILER), GCC)
 		DETECTED_TARGET:=$(shell gcc -dumpmachine)
 		ifneq (, $(findstring x86_64-linux-gnu, $(DETECTED_TARGET)))
@@ -132,7 +134,7 @@ else
 	else ifeq ($(BUILD), RELEASE)
 		CFLAGS+=-D NDEBUG -O2
 		CXXFLAGS+=-D NDEBUG -O2
-		ifeq ($(LTO), ENABLE)
+		ifeq ($(COMPILER)_$(LTO), CLANG_ENABLE)
 			CFLAGS+=-flto
 			CXXFLAGS+=-flto
 			LDFLAGS+=-flto -fuse-ld=gold -Wl,-plugin-opt=save-temps
