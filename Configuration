@@ -169,8 +169,8 @@ endif
 ifeq ($(COMPILER), GCC)
 	CC=gcc
 	CXX=gcc	
-	CFLAGS=-std=c11 -D_XOPEN_SOURCE=600 -Wall -Wextra -Wpedantic -Wformat -Wcast-qual -Wconversion -Winit-self -Wrestrict -Wunused -Werror
-	CXXFLAGS=-std=c++14 -D_XOPEN_SOURCE=600 -Wall -Wextra -Wpedantic -Wformat -Wcast-qual -Wconversion -Winit-self -Wrestrict -Wunused -Werror
+	CFLAGS=-std=c11 -D_XOPEN_SOURCE=600 -Wall -Wextra -Wpedantic -Wformat -Wcast-qual -Wconversion -Winit-self -Wunused -Werror
+	CXXFLAGS=-std=c++14 -D_XOPEN_SOURCE=600 -Wall -Wextra -Wpedantic -Wformat -Wcast-qual -Wconversion -Winit-self -Wunused -Werror
 	LDFLAGS=
 else ifeq ($(COMPILER), CLANG)
 	CC=clang
