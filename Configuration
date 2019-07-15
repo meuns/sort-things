@@ -84,7 +84,6 @@ endif
 
 # Execute error message if any
 $(ERROR_MESSAGE)
-$(info $(DETECTED_OS)-$(DETECTED_TARGET)-$(COMPILER))
 
 # Default build mode
 ifeq ($(BUILD),)
@@ -170,6 +169,8 @@ $(ERROR_MESSAGE)
 $(INFO_MESSAGE)
 
 # Configure build
+$(info $(DETECTED_OS)-$(DETECTED_TARGET)-$(COMPILER)-$(LINKER)-$(BUILD))
+
 EXE_SUFFIX=
 ifeq ($(BUILD), DEBUG)
 	BUILD_DIR_PATH=./.debug
