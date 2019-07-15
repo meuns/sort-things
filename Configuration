@@ -50,18 +50,18 @@ ifeq ($(LINKER),)
 	ifeq ($(COMPILER), GCC)
 		ifneq ($(DETECTED_GOLD_PATH),)
 			LINKER=GOLD
-			INFO_MESSAGE=$(info Choosing gold linker located at : $(DETECTED_GOLD_PATH))
+			INFO_MESSAGE=$(info Automatically using gold linker located at : $(DETECTED_GOLD_PATH))
 		else
 			LINKER=DEFAULT
-			INFO_MESSAGE=$(info Choosing default linker)
+			INFO_MESSAGE=$(info Automatically using default linker)
 		endif
 	else ifeq ($(COMPILER), CLANG)
 		ifneq ($(DETECTED_LLD_PATH),)
 			LINKER=LLD
-			INFO_MESSAGE=$(info Choosing lld linker located at : $(DETECTED_LLD_PATH))
+			INFO_MESSAGE=$(info Automatically using lld linker located at : $(DETECTED_LLD_PATH))
 		else
 			LINKER=DEFAULT
-			INFO_MESSAGE=$(info Choosing default linker)
+			INFO_MESSAGE=$(info Automatically using default linker)
 		endif
 	endif
 else
@@ -105,6 +105,8 @@ else
 		DETECTED_TARGET:=$(shell gcc -dumpmachine)
 		ifneq (, $(findstring x86_64-linux-gnu, $(DETECTED_TARGET)))
 			DETECTED_TARGET:=GNU
+		else ifneq (, $(findstring aarch64--linux-android, $(DETECTED_TARGET)))
+			DETECTED_TARGET:=ANDROID
 		else
 			ERROR_MESSAGE=$(error Unexpected DETECTED_TARGET $(DETECTED_TARGET))
 		endif
