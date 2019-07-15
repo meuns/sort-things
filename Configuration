@@ -114,6 +114,8 @@ else
 		DETECTED_TARGET:=$(shell clang -dumpmachine)
 		ifneq (, $(findstring x86_64-pc-linux-gnu, $(DETECTED_TARGET)))
 			DETECTED_TARGET:=GNU
+		else ifneq (, $(findstring aarch64--linux-android, $(DETECTED_TARGET)))
+			DETECTED_TARGET:=ANDROID
 		else
 			ERROR_MESSAGE=$(error Unexpected DETECTED_TARGET $(DETECTED_TARGET), consider to add and test it)
 		endif
