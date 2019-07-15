@@ -97,8 +97,12 @@ $(BUILD_DIR_PATH)/debug.o: debug.h debug.c
 
 # Benchmark
 MAIN_BENCHMARK_MODULES=$(ALL_SORT_MODULES) $(BUILD_DIR_PATH)/main_benchmark.o $(BUILD_DIR_PATH)/benchmark.o $(BUILD_DIR_PATH)/std_sort.o $(BUILD_DIR_PATH)/option.o $(BUILD_DIR_PATH)/test.o $(BUILD_DIR_PATH)/debug.o
+MAIN_BENCHMARK_LDFLAGS=$(LDFLAGS)
+ifneq ($(DETECTED_TARGET)_$(COMPILER), MSVC_CLANG)
+	MAIN_BENCHMARK_LDFLAGS:=$(MAIN_BENCHMARK_LDFLAGS) -lstdc++
+endif
 $(BUILD_DIR_PATH)/benchmark$(EXE_SUFFIX): $(BUILD_PROJECT_DEPENDENCIES) $(MAIN_BENCHMARK_MODULES)
-	$(CC) -o $@ $(MAIN_BENCHMARK_MODULES) $(LDFLAGS) -lstdc++
+	$(CC) -o $@ $(MAIN_BENCHMARK_MODULES) $(MAIN_BENCHMARK_LDFLAGS)
 
 $(BUILD_DIR_PATH)/main_benchmark.o: $(ALL_SORT_HEADERS) benchmark.h std_sort.h debug.h main_benchmark.c
 $(BUILD_DIR_PATH)/benchmark.o: benchmark.h benchmark.c
@@ -182,5 +186,4 @@ clean:
 	rm -rf *_clangcl_*
 	rm -rf *_gcc_*	
 	rm -rf .release* .debug* .profile*
-	rm -rf $(DEPLOY_EXE_PATHS)
-
+	rm -rf $(DEPLOY_EXE_PATHS) *.exe

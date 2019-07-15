@@ -62,7 +62,7 @@ void wrap_quick_sort_default_middle(int* keys, const int key_count)
 
 void wrap_quick_sort_swap_by_block_then_fit_median3(int* keys, const int key_count)
 {
-  quick_sort(keys, key_count, quick_partition_swap_by_block_then_fit, quick_median3_pivot);
+  quick_sort(keys, key_count, quick_partition_swap_by_block_then_fit_8, quick_median3_pivot);
 }
 
 void wrap_quick_sort_swap_then_fit_median3(int* keys, const int key_count)
@@ -197,9 +197,9 @@ int main(int argc, char** argv)
     int keys[max_key_count];
     int sorted_keys[max_key_count];
 
-    printf("\nTesting %s\n", sort_name);
+    printf("\nTesting %s with [%d, %d] keys\n", sort_name, min_key_count, max_key_count);
 
-    for (int key_count = min_key_count; key_count < max_key_count; key_count += key_step)
+    for (int key_count = min_key_count; key_count <= max_key_count; key_count += key_step)
     {
       srand(42);
 
