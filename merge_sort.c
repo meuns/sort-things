@@ -2,8 +2,7 @@
 
 #include <string.h>
 
-// Temporary workaround linking issue on _WIN32
-#if defined(_WIN32)
+#if defined(WA_LINKING_INLINE_FUNCTION)
   #define WA_INLINE
 #else
   #define WA_INLINE inline

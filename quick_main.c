@@ -12,7 +12,7 @@ int main()
   
   int key_count = sizeof(keys) / sizeof(keys[0]);
   
-  quick_sort(keys, key_count, quick_middle_pivot);
+  quick_sort(keys, key_count, quick_partition_default, quick_middle_pivot);
   
   debug_print_keys(keys, key_count);
 

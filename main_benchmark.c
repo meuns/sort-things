@@ -18,6 +18,12 @@
 #include "radix_sort.h"
 #include "std_sort.h"
 
+#if defined(WA_LINKING_INLINE_FUNCTION)
+  #define WA_INLINE
+#else
+  #define WA_INLINE inline
+#endif
+
 typedef void (*sort_function_t)(int* keys, const int key_count, int* temp_keys);
 
 void wrap_network_sort(int* keys, const int key_count, int* temp_keys __attribute__((unused)))
@@ -56,7 +62,7 @@ void wrap_heap_sort(int* keys, const int key_count, int* temp_keys __attribute__
 }
 
 __attribute__((always_inline))
-int benchmark_compare_le_lto(const void* left_key, const void* right_key)
+WA_INLINE int benchmark_compare_le_lto(const void* left_key, const void* right_key)
 {
   const int* left_key_int = (const int*)left_key;
   const int* right_key_int = (const int*)right_key;
@@ -64,7 +70,7 @@ int benchmark_compare_le_lto(const void* left_key, const void* right_key)
 }
 
 __attribute__((always_inline))
-void benchmark_copy_lto(void* to_key, const void* from_key)
+WA_INLINE void benchmark_copy_lto(void* to_key, const void* from_key)
 {
   int* to_key_int = (int*)to_key;
   const int* from_key_int = (const int*)from_key;
@@ -81,9 +87,39 @@ void wrap_merge_sort_hybrid(int* keys, const int key_count, int* temp_keys)
   merge_sort_hybrid(keys, key_count, temp_keys);
 }
 
-void wrap_quick_sort(int* keys, const int key_count, int* temp_keys __attribute__((unused)))
+void wrap_quick_sort_default_median3(int* keys, const int key_count, int* temp_keys __attribute__((unused)))
 {
-  quick_sort(keys, key_count, quick_median3_pivot);
+  quick_sort(keys, key_count, quick_partition_default, quick_median3_pivot);
+}
+
+void wrap_quick_sort_default_middle(int* keys, const int key_count, int* temp_keys __attribute__((unused)))
+{
+  quick_sort(keys, key_count, quick_partition_default, quick_middle_pivot);
+}
+
+void wrap_quick_sort_swap_by_block_then_fit_median3(int* keys, const int key_count, int* temp_keys __attribute__((unused)))
+{
+  quick_sort(keys, key_count, quick_partition_swap_by_block_then_fit_32, quick_median3_pivot);
+}
+
+void wrap_quick_sort_swap_then_fit_median3(int* keys, const int key_count, int* temp_keys __attribute__((unused)))
+{
+  quick_sort(keys, key_count, quick_partition_swap_then_fit, quick_median3_pivot);
+}
+
+void wrap_quick_sort_swap_then_fit_middle(int* keys, const int key_count, int* temp_keys __attribute__((unused)))
+{
+  quick_sort(keys, key_count, quick_partition_swap_then_fit, quick_middle_pivot);
+}
+
+void wrap_quick_sort_three_ways_median3(int* keys, const int key_count, int* temp_keys __attribute__((unused)))
+{
+  quick_sort(keys, key_count, quick_partition_three_ways, quick_median3_pivot);
+}
+
+void wrap_quick_sort_three_ways_middle(int* keys, const int key_count, int* temp_keys __attribute__((unused)))
+{
+  quick_sort(keys, key_count, quick_partition_three_ways, quick_middle_pivot);
 }
 
 void wrap_radix_sort_halfbyte(int* keys, const int key_count, int* temp_keys)
@@ -111,6 +147,8 @@ benchmark_t;
 
 int main(int argc, char** argv)
 {
+  const int quick_sort_group_is_enabled = option_parse_command_line(argc, argv, "--quick-sort=", "-qs=", 0);
+
   const benchmark_t benchmarks[] =
   {
     {wrap_network_sort, "network_sort", option_parse_command_line(argc, argv, "--network-sort=", "-ns=", 0)},
@@ -119,7 +157,13 @@ int main(int argc, char** argv)
     {wrap_heap_sort, "heap_sort", option_parse_command_line(argc, argv, "--heap-sort=", "-hs=", 0)},
     {wrap_merge_sort, "merge_sort", option_parse_command_line(argc, argv, "--merge-sort=", "-ms=", 0)},
     {wrap_merge_sort_hybrid, "merge_sort_hybrid", option_parse_command_line(argc, argv, "--merge-sort-hybrid=", "-msh=", 0)},
-    {wrap_quick_sort, "quick_sort", option_parse_command_line(argc, argv, "--quick-sort=", "-qs=", 0)},
+    {wrap_quick_sort_default_median3, "quick_sort_default_median3", quick_sort_group_is_enabled || option_parse_command_line(argc, argv, "--quick-sort-default-median3=", "-qse=", 0)},
+    {wrap_quick_sort_default_middle, "quick_sort_default_middle", quick_sort_group_is_enabled || option_parse_command_line(argc, argv, "--quick-sort-default-middle=", "-qsi=", 0)},
+    {wrap_quick_sort_swap_by_block_then_fit_median3, "quick_sort_swap_by_block_then_fit_median3", quick_sort_group_is_enabled || option_parse_command_line(argc, argv, "--quick-sort-swap-by-block-then-fit-median3=", "-qssbfi=", 0)},
+    {wrap_quick_sort_swap_then_fit_median3, "quick_sort_swap_then_fit_median3", quick_sort_group_is_enabled || option_parse_command_line(argc, argv, "--quick-sort-swap-then-fit-median3=", "-qssfe=", 0)},
+    {wrap_quick_sort_swap_then_fit_middle, "quick_sort_swap_then_fit_middle", quick_sort_group_is_enabled || option_parse_command_line(argc, argv, "--quick-sort-swap-then-fit-middle=", "-qssfi=", 0)},
+    {wrap_quick_sort_three_ways_median3, "quick_sort_three_ways_median3", quick_sort_group_is_enabled || option_parse_command_line(argc, argv, "--quick-sort-three-ways-median3=", "-qs3e=", 0)},
+    {wrap_quick_sort_three_ways_middle, "quick_sort_three_ways_middle", quick_sort_group_is_enabled || option_parse_command_line(argc, argv, "--quick-sort-three-ways-middle=", "-qs3i=", 0)},
     {wrap_std_sort, "std_sort", option_parse_command_line(argc, argv, "--std-sort=", "-std=", 0)},
     {wrap_std_stable_sort, "std_stable_sort", option_parse_command_line(argc, argv, "--std-stable-sort=", "-sts=", 0)},
     //{wrap_std_qsort, "std_qsort", option_parse_command_line(argc, argv, "--std-qsort=", "-stq=", 0)},
@@ -128,22 +172,25 @@ int main(int argc, char** argv)
     {wrap_radix_sort_short, "radix_sort_short", option_parse_command_line(argc, argv, "--radix-short-sort=", "-rss=", 0)}
   };
 
-  const int max_key_power = option_parse_command_line(argc, argv, "--max-key-pow2=", "-kp=", 24);
-  const int min_key_power = option_parse_command_line(argc, argv, "--min-key-pow2=", "-mkp=", max_key_power);
-  const int step_key_power = option_parse_command_line(argc, argv, "--step-key-pow2=", "-skp=", 10);
+  const int max_key_count = option_parse_command_line(argc, argv, "--max-key-count=", "-kc=", 1 << 24);
+  const int min_key_count = option_parse_command_line(argc, argv, "--min-key-count=", "-mkc=", max_key_count);
+  const int step_key_count = option_parse_command_line(argc, argv, "--step-key=", "-sk=", 1 << 10);
+  const int max_key_value = option_parse_command_line(argc, argv, "--max-key-value=", "-kv=", INT_MAX);
+  const int min_key_value = option_parse_command_line(argc, argv, "--min-key-value=", "-mkv=", INT_MIN);
   const int split_count = option_parse_command_line(argc, argv, "--split-count", "-sc=", 1);
   const int inner_scope = option_parse_command_line(argc, argv, "--inner-scope=", "-i=", 1);
   const int verbose = option_parse_command_line(argc, argv, "--verbose=", "-v=", 1);
   const int repeat_count = 20;
 
-  const int min_key_count = 1 << min_key_power;
-  const int max_key_count = 1 << max_key_power;
-  const int step_key_count = 1 << step_key_power;
-
   int* ref_keys = (int*)malloc((unsigned int)max_key_count * sizeof(int));
   int* temp_keys = (int*)malloc((unsigned int)max_key_count * sizeof(int));
   int* keys = (int*)malloc((unsigned int)max_key_count * sizeof(int));
-  benchmark_generate_random_keys(ref_keys, max_key_count, 42, INT_MIN, INT_MAX);
+  benchmark_generate_random_keys(ref_keys, max_key_count, 42, min_key_value, max_key_value);
+
+  if (!verbose)
+  {
+    printf("Sort Name;Key Count;Duration us\n");
+  }
 
   const int sort_count = sizeof(benchmarks) / sizeof(benchmarks[0]);
   for (int sort_index = 0; sort_index < sort_count; ++sort_index)
@@ -156,11 +203,6 @@ int main(int argc, char** argv)
 
     const sort_function_t sort_function = benchmark.sort_function;
     const char* sort_name = benchmark.sort_name;
-
-    if (!verbose)
-    {
-      printf("Key count;Duration us\n");
-    }
 
     for (int key_count = min_key_count; key_count <= max_key_count; key_count += step_key_count)
     {
@@ -225,7 +267,7 @@ int main(int argc, char** argv)
       }
       else
       {
-        printf("%d;%d\n", key_count, average_duration);
+        printf("%s;%d;%d\n", sort_name, key_count, average_duration);
       }
     }
   }

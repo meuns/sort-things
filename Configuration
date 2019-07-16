@@ -1,17 +1,182 @@
-# Platform
-ifeq ($(OS), Windows_NT) 
-	DETECTED_OS:=Windows
+# Detecting compilers
+ifeq ($(OS), Windows_NT)
+	DETECTED_GCC_PATH:=$(shell where gcc)
+	DETECTED_CLANG_PATH:=$(shell where clang)
 else
-	DETECTED_OS:=$(shell sh -c 'uname 2>/dev/null || echo Unknown')
+	DETECTED_GCC_PATH:=$(shell which gcc)
+	DETECTED_CLANG_PATH:=$(shell which clang)
 endif
 
+ifeq ($(COMPILER),)
+	ifneq ($(DETECTED_GCC_PATH),)
+		COMPILER:=GCC
+		INFO_MESSAGE=$(info Automatically using gcc compiler located at : $(DETECTED_GCC_PATH))
+	else ifneq ($(DETECTED_CLANG_PATH),)
+		COMPILER:=CLANG
+		INFO_MESSAGE=$(info Automatically using clang compiler located at : $(DETECTED_CLANG_PATH))
+	else
+		ERROR_MESSAGE=$(error No detected compilers, check your PATH)
+	endif
+else ifeq ($(COMPILER), GCC)
+	ifneq ($(DETECTED_GCC_PATH),)
+		INFO_MESSAGE=$(info Choosing gcc compiler located at : $(DETECTED_GCC_PATH))
+	else
+		ERROR_MESSAGE=$(error Gcc compiler is missing, check your PATH)
+	endif
+else ifeq ($(COMPILER), CLANG)
+	ifneq ($(DETECTED_CLANG_PATH),)
+		INFO_MESSAGE=$(info Choosing clang compiler located at : $(DETECTED_CLANG_PATH))
+	else
+		ERROR_MESSAGE=$(error Clang compiler is missing, check your PATH)
+	endif
+else
+	ERROR_MESSAGE=$(error Unexpected COMPILER $(COMPILER), you can choose GCC or CLANG)
+endif
+
+# Execute error message if any
+$(ERROR_MESSAGE)
+$(INFO_MESSAGE)
+
+# Detecting platform
+ifeq ($(OS), Windows_NT)
+	DETECTED_OS:=WINDOWS
+	ifeq ($(COMPILER), GCC)
+		DETECTED_TARGET:=$(shell gcc -dumpmachine)
+		ifneq (, $(findstring x86_64-w64-mingw32, $(DETECTED_TARGET)))
+			DETECTED_TARGET:=MSYS
+		else ifneq (, $(findstring x86_64-pc-msys, $(DETECTED_TARGET)))
+			DETECTED_TARGET:=MSYS
+		else
+			ERROR_MESSAGE=$(error Unexpected DETECTED_TARGET $(DETECTED_TARGET))
+		endif
+	else ifeq ($(COMPILER), CLANG)
+		DETECTED_TARGET:=$(shell clang -dumpmachine)
+		ifneq (, $(findstring x86_64-pc-windows-msvc, $(DETECTED_TARGET)))
+			DETECTED_TARGET:=MSVC
+		else ifneq (, $(findstring x86_64-pc-msys, $(DETECTED_TARGET)))
+			DETECTED_TARGET:=MSYS
+		else
+			ERROR_MESSAGE=$(error Unexpected DETECTED_TARGET $(DETECTED_TARGET), consider to add and test it)
+		endif
+	endif
+else
+	DETECTED_OS:=$(shell sh -c '(uname 2>/dev/null || echo UNKNOWN) | tr "[:lower:]" "[:upper:]"')
+	ifeq ($(COMPILER), GCC)
+		DETECTED_TARGET:=$(shell gcc -dumpmachine)
+		ifneq (, $(findstring x86_64-linux-gnu, $(DETECTED_TARGET)))
+			DETECTED_TARGET:=GNU
+		else ifneq (, $(findstring aarch64--linux-android, $(DETECTED_TARGET)))
+			DETECTED_TARGET:=ANDROID
+		else
+			ERROR_MESSAGE=$(error Unexpected DETECTED_TARGET $(DETECTED_TARGET))
+		endif
+	else ifeq ($(COMPILER), CLANG)
+		DETECTED_TARGET:=$(shell clang -dumpmachine)
+		ifneq (, $(findstring x86_64-pc-linux-gnu, $(DETECTED_TARGET)))
+			DETECTED_TARGET:=GNU
+		else ifneq (, $(findstring aarch64--linux-android, $(DETECTED_TARGET)))
+			DETECTED_TARGET:=ANDROID
+		else
+			ERROR_MESSAGE=$(error Unexpected DETECTED_TARGET $(DETECTED_TARGET), consider to add and test it)
+		endif
+	endif
+endif
+
+# Execute error message if any
+$(ERROR_MESSAGE)
+
+# Default build mode
+ifeq ($(BUILD),)
+	BUILD:=RELEASE
+endif
+
+# Detecting LTO linkers
+ifeq ($(OS), Windows_NT)
+	DETECTED_GOLD_PATH:=
+	DETECTED_LLD_PATH:=$(shell where lld-link)
+else
+	DETECTED_GOLD_PATH:=$(shell which ld.gold)
+	DETECTED_LLD_PATH:=$(shell which ld.lld)
+endif
+
+ifeq ($(LINKER),)
+	ifeq ($(COMPILER), GCC)
+		ifneq ($(DETECTED_GOLD_PATH),)
+			LINKER=GOLD
+			INFO_MESSAGE=$(info Automatically using gold linker located at : $(DETECTED_GOLD_PATH))
+		else
+			LINKER=DEFAULT
+			INFO_MESSAGE=$(info Automatically using default linker)
+		endif
+	else ifeq ($(COMPILER), CLANG)
+		ifeq ($(DETECTED_TARGET), ANDROID)
+			ifneq ($(DETECTED_GOLD_PATH),)
+				LINKER=GOLD
+				INFO_MESSAGE=$(info Automatically using gold linker located at : $(DETECTED_GOLD_PATH))
+			else
+				LINKER=DEFAULT
+				INFO_MESSAGE=$(info Automatically using default linker)
+			endif
+		else ifeq ($(DETECTED_TARGET), GNU)
+			ifneq ($(DETECTED_LLD_PATH),)
+				LINKER=LLD
+				INFO_MESSAGE=$(info Automatically using lld linker located at : $(DETECTED_LLD_PATH))
+			else ifneq ($(DETECTED_GOLD_PATH),)
+				LINKER=GOLD
+				INFO_MESSAGE=$(info Automatically using gold linker located at : $(DETECTED_GOLD_PATH))
+			else
+				LINKER=DEFAULT
+				INFO_MESSAGE=$(info Automatically using default linker)
+			endif
+		else ifeq ($(DETECTED_TARGET), MSVC)
+			ifneq ($(DETECTED_LLD_PATH),)
+				LINKER=LLD
+				INFO_MESSAGE=$(info Automatically using lld linker located at : $(DETECTED_LLD_PATH))
+			else
+				LINKER=DEFAULT
+				INFO_MESSAGE=$(info Automatically using default linker)
+			endif
+		else
+			LINKER=DEFAULT
+			INFO_MESSAGE=$(info Automatically using default linker)
+		endif
+	endif
+else ifeq ($(LINKER), GOLD)
+	ifneq ($(DETECTED_GOLD_PATH),)
+		LINKER=GOLD
+		INFO_MESSAGE=$(info Choosing gold linker located at : $(DETECTED_GOLD_PATH))
+	else
+		ERROR_MESSAGE=$(error Gold linker is missing)
+	endif
+else ifeq ($(LINKER), LLD)
+	ifneq ($(DETECTED_LLD_PATH),)
+		LINKER=LLD
+		INFO_MESSAGE=$(info Choosing lld linker located at : $(DETECTED_LLD_PATH))
+	else
+		ERROR_MESSAGE=$(error Gold lld is missing)
+	endif
+else
+	ERROR_MESSAGE=$(error Unexpected LINKER $(LINKER))
+endif
+
+ifeq ($(LINKER)-$(LTO), DEFAULT-ENABLE)
+	ERROR_MESSAGE=$(error No LTO linker is available)
+	LTO=DISABLE
+endif
+
+# Execute error message if any
+$(ERROR_MESSAGE)
+$(INFO_MESSAGE)
+
 # Configure build
+$(info $(DETECTED_OS)-$(DETECTED_TARGET)-$(COMPILER)-$(LINKER)-$(BUILD))
+
 EXE_SUFFIX=
 ifeq ($(BUILD), DEBUG)
 	BUILD_DIR_PATH=./.debug
 else ifeq ($(BUILD), PROFILE)
 	BUILD_DIR_PATH=./.profile
-else
+else ifeq ($(BUILD), RELEASE)
 	BUILD_DIR_PATH=./.release
 endif
 
@@ -21,42 +186,39 @@ BUILD_DIR_PATH:=$(BUILD_DIR_PATH)_$(BRANCH_NAME)
 ifeq ($(COMPILER), GCC)
 	BUILD_DIR_PATH:=$(BUILD_DIR_PATH)_gcc
 	EXE_SUFFIX:=$(EXE_SUFFIX)_gcc
-else ifeq ($(COMPILER), CLANGCL)
-	BUILD_DIR_PATH:=$(BUILD_DIR_PATH)_clangcl
-	EXE_SUFFIX:=$(EXE_SUFFIX)_clangcl
-else
+else ifeq ($(COMPILER), CLANG)
 	BUILD_DIR_PATH:=$(BUILD_DIR_PATH)_clang
 	EXE_SUFFIX:=$(EXE_SUFFIX)_clang
-	ifeq ($(LTO), ENABLE)
-		BUILD_DIR_PATH:=$(BUILD_DIR_PATH)_lto
-		EXE_SUFFIX:=$(EXE_SUFFIX)_lto
-	else ifeq ($(LTO), VALIDATE)
-		BUILD_DIR_PATH:=$(BUILD_DIR_PATH)_lto_v
-		EXE_SUFFIX:=$(EXE_SUFFIX)_lto_v
-	endif
+endif
+
+ifeq ($(LTO), ENABLE)
+	BUILD_DIR_PATH:=$(BUILD_DIR_PATH)_lto
+	EXE_SUFFIX:=$(EXE_SUFFIX)_lto
+endif
+
+ifeq ($(LINKER), GOLD)
+	BUILD_DIR_PATH:=$(BUILD_DIR_PATH)_gold
+	EXE_SUFFIX:=$(EXE_SUFFIX)_gold
+else ifeq ($(LINKER), LLD)
+	BUILD_DIR_PATH:=$(BUILD_DIR_PATH)_lld
+	EXE_SUFFIX:=$(EXE_SUFFIX)_lld
 endif
 
 ifeq ($(BUILD), DEBUG)
 	EXE_SUFFIX:=$(EXE_SUFFIX)_d
 else ifeq ($(BUILD), PROFILE)
 	EXE_SUFFIX:=$(EXE_SUFFIX)_p
-else
+else ifeq ($(BUILD), RELEASE)
 	EXE_SUFFIX:=$(EXE_SUFFIX)_r
 endif
 
 ifeq ($(COMPILER), GCC)
 	CC=gcc
 	CXX=gcc	
-	CFLAGS=-std=c11 -D_XOPEN_SOURCE=600 -Wall -Wextra -Wpedantic -Wformat -Wbool-compare -Wcast-qual -Wconversion -Winit-self -Wrestrict -Wunused -Werror
-	CXXFLAGS=-std=c++14 -D_XOPEN_SOURCE=600 -Wall -Wextra -Wpedantic -Wformat -Wbool-compare -Wcast-qual -Wconversion -Winit-self -Wrestrict -Wunused -Werror
+	CFLAGS=-std=c11 -D_XOPEN_SOURCE=600 -Wall -Wextra -Wpedantic -Wformat -Wcast-qual -Wconversion -Winit-self -Wunused -Werror
+	CXXFLAGS=-std=c++14 -D_XOPEN_SOURCE=600 -Wall -Wextra -Wpedantic -Wformat -Wcast-qual -Wconversion -Winit-self -Wunused -Werror
 	LDFLAGS=
-else ifeq ($(COMPILER), CLANGCL)
-	CC=clang-cl
-	CXX=clang-cl
-	CFLAGS=
-	CXXFLAGS=
-	LDFLAGS=
-else
+else ifeq ($(COMPILER), CLANG)
 	CC=clang
 	CXX=clang
 	CFLAGS=-std=c11 -D_XOPEN_SOURCE=600 -Weverything -Werror -Wno-gnu-empty-initializer -Wno-zero-length-array -Wno-vla -Wno-missing-prototypes -Wno-comma -save-temps=obj
@@ -64,34 +226,35 @@ else
 	LDFLAGS=
 endif
 
-ifeq ($(COMPILER), CLANGCL)
-	ifeq ($(BUILD), DEBUG)
-		CFLAGS+=-Zi -MTd -fuse-ld=lld
-		CXXFLAGS+=-Zi -MTd -fuse-ld=lld
-		LDFLAGS+=-DEBUG:FULL
-	else ifeq ($(BUILD), PROFILE)
-		CFLAGS+=-Zi -MTd -fuse-ld=lld
-		CXXFLAGS+=-Zi -MTd -fuse-ld=lld
-		LDFLAGS+=-DEBUG:FULL
-	else
-		CFLAGS+=-fuse-ld=lld
-		CXXFLAGS+=-fuse-ld=lld
-		LDFLAGS+=
+ifeq ($(LINKER), GOLD)
+	LDFLAGS+=-fuse-ld=gold
+else ifeq ($(LINKER), LLD)
+	LDFLAGS+=-fuse-ld=lld
+endif
+
+ifeq ($(BUILD), DEBUG)
+	CFLAGS+=-g -O0
+	CXXFLAGS+=-g -O0
+	LDFLAGS+=-g
+else ifeq ($(BUILD), PROFILE)
+	CFLAGS+=-g -D NDEBUG -O2
+	CXXFLAGS+=-g -D NDEBUG -O2
+else ifeq ($(BUILD), RELEASE)
+	CFLAGS+=-D NDEBUG -O2
+	CXXFLAGS+=-D NDEBUG -O2
+endif
+
+ifeq ($(LTO), ENABLE)
+	CFLAGS+=-flto
+	CXXFLAGS+=-flto
+	LDFLAGS+=-flto
+	ifeq ($(LINKER), GOLD)
+		LDFLAGS+=-Wl,-plugin-opt=save-temps
 	endif
-else
-	ifeq ($(BUILD), DEBUG)
-		CFLAGS+=-g -O0
-		CXXFLAGS+=-g -O0
-	else ifeq ($(BUILD), PROFILE)
-		CFLAGS+=-g -D NDEBUG -O2
-		CXXFLAGS+=-g -D NDEBUG -O2
-	else
-		CFLAGS+=-D NDEBUG -O2
-		CXXFLAGS+=-D NDEBUG -O2
-		ifeq ($(LTO), ENABLE)
-			CFLAGS+=-flto
-			CXXFLAGS+=-flto
-			LDFLAGS+=-flto -fuse-ld=gold -Wl,-plugin-opt=save-temps
-		endif
-	endif
+endif
+
+# Platform specific compiler options
+ifeq ($(DETECTED_OS)-$(DETECTED_TARGET)-$(COMPILER), WINDOWS-MSVC-CLANG)
+	CFLAGS+=-D WA_LINKING_INLINE_FUNCTION -Wno-comma
+	CXXFLAGS+=-D WA_LINKING_INLINE_FUNCTION -Wno-comma
 endif
